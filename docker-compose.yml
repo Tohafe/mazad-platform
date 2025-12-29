@@ -1,0 +1,28 @@
+services:
+  postgres:
+    container_name: postgres-c
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: klock
+      POSTGRES_PASSWORD: klock123
+      PGDATA: /data/postgres
+
+    volumes:
+      - postgres-v:/data/postgres
+    ports:
+      - "5000:5432"
+    networks:
+      klock-network:
+    restart: unless-stopped
+
+
+networks:
+  klock-network:
+    name: klock-network
+    driver: bridge
+
+volumes:
+  postgres-v:
+    name: postgres-v
+
+
