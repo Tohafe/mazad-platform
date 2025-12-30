@@ -17,12 +17,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final static UUID CURRENT_USER_ID = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11");
 
     @PostMapping
     public ResponseEntity<ItemResponse> create(@RequestBody @Valid ItemRequest itemRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(itemService.createItem(itemRequest, UUID.randomUUID()));
+                .body(itemService.createItem(itemRequest, CURRENT_USER_ID));
     }
 
     @GetMapping("/{id}")
