@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +33,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse createItem(ItemRequest itemRequest, UUID sellerId) {
         ItemEntity entity = mapper.toEntity(itemRequest);
         entity.setSellerId(sellerId);
-        entity.setStatus(AuctionStatus.SOLD);
+        entity.setStatus(AuctionStatus.ACTIVE);
         entity.setCurrentBid(BigDecimal.ZERO);
         return mapper.toResponse(itemRepo.save(entity));
     }
@@ -44,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public PagedModel<ItemResponse> getItemsPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("endsAt").ascending());
         Page<ItemResponse> items = itemRepo.findAllByStatus(AuctionStatus.ACTIVE, pageable)
                 .map(mapper::toResponse);
         return new PagedModel<>(items);
