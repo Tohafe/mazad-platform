@@ -32,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse createItem(ItemRequest itemRequest, UUID sellerId) {
         ItemEntity entity = mapper.toEntity(itemRequest);
         entity.setSellerId(sellerId);
-        entity.setStatus(AuctionStatus.ACTIVE);
+        entity.setStatus(AuctionStatus.SOLD);
         entity.setCurrentBid(BigDecimal.ZERO);
         return mapper.toResponse(itemRepo.save(entity));
     }
@@ -45,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
 
     public PagedModel<ItemResponse> getItemsPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ItemResponse> items = itemRepo.findAll(pageable)
+        Page<ItemResponse> items = itemRepo.findAllByStatus(AuctionStatus.ACTIVE, pageable)
                 .map(mapper::toResponse);
         return new PagedModel<>(items);
     }
