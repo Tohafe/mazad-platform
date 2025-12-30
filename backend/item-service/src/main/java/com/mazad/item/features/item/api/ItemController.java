@@ -30,4 +30,11 @@ public class ItemController {
         ItemResponse itemResponse = itemService.getItem(id);
         return ResponseEntity.ofNullable(itemResponse);
     }
+
+    @GetMapping
+    public PagedModel<ItemResponse> getItems(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "3") int size) {
+        return itemService.getItemsPage(page, size);
+    }
 }
