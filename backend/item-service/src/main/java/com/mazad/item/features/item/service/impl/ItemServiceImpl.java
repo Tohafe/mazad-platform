@@ -43,4 +43,10 @@ public class ItemServiceImpl implements ItemService {
         return mapper.toResponse(entity);
     }
 
+    public PagedModel<ItemResponse> getItemsPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ItemResponse> items = itemRepo.findAll(pageable)
+                .map(mapper::toResponse);
+        return new PagedModel<>(items);
+    }
 }
