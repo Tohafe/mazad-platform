@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "items")
@@ -20,7 +21,7 @@ public class ItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private Long sellerId;
+    private UUID sellerId;
     @Column(nullable = false)
     private String title;
 
