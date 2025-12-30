@@ -27,13 +27,13 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemResponse> getItemById(@PathVariable Long id) {
+    public ResponseEntity<ItemResponse> getById(@PathVariable Long id) {
         ItemResponse itemResponse = itemService.getItem(id);
         return ResponseEntity.ofNullable(itemResponse);
     }
 
     @GetMapping
-    public PagedModel<ItemResponse> getItems(
+    public PagedModel<ItemResponse> getAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "3") int size) {
         return itemService.getItemsPage(page, size);
