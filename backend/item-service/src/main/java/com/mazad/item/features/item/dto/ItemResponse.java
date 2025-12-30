@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public record ItemResponse(
         Long id,
+        Long categoryId,
         UUID sellerId,
         String title,
         String description,
