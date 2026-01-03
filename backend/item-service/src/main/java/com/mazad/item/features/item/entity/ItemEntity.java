@@ -3,6 +3,7 @@ package com.mazad.item.features.item.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -20,31 +21,33 @@ public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+
+    @NotNull
     private Long categoryId;
-    @Column(nullable = false)
+
+    @NotNull
     private UUID sellerId;
-    @Column(nullable = false)
+
+    @NotNull
     private String title;
 
-    @Column(nullable = false)
+    @NotNull
     @Enumerated(EnumType.STRING)
     private AuctionStatus status;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(precision = 19, scale = 2, nullable = false)
+    @NotNull
     private BigDecimal startingPrice;
 
-    @Column(precision = 19, scale = 2, nullable = false)
+    @NotNull
     private BigDecimal currentBid;
 
-    @FutureOrPresent
-    @Column(nullable = false)
+    @NotNull @FutureOrPresent
     private Instant startsAt;
-    @Future
-    @Column(nullable = false)
+
+    @NotNull @Future
     private Instant endsAt;
 
 
