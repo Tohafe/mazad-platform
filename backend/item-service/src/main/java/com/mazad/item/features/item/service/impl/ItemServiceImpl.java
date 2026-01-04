@@ -8,6 +8,7 @@ import com.mazad.item.features.item.entity.ItemEntity;
 import com.mazad.item.features.item.mapper.ItemMapper;
 import com.mazad.item.features.item.repository.ItemRepository;
 import com.mazad.item.features.item.service.ItemService;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public PagedModel<ItemResponse> getItemsPage(int page, int size) {
+        if (page < 0 || size <= 0)
+            throw new ValidationException("The page info is invalid");
         Pageable pageable = PageRequest.of(page, size, Sort.by("endsAt").ascending());
         Page<ItemResponse> items = itemRepo.findAllByStatus(AuctionStatus.ACTIVE, pageable)
                 .map(mapper::toResponse);

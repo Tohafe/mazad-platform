@@ -1,6 +1,7 @@
 package com.mazad.item.exceptions;
 
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,5 +25,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
     public ProblemDetail handleConstraintViolation(ConstraintViolationException e) {
         return ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ValidationException.class)
+    public ProblemDetail handleValidationException(ValidationException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 }
