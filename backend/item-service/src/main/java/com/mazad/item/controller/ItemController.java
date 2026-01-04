@@ -26,6 +26,11 @@ public class ItemController {
                 .body(itemService.createItem(itemRequest, CURRENT_USER_ID));
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity<ItemResponse> update(@PathVariable Long id, @RequestBody @Valid ItemRequest itemRequest) {
+        return ResponseEntity.ok(itemService.updateItem(id, itemRequest));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ItemResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(itemService.getItem(id));

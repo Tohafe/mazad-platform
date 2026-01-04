@@ -53,4 +53,18 @@ public class ItemServiceImpl implements ItemService {
                 .map(mapper::toResponse);
         return new PagedModel<>(items);
     }
+
+    @Override
+    public ItemResponse updateItem(Long id, ItemRequest itemRequest) {
+        ItemEntity entity = itemRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
+        entity.setCategoryId(itemRequest.categoryId());
+        entity.setTitle(itemRequest.title());
+        entity.setDescription(itemRequest.description());
+        entity.setStartingPrice(itemRequest.startingPrice());
+        entity.setStartsAt(itemRequest.startsAt());
+        entity.setEndsAt(itemRequest.endsAt());
+        ItemEntity updatedEntity = itemRepo.save(entity);
+        return mapper.toResponse(updatedEntity);
+    }
 }
