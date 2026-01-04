@@ -1,5 +1,6 @@
 package com.mazad.item.features.item.service.impl;
 
+import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.features.item.dto.ItemRequest;
 import com.mazad.item.features.item.dto.ItemResponse;
 import com.mazad.item.features.item.entity.AuctionStatus;
@@ -7,8 +8,8 @@ import com.mazad.item.features.item.entity.ItemEntity;
 import com.mazad.item.features.item.mapper.ItemMapper;
 import com.mazad.item.features.item.repository.ItemRepository;
 import com.mazad.item.features.item.service.ItemService;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -40,11 +40,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponse getItem(Long id) {
-        ItemEntity entity = itemRepo.findById(id).orElse(null);
+        ItemEntity entity = itemRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         return mapper.toResponse(entity);
     }
 
     public PagedModel<ItemResponse> getItemsPage(int page, int size) {
+        if (page < 0 || size <= 0)
+            throw new ValidationException("The page info is invalid");
         Pageable pageable = PageRequest.of(page, size, Sort.by("endsAt").ascending());
         Page<ItemResponse> items = itemRepo.findAllByStatus(AuctionStatus.ACTIVE, pageable)
                 .map(mapper::toResponse);

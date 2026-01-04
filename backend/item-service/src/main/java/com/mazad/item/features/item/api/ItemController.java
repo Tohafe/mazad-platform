@@ -28,8 +28,7 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ItemResponse> getById(@PathVariable Long id) {
-        ItemResponse itemResponse = itemService.getItem(id);
-        return ResponseEntity.ofNullable(itemResponse);
+        return ResponseEntity.ok(itemService.getItem(id));
     }
 
     @GetMapping
