@@ -16,4 +16,6 @@ public interface ItemService {
     public PagedModel<ItemResponse> getItemsPage(int page, int size);
 
     ItemResponse updateItem(Long id, @Valid ItemRequest itemRequest);
+
+    void deleteItem(Long id);
 }

@@ -67,4 +67,9 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity updatedEntity = itemRepo.save(entity);
         return mapper.toResponse(updatedEntity);
     }
+
+    @Override
+    public void deleteItem(Long id) {
+        itemRepo.deleteById(id);
+    }
 }

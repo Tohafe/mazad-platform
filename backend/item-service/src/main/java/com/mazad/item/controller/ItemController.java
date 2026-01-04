@@ -31,6 +31,12 @@ public class ItemController {
         return ResponseEntity.ok(itemService.updateItem(id, itemRequest));
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        itemService.deleteItem(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ItemResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(itemService.getItem(id));
