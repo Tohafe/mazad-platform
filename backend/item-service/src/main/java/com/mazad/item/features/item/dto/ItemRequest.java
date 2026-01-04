@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 public record ItemRequest(
+        @NotNull(message = "Category id is required")
+        Long categoryId,
         @NotBlank(message = "Title is required")
         String title,
         String description,

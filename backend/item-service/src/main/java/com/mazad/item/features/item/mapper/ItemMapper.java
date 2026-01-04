@@ -13,6 +13,7 @@ public class ItemMapper {
         if (itemRequest == null)
             return null;
         return ItemEntity.builder()
+                .categoryId(itemRequest.categoryId())
                 .title(itemRequest.title())
                 .description(itemRequest.description())
                 .startingPrice(itemRequest.startingPrice())
@@ -26,6 +27,7 @@ public class ItemMapper {
             return null;
         return new ItemResponse(
                 entity.getId(),
+                entity.getCategoryId(),
                 entity.getSellerId(),
                 entity.getTitle(),
                 entity.getDescription(),
