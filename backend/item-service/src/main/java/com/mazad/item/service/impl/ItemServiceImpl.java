@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -27,6 +29,7 @@ import java.util.UUID;
 public class ItemServiceImpl implements ItemService {
     private final ItemMapper mapper;
     private final ItemRepository itemRepo;
+    private final JsonMapper jsonMapper;
 
 
     @Override
@@ -66,6 +69,15 @@ public class ItemServiceImpl implements ItemService {
         entity.setEndsAt(itemRequest.endsAt());
         ItemEntity updatedEntity = itemRepo.save(entity);
         return mapper.toResponse(updatedEntity);
+    }
+
+    @Override
+    public ItemResponse patchItem(Long id, JsonNode patchNode) {
+        ItemEntity entity = itemRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
+        jsonMapper.readerForUpdating(entity).readValue(patchNode);
+        ItemEntity savedEntity = itemRepo.save(entity);
+        return mapper.toResponse(savedEntity);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -32,7 +33,7 @@ class ItemServiceImplTest {
         itemRepoMock = mock(ItemRepository.class);
 //        itemServiceMock = mock(ItemServiceImpl.class);
         mapper = new ItemMapper();
-        itemService = new ItemServiceImpl(mapper, itemRepoMock);
+        itemService = new ItemServiceImpl(mapper, itemRepoMock, JsonMapper.builder().build());
     }
 
     @Test

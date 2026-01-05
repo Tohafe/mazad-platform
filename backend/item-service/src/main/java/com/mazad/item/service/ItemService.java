@@ -1,9 +1,11 @@
 package com.mazad.item.service;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.web.PagedModel;
+import tools.jackson.databind.JsonNode;
 
 import java.util.UUID;
 
@@ -18,4 +20,6 @@ public interface ItemService {
     ItemResponse updateItem(Long id, @Valid ItemRequest itemRequest);
 
     void deleteItem(Long id);
+
+    ItemResponse patchItem(Long id, JsonNode jsonPatch);
 }
