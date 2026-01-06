@@ -1,5 +1,6 @@
 package com.mazad.item.controller;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
 import com.mazad.item.service.ItemService;
@@ -9,6 +10,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.JsonNode;
 
 import java.util.UUID;
 
@@ -24,6 +26,22 @@ public class ItemController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(itemService.createItem(itemRequest, CURRENT_USER_ID));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<ItemResponse> update(@PathVariable Long id, @RequestBody @Valid ItemRequest itemRequest) {
+        return ResponseEntity.ok(itemService.updateItem(id, itemRequest));
+    }
+
+    @PatchMapping(path =  "{id}")
+    public ResponseEntity<ItemResponse> patch(@PathVariable Long id, @RequestBody JsonNode patch) {
+        return ResponseEntity.ok(itemService.patchItem(id, patch));
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        itemService.deleteItem(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
