@@ -1,6 +1,5 @@
 package com.mazad.item.service;
 
-import com.github.fge.jsonpatch.JsonPatch;
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
 import jakarta.validation.Valid;
