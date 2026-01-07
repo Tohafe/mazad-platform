@@ -1,6 +1,5 @@
 package com.mazad.item.controller;
 
-import com.github.fge.jsonpatch.JsonPatch;
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
 import com.mazad.item.service.ItemService;
