@@ -14,7 +14,7 @@ import java.util.UUID;
 @Table(name = "items")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Getter 
 @Setter
 @Builder
 public class ItemEntity {
