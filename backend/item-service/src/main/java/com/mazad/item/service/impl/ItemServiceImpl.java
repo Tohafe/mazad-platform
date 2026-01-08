@@ -3,6 +3,7 @@ package com.mazad.item.service.impl;
 import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.entity.AuctionStatus;
 import com.mazad.item.entity.ItemEntity;
 import com.mazad.item.mapper.ItemMapper;
@@ -11,6 +12,9 @@ import com.mazad.item.service.ItemService;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +59,23 @@ public class ItemServiceImpl implements ItemService {
         Page<ItemResponse> items = itemRepo.findAllByStatus(AuctionStatus.ACTIVE, pageable)
                 .map(mapper::toResponse);
         return new PagedModel<>(items);
+    }
+
+    @Override
+    @SuppressWarnings("Convert2MethodRef")
+    public PagedModel<ItemResponse> listItemsBy(ItemSearch itemSearch, Pageable pageable) {
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnoreCase()
+                .withMatcher("sellerId", match -> match.exact())
+                .withMatcher("status", match -> match.exact())
+                .withMatcher("startingPrice", match -> match.exact())
+                .withMatcher("currentBid", match -> match.exact())
+                .withMatcher("startsAt", match -> match.exact())
+                .withMatcher("endsAt", match -> match.exact())
+                .withMatcher("title", match -> match.contains().ignoreCase());
+        Example<ItemEntity> example = Example.of(mapper.toEntity(itemSearch), matcher);
+        Page<ItemResponse> itemPage = itemRepo.findAll(example, pageable).map(mapper::toResponse);
+        return new PagedModel<>(itemPage);
     }
 
     @Override

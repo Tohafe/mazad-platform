@@ -2,7 +2,11 @@ package com.mazad.item.service;
 
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemSearch;
+
 import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import tools.jackson.databind.JsonNode;
 
@@ -21,4 +25,6 @@ public interface ItemService {
     void deleteItem(Long id);
 
     ItemResponse patchItem(Long id, JsonNode jsonPatch);
+
+    public PagedModel<ItemResponse> listItemsBy(ItemSearch itemSearch, Pageable pageable);
 }

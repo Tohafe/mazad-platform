@@ -2,6 +2,7 @@ package com.mazad.item.mapper;
 
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.entity.ItemEntity;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,22 @@ public class ItemMapper {
                 .startingPrice(itemRequest.startingPrice())
                 .startsAt(itemRequest.startsAt())
                 .endsAt(itemRequest.endsAt())
+                .build();
+    }
+
+    public ItemEntity toEntity(ItemSearch itemSearch) {
+        if (itemSearch == null)
+            return null;
+        return ItemEntity.builder()
+                .sellerId(itemSearch.sellerId())
+                .categoryId(itemSearch.categoryId())
+                .title(itemSearch.title())
+                .description(itemSearch.description())
+                .status(itemSearch.status())
+                .startingPrice(itemSearch.startingPrice())
+                .currentBid(itemSearch.currentBid())
+                .startsAt(itemSearch.startsAt())
+                .endsAt(itemSearch.endsAt())
                 .build();
     }
 

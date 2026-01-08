@@ -2,9 +2,15 @@ package com.mazad.item.controller;
 
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemSearch;
+import com.mazad.item.entity.AuctionStatus;
 import com.mazad.item.service.ItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +38,7 @@ public class ItemController {
         return ResponseEntity.ok(itemService.updateItem(id, itemRequest));
     }
 
-    @PatchMapping(path =  "{id}")
+    @PatchMapping(path = "{id}")
     public ResponseEntity<ItemResponse> patch(@PathVariable Long id, @RequestBody JsonNode patch) {
         return ResponseEntity.ok(itemService.patchItem(id, patch));
     }
@@ -49,9 +55,9 @@ public class ItemController {
     }
 
     @GetMapping
-    public PagedModel<ItemResponse> getAll(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "3") int size) {
-        return itemService.getItemsPage(page, size);
+    public PagedModel<ItemResponse> listItems(
+        @ModelAttribute ItemSearch itemSearch,
+        @PageableDefault(size = 15, sort = "endsAt", direction = Sort.Direction.ASC) Pageable pageable) {
+            return itemService.listItemsBy(itemSearch, pageable);
     }
 }
