@@ -21,6 +21,12 @@ public class GlobalExceptionHandler {
                         .forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail userNotFoundHandler(UserNotFoundException e){
+        return ProblemDetail
+                        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ProblemDetail runTimeExceptionHandler(Exception e){
         return ProblemDetail

@@ -9,6 +9,8 @@ import com.mazad.auth.entity.UserEntity;
 @Component
 public class UserMapper {
     public UserEntity toEntity(UserRequestDTO request){
+        if (request == null)
+            return null;
         return UserEntity.builder()
                             .email(request.email())
                             .password(request.password())
@@ -19,6 +21,8 @@ public class UserMapper {
     }
 
     public UserResponseDTO toResponseDTO(UserEntity userEntity){
+        if (userEntity == null)
+            return null;
         return UserResponseDTO.builder()
                                     .id(userEntity.getId())
                                     .email(userEntity.getEmail())
