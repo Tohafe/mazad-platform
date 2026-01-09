@@ -2,7 +2,10 @@ package com.mazad.auth.dto;
 
 import java.util.UUID;
 
-public record RegisterResponse(
+import lombok.Builder;
+
+@Builder
+public record UserResponseDTO(
     UUID id,
     String email,
     String userName,
