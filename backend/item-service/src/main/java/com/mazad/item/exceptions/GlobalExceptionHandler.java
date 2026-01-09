@@ -2,6 +2,7 @@ package com.mazad.item.exceptions;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,9 +25,13 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail handleConstraintViolation(ConstraintViolationException e) {
         return ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Database error: " + e.getLocalizedMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
@@ -42,5 +47,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(JacksonException.class)
     public ProblemDetail handleJacksonException(JacksonException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+    @ExceptionHandler(ItemNotEditableException.class)
+    public ProblemDetail handleItemNotEditableException(ItemNotEditableException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
     }
 }
