@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,15 +31,14 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Email
     @Column(unique=true, nullable=false)
     private String email;
 
     @Column(nullable=false)
     private String password;
 
-    @Column(unique=true, nullable=false, length=15)
-    private String username;
+    @Column(name="username", unique=true, nullable=false, length=15)
+    private String userName;
 
     @Column(name="first_name", nullable=false, length=15)
     private String firstName;
