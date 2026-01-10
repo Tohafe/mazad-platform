@@ -22,32 +22,32 @@ public class ItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private Long categoryId;
 
-    @NotNull
+    @Column(nullable = false)
     private UUID sellerId;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AuctionStatus status;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @NotNull
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal startingPrice;
 
-    @NotNull
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal currentBid;
 
-    @NotNull @FutureOrPresent
+    @Column(nullable = false)
     private Instant startsAt;
 
-    @NotNull @Future
+    @Column(nullable = false)
     private Instant endsAt;
 
 

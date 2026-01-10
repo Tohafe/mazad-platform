@@ -1,5 +1,6 @@
 package com.mazad.item.service.impl;
 
+import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
@@ -40,8 +41,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse createItem(ItemRequest itemRequest, UUID sellerId) {
         ItemEntity entity = mapper.toEntity(itemRequest);
         entity.setSellerId(sellerId);
-        entity.setStatus(AuctionStatus.ACTIVE);
         entity.setCurrentBid(BigDecimal.ZERO);
+        AuctionStatus status = itemRequest.status() == null ? AuctionStatus.ACTIVE : itemRequest.status();
+        if (status != AuctionStatus.ACTIVE && status != AuctionStatus.DRAFT)
+            throw new ValidationException("Can't create an item with status of " + status);
+        entity.setStatus(status);
         return mapper.toResponse(itemRepo.save(entity));
     }
 
@@ -82,6 +86,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse updateItem(Long id, ItemRequest itemRequest) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
+        // An exception will be thrown if the status is not draft and the current bid is greater than 0.
+        boolean isEditable = entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0;
+        if (!isEditable)
+            throw new ItemNotEditableException("Item (" + id + ") can't be updated: status = " + entity.getStatus());
         entity.setCategoryId(itemRequest.categoryId());
         entity.setTitle(itemRequest.title());
         entity.setDescription(itemRequest.description());
@@ -96,6 +104,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse patchItem(Long id, JsonNode patchNode) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
+        // An exception will be thrown if the status is not draft and the current bid is greater than 0.
+        boolean isEditable = entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0;
+        if (!isEditable)
+            throw new ItemNotEditableException("Item (" + id + ") can't be edited: status = " + entity.getStatus());
         jsonMapper.readerForUpdating(entity).readValue(patchNode);
         ItemEntity savedEntity = itemRepo.save(entity);
         return mapper.toResponse(savedEntity);
@@ -103,6 +115,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItem(Long id) {
-        itemRepo.deleteById(id);
+        itemRepo.findById(id).ifPresent(entity -> {
+            // An exception will be thrown if the status is not draft and the current bid is greater than 0.
+            boolean isEditable = entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0;
+            if (!isEditable)
+                throw new ItemNotEditableException("Item (" + id + ") can't be deleted: status = " + entity.getStatus());
+            itemRepo.deleteById(id);
+        });
     }
 }
