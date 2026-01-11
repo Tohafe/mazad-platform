@@ -87,8 +87,7 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         // An exception will be thrown if the status is not draft and the current bid is greater than 0.
-        boolean isEditable = entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0;
-        if (!isEditable)
+        if (!isEditable(entity))
             throw new ItemNotEditableException("Item (" + id + ") can't be updated: status = " + entity.getStatus());
         entity.setCategoryId(itemRequest.categoryId());
         entity.setTitle(itemRequest.title());
@@ -105,8 +104,7 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         // An exception will be thrown if the status is not draft and the current bid is greater than 0.
-        boolean isEditable = entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0;
-        if (!isEditable)
+        if (!isEditable(entity))
             throw new ItemNotEditableException("Item (" + id + ") can't be edited: status = " + entity.getStatus());
         jsonMapper.readerForUpdating(entity).readValue(patchNode);
         ItemEntity savedEntity = itemRepo.save(entity);
@@ -117,10 +115,13 @@ public class ItemServiceImpl implements ItemService {
     public void deleteItem(Long id) {
         itemRepo.findById(id).ifPresent(entity -> {
             // An exception will be thrown if the status is not draft and the current bid is greater than 0.
-            boolean isEditable = entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0;
-            if (!isEditable)
+            if (!isEditable(entity))
                 throw new ItemNotEditableException("Item (" + id + ") can't be deleted: status = " + entity.getStatus());
             itemRepo.deleteById(id);
         });
+    }
+
+    private boolean isEditable(ItemEntity entity) {
+        return !(entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0);
     }
 }

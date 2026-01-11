@@ -15,4 +15,8 @@ public record ItemSearch(
     BigDecimal currentBid,
     Instant startsAt,
     Instant endsAt
-) {} 
+) {
+    public ItemSearch() {
+        this(null, null, null, null, null, null, null, null, null);
+    }
+}

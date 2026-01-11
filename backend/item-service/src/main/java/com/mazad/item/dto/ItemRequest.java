@@ -2,10 +2,12 @@ package com.mazad.item.dto;
 
 import com.mazad.item.entity.AuctionStatus;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
+@Builder
 public record ItemRequest(
         @NotNull(message = "Category id is required")
         Long categoryId,
