@@ -55,4 +55,18 @@ public class ItemMapper {
                 entity.getEndsAt()
         );
     }
+
+    public ItemRequest toRequest(ItemEntity entity) {
+        if (entity == null)
+            return null;
+        return ItemRequest.builder()
+                .categoryId(entity.getCategoryId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .status(entity.getStatus())
+                .startingPrice(entity.getStartingPrice())
+                .startsAt(entity.getStartsAt())
+                .endsAt(entity.getEndsAt())
+                .build();
+    }
 }
