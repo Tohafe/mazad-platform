@@ -1,8 +1,9 @@
 package com.mazad.item.mapper;
 
-import com.mazad.item.dto.ItemRequest;
-import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemRequestDto;
+import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
+import com.mazad.item.dto.ItemSummaryDto;
 import com.mazad.item.entity.ItemEntity;
 import org.springframework.stereotype.Component;
 
@@ -10,17 +11,24 @@ import org.springframework.stereotype.Component;
 public class ItemMapper {
 
 
-    public ItemEntity toEntity(ItemRequest itemRequest) {
-        if (itemRequest == null)
+    public ItemEntity toEntity(ItemRequestDto itemRequestDto) {
+        if (itemRequestDto == null)
             return null;
-        return ItemEntity.builder()
-                .categoryId(itemRequest.categoryId())
-                .title(itemRequest.title())
-                .description(itemRequest.description())
-                .startingPrice(itemRequest.startingPrice())
-                .startsAt(itemRequest.startsAt())
-                .endsAt(itemRequest.endsAt())
-                .build();
+        ItemEntity.ItemEntityBuilder builder = ItemEntity.builder()
+                .categoryId(itemRequestDto.categoryId())
+                .title(itemRequestDto.title())
+                .description(itemRequestDto.description())
+                .status(itemRequestDto.status())
+                .shippingInfo(itemRequestDto.shippingInfo())
+                .startingPrice(itemRequestDto.startingPrice())
+                .startsAt(itemRequestDto.startsAt())
+                .endsAt(itemRequestDto.endsAt());
+
+        if (itemRequestDto.images() != null)
+            builder.images(itemRequestDto.images());
+        if (itemRequestDto.specs() != null)
+            builder.specs(itemRequestDto.specs());
+        return builder.build();
     }
 
     public ItemEntity toEntity(ItemSearch itemSearch) {
@@ -39,32 +47,49 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemResponse toResponse(ItemEntity entity) {
+    public ItemDetailsDto toItemDetailsDto(ItemEntity entity) {
         if (entity == null)
             return null;
-        return new ItemResponse(
-                entity.getId(),
-                entity.getCategoryId(),
-                entity.getSellerId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getStatus(),
-                entity.getStartingPrice(),
-                entity.getCurrentBid(),
-                entity.getStartsAt(),
-                entity.getEndsAt()
-        );
+        return ItemDetailsDto.builder()
+                .id(entity.getId())
+                .categoryId(entity.getCategoryId())
+                .sellerId(entity.getSellerId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .status(entity.getStatus())
+                .images(entity.getImages())
+                .specs(entity.getSpecs())
+                .shippingInfo(entity.getShippingInfo())
+                .startingPrice(entity.getStartingPrice())
+                .currentBid(entity.getCurrentBid())
+                .startsAt(entity.getStartsAt())
+                .endsAt(entity.getEndsAt())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
     }
 
-    public ItemRequest toRequest(ItemEntity entity) {
+    public ItemRequestDto toItemRequestDto(ItemEntity entity) {
         if (entity == null)
             return null;
-        return ItemRequest.builder()
+        return ItemRequestDto.builder()
                 .categoryId(entity.getCategoryId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())
+                .startsAt(entity.getStartsAt())
+                .endsAt(entity.getEndsAt())
+                .build();
+    }
+
+    public ItemSummaryDto toItemSummaryDto(ItemEntity entity) {
+        if (entity == null) return null;
+        return ItemSummaryDto.builder()
+                .title(entity.getTitle())
+                .thumbnail(entity.getImages().isEmpty() ? null : entity.getImages().get(0))
+                .currentBid(entity.getCurrentBid())
+                .status(entity.getStatus())
                 .startsAt(entity.getStartsAt())
                 .endsAt(entity.getEndsAt())
                 .build();

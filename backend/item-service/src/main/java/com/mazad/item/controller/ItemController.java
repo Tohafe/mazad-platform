@@ -1,9 +1,9 @@
 package com.mazad.item.controller;
 
-import com.mazad.item.dto.ItemRequest;
-import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemRequestDto;
+import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
-import com.mazad.item.entity.AuctionStatus;
+import com.mazad.item.dto.ItemSummaryDto;
 import com.mazad.item.service.ItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +27,19 @@ public class ItemController {
     private final static UUID CURRENT_USER_ID = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11");
 
     @PostMapping
-    public ResponseEntity<ItemResponse> create(@RequestBody @Valid ItemRequest itemRequest) {
+    public ResponseEntity<ItemDetailsDto> create(@RequestBody @Valid ItemRequestDto itemRequestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(itemService.createItem(itemRequest, CURRENT_USER_ID));
+                .body(itemService.createItem(itemRequestDto, CURRENT_USER_ID));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<ItemResponse> update(@PathVariable Long id, @RequestBody @Valid ItemRequest itemRequest) {
-        return ResponseEntity.ok(itemService.updateItem(id, itemRequest));
+    public ResponseEntity<ItemDetailsDto> update(@PathVariable Long id, @RequestBody @Valid ItemRequestDto itemRequestDto) {
+        return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto));
     }
 
     @PatchMapping(path = "{id}")
-    public ResponseEntity<ItemResponse> patch(@PathVariable Long id, @RequestBody JsonNode patch) {
+    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch) {
         return ResponseEntity.ok(itemService.patchItem(id, patch));
     }
 
@@ -50,12 +50,12 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<ItemDetailsDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(itemService.getItem(id));
     }
 
     @GetMapping
-    public PagedModel<ItemResponse> listItems(
+    public PagedModel<ItemSummaryDto> listItems(
         @ModelAttribute ItemSearch itemSearch,
         @PageableDefault(size = 15, sort = "endsAt", direction = Sort.Direction.ASC) Pageable pageable) {
             return itemService.listItemsBy(itemSearch, pageable);
