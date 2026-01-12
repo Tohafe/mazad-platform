@@ -45,9 +45,6 @@ public class ItemEntity {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal currentBid;
 
-    private BigDecimal estimateMin;
-    private BigDecimal estimateMax;
-
     @Builder.Default
     @Column(name = "image_url")
     @ElementCollection(fetch = FetchType.EAGER)

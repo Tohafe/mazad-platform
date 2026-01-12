@@ -1,6 +1,6 @@
 package com.mazad.item.mapper;
 
-import com.mazad.item.dto.ItemRequest;
+import com.mazad.item.dto.ItemRequestDto;
 import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.dto.ItemSummaryDto;
@@ -11,17 +11,24 @@ import org.springframework.stereotype.Component;
 public class ItemMapper {
 
 
-    public ItemEntity toEntity(ItemRequest itemRequest) {
-        if (itemRequest == null)
+    public ItemEntity toEntity(ItemRequestDto itemRequestDto) {
+        if (itemRequestDto == null)
             return null;
-        return ItemEntity.builder()
-                .categoryId(itemRequest.categoryId())
-                .title(itemRequest.title())
-                .description(itemRequest.description())
-                .startingPrice(itemRequest.startingPrice())
-                .startsAt(itemRequest.startsAt())
-                .endsAt(itemRequest.endsAt())
-                .build();
+        ItemEntity.ItemEntityBuilder builder = ItemEntity.builder()
+                .categoryId(itemRequestDto.categoryId())
+                .title(itemRequestDto.title())
+                .description(itemRequestDto.description())
+                .status(itemRequestDto.status())
+                .shippingInfo(itemRequestDto.shippingInfo())
+                .startingPrice(itemRequestDto.startingPrice())
+                .startsAt(itemRequestDto.startsAt())
+                .endsAt(itemRequestDto.endsAt());
+
+        if (itemRequestDto.images() != null)
+            builder.images(itemRequestDto.images());
+        if (itemRequestDto.specs() != null)
+            builder.specs(itemRequestDto.specs());
+        return builder.build();
     }
 
     public ItemEntity toEntity(ItemSearch itemSearch) {
@@ -40,7 +47,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemDetailsDto toResponse(ItemEntity entity) {
+    public ItemDetailsDto toItemDetailsDto(ItemEntity entity) {
         if (entity == null)
             return null;
         return ItemDetailsDto.builder()
@@ -62,10 +69,10 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemRequest toRequest(ItemEntity entity) {
+    public ItemRequestDto toItemRequestDto(ItemEntity entity) {
         if (entity == null)
             return null;
-        return ItemRequest.builder()
+        return ItemRequestDto.builder()
                 .categoryId(entity.getCategoryId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())

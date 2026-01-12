@@ -6,16 +6,20 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 @Builder
-public record ItemRequest(
+public record ItemRequestDto(
         @NotNull(message = "Category id is required")
         Long categoryId,
-        @NotNull(message = "Title can't be null")
         @NotBlank(message = "Title is required")
         String title,
         String description,
         AuctionStatus status,
+        List<String> images,
+        Map<String, String> specs,
+        String shippingInfo,
         @NotNull(message = "Price is required")
         @Positive(message = "Price must be positive")
         BigDecimal startingPrice,

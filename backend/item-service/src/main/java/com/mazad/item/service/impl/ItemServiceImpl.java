@@ -3,7 +3,7 @@ package com.mazad.item.service.impl;
 import com.mazad.item.dto.ItemSummaryDto;
 import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.exceptions.ResourceNotFoundException;
-import com.mazad.item.dto.ItemRequest;
+import com.mazad.item.dto.ItemRequestDto;
 import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.entity.AuctionStatus;
@@ -37,22 +37,22 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public ItemDetailsDto createItem(ItemRequest itemRequest, UUID sellerId) {
-        ItemEntity entity = mapper.toEntity(itemRequest);
+    public ItemDetailsDto createItem(ItemRequestDto itemRequestDto, UUID sellerId) {
+        ItemEntity entity = mapper.toEntity(itemRequestDto);
         entity.setSellerId(sellerId);
         entity.setCurrentBid(BigDecimal.ZERO);
-        AuctionStatus status = itemRequest.status() == null ? AuctionStatus.ACTIVE : itemRequest.status();
+        AuctionStatus status = itemRequestDto.status() == null ? AuctionStatus.ACTIVE : itemRequestDto.status();
         if (status != AuctionStatus.ACTIVE && status != AuctionStatus.DRAFT)
             throw new ValidationException("Can't create an item with status of " + status);
         entity.setStatus(status);
-        return mapper.toResponse(itemRepo.save(entity));
+        return mapper.toItemDetailsDto(itemRepo.save(entity));
     }
 
     @Override
     public ItemDetailsDto getItem(Long id) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
-        return mapper.toResponse(entity);
+        return mapper.toItemDetailsDto(entity);
     }
 
 
@@ -75,20 +75,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDetailsDto updateItem(Long id, ItemRequest itemRequest) {
+    public ItemDetailsDto updateItem(Long id, ItemRequestDto itemRequestDto) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         // An exception will be thrown if the status is not draft and the current bid is greater than 0.
         if (!isEditable(entity))
             throw new ItemNotEditableException("Item (" + id + ") can't be updated: status = " + entity.getStatus());
-        entity.setCategoryId(itemRequest.categoryId());
-        entity.setTitle(itemRequest.title());
-        entity.setDescription(itemRequest.description());
-        entity.setStartingPrice(itemRequest.startingPrice());
-        entity.setStartsAt(itemRequest.startsAt());
-        entity.setEndsAt(itemRequest.endsAt());
+        entity.setCategoryId(itemRequestDto.categoryId());
+        entity.setTitle(itemRequestDto.title());
+        entity.setDescription(itemRequestDto.description());
+        entity.setStartingPrice(itemRequestDto.startingPrice());
+        entity.setStartsAt(itemRequestDto.startsAt());
+        entity.setEndsAt(itemRequestDto.endsAt());
         ItemEntity updatedEntity = itemRepo.save(entity);
-        return mapper.toResponse(updatedEntity);
+        return mapper.toItemDetailsDto(updatedEntity);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemNotEditableException("Item (" + id + ") can't be edited: status = " + entity.getStatus());
         jsonMapper.readerForUpdating(entity).readValue(patchNode);
         ItemEntity savedEntity = itemRepo.save(entity);
-        return mapper.toResponse(savedEntity);
+        return mapper.toItemDetailsDto(savedEntity);
     }
 
     @Override

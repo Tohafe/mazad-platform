@@ -1,6 +1,6 @@
 package com.mazad.item.service;
 
-import com.mazad.item.dto.ItemRequest;
+import com.mazad.item.dto.ItemRequestDto;
 import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 
@@ -15,11 +15,11 @@ import java.util.UUID;
 
 public interface ItemService {
 
-    public ItemDetailsDto createItem(ItemRequest itemRequest, UUID sellerId);
+    public ItemDetailsDto createItem(ItemRequestDto itemRequestDto, UUID sellerId);
 
     public ItemDetailsDto getItem(Long id);
 
-    ItemDetailsDto updateItem(Long id, @Valid ItemRequest itemRequest);
+    ItemDetailsDto updateItem(Long id, @Valid ItemRequestDto itemRequestDto);
 
     void deleteItem(Long id);
 
