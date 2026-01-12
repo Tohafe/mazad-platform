@@ -1,7 +1,7 @@
 package com.mazad.item.mapper;
 
 import com.mazad.item.dto.ItemRequest;
-import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.dto.ItemSummaryDto;
 import com.mazad.item.entity.ItemEntity;
@@ -40,21 +40,26 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemResponse toResponse(ItemEntity entity) {
+    public ItemDetailsDto toResponse(ItemEntity entity) {
         if (entity == null)
             return null;
-        return new ItemResponse(
-                entity.getId(),
-                entity.getCategoryId(),
-                entity.getSellerId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getStatus(),
-                entity.getStartingPrice(),
-                entity.getCurrentBid(),
-                entity.getStartsAt(),
-                entity.getEndsAt()
-        );
+        return ItemDetailsDto.builder()
+                .id(entity.getId())
+                .categoryId(entity.getCategoryId())
+                .sellerId(entity.getSellerId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .status(entity.getStatus())
+                .images(entity.getImages())
+                .specs(entity.getSpecs())
+                .shippingInfo(entity.getShippingInfo())
+                .startingPrice(entity.getStartingPrice())
+                .currentBid(entity.getCurrentBid())
+                .startsAt(entity.getStartsAt())
+                .endsAt(entity.getEndsAt())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
     }
 
     public ItemRequest toRequest(ItemEntity entity) {

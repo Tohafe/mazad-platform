@@ -4,7 +4,7 @@ import com.mazad.item.dto.ItemSummaryDto;
 import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.dto.ItemRequest;
-import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.entity.AuctionStatus;
 import com.mazad.item.entity.ItemEntity;
@@ -18,9 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -39,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public ItemResponse createItem(ItemRequest itemRequest, UUID sellerId) {
+    public ItemDetailsDto createItem(ItemRequest itemRequest, UUID sellerId) {
         ItemEntity entity = mapper.toEntity(itemRequest);
         entity.setSellerId(sellerId);
         entity.setCurrentBid(BigDecimal.ZERO);
@@ -51,7 +49,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse getItem(Long id) {
+    public ItemDetailsDto getItem(Long id) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         return mapper.toResponse(entity);
@@ -77,7 +75,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(Long id, ItemRequest itemRequest) {
+    public ItemDetailsDto updateItem(Long id, ItemRequest itemRequest) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         // An exception will be thrown if the status is not draft and the current bid is greater than 0.
@@ -94,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse patchItem(Long id, JsonNode patchNode) {
+    public ItemDetailsDto patchItem(Long id, JsonNode patchNode) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         // An exception will be thrown if the status is not draft and the current bid is greater than 0.

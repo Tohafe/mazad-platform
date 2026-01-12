@@ -57,7 +57,7 @@ public class ItemEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Builder.Default
-    private Map<String, Object> specs = new HashMap<>();
+    private Map<String, String> specs = new HashMap<>();
 
     private String shippingInfo;
 

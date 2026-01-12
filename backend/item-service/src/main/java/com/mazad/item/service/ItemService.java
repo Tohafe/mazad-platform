@@ -1,7 +1,7 @@
 package com.mazad.item.service;
 
 import com.mazad.item.dto.ItemRequest;
-import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 
 import com.mazad.item.dto.ItemSummaryDto;
@@ -15,15 +15,15 @@ import java.util.UUID;
 
 public interface ItemService {
 
-    public ItemResponse createItem(ItemRequest itemRequest, UUID sellerId);
+    public ItemDetailsDto createItem(ItemRequest itemRequest, UUID sellerId);
 
-    public ItemResponse getItem(Long id);
+    public ItemDetailsDto getItem(Long id);
 
-    ItemResponse updateItem(Long id, @Valid ItemRequest itemRequest);
+    ItemDetailsDto updateItem(Long id, @Valid ItemRequest itemRequest);
 
     void deleteItem(Long id);
 
-    ItemResponse patchItem(Long id, JsonNode jsonPatch);
+    ItemDetailsDto patchItem(Long id, JsonNode jsonPatch);
 
     public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
 }
