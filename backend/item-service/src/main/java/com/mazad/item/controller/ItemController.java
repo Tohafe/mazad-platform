@@ -3,6 +3,7 @@ package com.mazad.item.controller;
 import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
 import com.mazad.item.dto.ItemSearch;
+import com.mazad.item.dto.ItemSummaryDto;
 import com.mazad.item.entity.AuctionStatus;
 import com.mazad.item.service.ItemService;
 import jakarta.validation.Valid;
@@ -55,7 +56,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public PagedModel<ItemResponse> listItems(
+    public PagedModel<ItemSummaryDto> listItems(
         @ModelAttribute ItemSearch itemSearch,
         @PageableDefault(size = 15, sort = "endsAt", direction = Sort.Direction.ASC) Pageable pageable) {
             return itemService.listItemsBy(itemSearch, pageable);

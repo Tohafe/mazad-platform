@@ -1,5 +1,6 @@
 package com.mazad.item.service.impl;
 
+import com.mazad.item.dto.ItemSummaryDto;
 import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.dto.ItemRequest;
@@ -56,20 +57,13 @@ public class ItemServiceImpl implements ItemService {
         return mapper.toResponse(entity);
     }
 
-    public PagedModel<ItemResponse> getItemsPage(int page, int size) {
-        if (page < 0 || size <= 0)
-            throw new ValidationException("The page info is invalid");
-        Pageable pageable = PageRequest.of(page, size, Sort.by("endsAt").ascending());
-        Page<ItemResponse> items = itemRepo.findAllByStatus(AuctionStatus.ACTIVE, pageable)
-                .map(mapper::toResponse);
-        return new PagedModel<>(items);
-    }
 
     @Override
     @SuppressWarnings("Convert2MethodRef")
-    public PagedModel<ItemResponse> listItemsBy(ItemSearch itemSearch, Pageable pageable) {
+    public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable) {
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withIgnoreCase()
+                .withIgnorePaths("specs", "images")
                 .withMatcher("sellerId", match -> match.exact())
                 .withMatcher("status", match -> match.exact())
                 .withMatcher("startingPrice", match -> match.exact())
@@ -78,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
                 .withMatcher("endsAt", match -> match.exact())
                 .withMatcher("title", match -> match.contains().ignoreCase());
         Example<ItemEntity> example = Example.of(mapper.toEntity(itemSearch), matcher);
-        Page<ItemResponse> itemPage = itemRepo.findAll(example, pageable).map(mapper::toResponse);
+        Page<ItemSummaryDto> itemPage = itemRepo.findAll(example, pageable).map(mapper::toItemSummaryDto);
         return new PagedModel<>(itemPage);
     }
 

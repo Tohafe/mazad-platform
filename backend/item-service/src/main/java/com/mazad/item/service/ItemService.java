@@ -4,6 +4,7 @@ import com.mazad.item.dto.ItemRequest;
 import com.mazad.item.dto.ItemResponse;
 import com.mazad.item.dto.ItemSearch;
 
+import com.mazad.item.dto.ItemSummaryDto;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Pageable;
@@ -18,13 +19,11 @@ public interface ItemService {
 
     public ItemResponse getItem(Long id);
 
-    public PagedModel<ItemResponse> getItemsPage(int page, int size);
-
     ItemResponse updateItem(Long id, @Valid ItemRequest itemRequest);
 
     void deleteItem(Long id);
 
     ItemResponse patchItem(Long id, JsonNode jsonPatch);
 
-    public PagedModel<ItemResponse> listItemsBy(ItemSearch itemSearch, Pageable pageable);
+    public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
 }
