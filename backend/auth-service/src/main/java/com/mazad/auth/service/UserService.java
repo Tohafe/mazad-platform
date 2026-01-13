@@ -26,7 +26,7 @@ public class UserService {
 
         users = repo.findAll()
                 .stream()
-                .map(entity -> mapper.toResponseDTO(entity))
+                .map(mapper::toResponseDTO)
                 .toList();
         return users;
     }
@@ -34,7 +34,7 @@ public class UserService {
     public UserResponseDTO getUserById(UUID id){
         UserEntity user = repo
                             .findById(id)
-                            .orElseThrow(() -> new UserNotFoundException());
+                            .orElseThrow(UserNotFoundException::new);
         return mapper.toResponseDTO(user);
         
     }
