@@ -26,4 +26,6 @@ public class CategoryEntity {
     private String hexColor;
 
     private String icon;
+
+    private boolean active;
 }
