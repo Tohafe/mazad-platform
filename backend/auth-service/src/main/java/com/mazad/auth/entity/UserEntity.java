@@ -1,10 +1,14 @@
 package com.mazad.auth.entity;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +29,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -61,4 +65,23 @@ public class UserEntity {
     @UpdateTimestamp
     @Column(name="updated_at", nullable=false)
     private OffsetDateTime    updatedAt;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getUsername() {
+       return this.email;
+    }
+    
+    public String getUserName() {
+       return this.userName;
+    }
+
+    @Override
+    public boolean isEnabled() {
+		return true;
+	}
 }

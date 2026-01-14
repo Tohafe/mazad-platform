@@ -15,33 +15,37 @@ import com.mazad.auth.dto.UserRequestDTO;
 import com.mazad.auth.dto.UserResponseDTO;
 import com.mazad.auth.service.UserService;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+
 
 
 
 
 
 @RestController
-@RequestMapping("/api/v1/")
-@AllArgsConstructor
+@RequestMapping("/api")
+@RequiredArgsConstructor
 public class UserController {
-    public UserService service;
+    public final UserService service;
 
-    @GetMapping("/")
-    public List<UserResponseDTO> getAllUsers() {
-        return service.getAllUsers();
-    }
-    @GetMapping("/{userId}")
-    public UserResponseDTO getUserById(@PathVariable UUID userId) {
-        return service.getUserById(userId);
-    }
-    
-
-    @PostMapping("/register")
+    @PostMapping("auth/register")
     public UserResponseDTO adddUser(
         @RequestBody @Validated(UserRequestDTO.OnRegister.class) UserRequestDTO userRequest
     ) {
         return service.addUser(userRequest);
     }
+
+    @GetMapping("/users")
+    public List<UserResponseDTO> allUsers() {
+        return service.getAllUsers();
+    }
+ 
+    @GetMapping("users/{userId}")
+    public UserResponseDTO getUserById(@PathVariable UUID userId) {
+        return service.getUserById(userId);
+    }
+    
+
     
 }
