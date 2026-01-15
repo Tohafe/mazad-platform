@@ -1,6 +1,6 @@
 package com.mazad.item.controller;
 
-import com.mazad.item.dto.CategoryResponse;
+import com.mazad.item.dto.CategoryDto;
 import com.mazad.item.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getAll() {
+    public ResponseEntity<List<CategoryDto>> getAll() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<CategoryResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<CategoryDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 }
