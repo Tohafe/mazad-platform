@@ -2,23 +2,49 @@ services:
   postgres:
     container_name: postgres-c
     image: postgres:latest
-    environment:
-      POSTGRES_USER: klock
-      POSTGRES_PASSWORD: klock123
-      PGDATA: /data/postgres
-
     volumes:
-      - postgres-v:/data/postgres
+      - postgres-v:${PGDATA}
+      - ./init-scripts:/docker-entrypoint-initdb.d/
     ports:
       - "5000:5432"
     networks:
-      klock-network:
+      mazad-network:
     restart: unless-stopped
+    env_file: .env
 
+
+  mazad-gateway:
+    build: ./backend/mazad-gateway/
+    container_name: mazad-gateway-c
+    image: mazad-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      mazad-network:
+    restart: on-failure
+    env_file: .env
+  
+  items-service:
+    build: ./backend/item-service/
+    container_name: item-service-c
+    image: items-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SERVER_PORT=${ITEMS_SERVICE_PORT}
+    depends_on:
+      - postgres
+    ports:
+    - "4000:8000"
+    networks:
+      mazad-network:
+    restart: on-failure
+    
 
 networks:
-  klock-network:
-    name: klock-network
+  mazad-network:
+    name: mazad-network
     driver: bridge
 
 volumes:
