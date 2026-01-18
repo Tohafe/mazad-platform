@@ -12,11 +12,24 @@ services:
     restart: unless-stopped
     env_file: .env
 
+  redis:
+    container_name: redis-c
+    image: redis:8.4.0-bookworm
+    ports:
+      - "6379"
+    networks:
+      mazad-network:
+    restart: unless-stopped
+
 
   mazad-gateway:
     build: ./backend/mazad-gateway/
     container_name: mazad-gateway-c
     image: mazad-gateway
+    environment:
+      - SPRING_DATA_REDIS_HOST=${GATEWAY_REDIS_HOST}
+      - SPRING_DATA_REDIS_PORT=${GATEWAY_REDIS_PORT}
+      
     ports:
       - "8080:8080"
     networks:
@@ -29,7 +42,7 @@ services:
     container_name: item-service-c
     image: items-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${DB_NAME}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${ITEMS_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SERVER_PORT=${ITEMS_SERVICE_PORT}
