@@ -1,9 +1,13 @@
-package com.helarras.mazadgateway;
+package com.mazad.mazadgateway;
 
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import reactor.core.publisher.Mono;
 
 /*
  * =================================================================================
@@ -33,22 +37,41 @@ import org.springframework.context.annotation.Configuration;
 public class GatewayConfig {
 
     @Bean
-    public RouteLocator routeItemsService(RouteLocatorBuilder builder) {
+    public RouteLocator routeItemsService(RouteLocatorBuilder builder, KeyResolver resolveKey, RedisRateLimiter rateLimiter) {
         return builder.routes()
-                .route("path_route", r -> r
+                .route("item-service-route", r -> r
                         .path("/api/v1/items/**", "/api/v1/categories/**")
                         .and()
                         .method("GET")
                         .filters(f -> f
                                 .addRequestHeader("X-Source", "Mazad-Gateway")
+                                .requestRateLimiter(config -> config
+                                        .setKeyResolver(resolveKey)
+                                        .setRateLimiter(rateLimiter)
+                                )
                                 .filters(
                                         MazadFilters.logger(),
                                         MazadFilters.totalTime()
+
                                 )
                         )
                         .uri("http://items-service:8000")
                 )
                 .build();
+    }
+
+    @Bean
+    public KeyResolver resolveKey() {
+        return (exchange) -> {
+            String ip = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
+            System.out.println("CLIENT IP ADDRESS: " + ip);
+            return Mono.just(ip);
+        };
+    }
+
+    @Bean
+    public RedisRateLimiter rateLimiter() {
+        return new RedisRateLimiter(1, 2, 1);
     }
 }
 

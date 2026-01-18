@@ -1,4 +1,4 @@
-package com.helarras.mazadgateway;
+package com.mazad.mazadgateway;
 
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import reactor.core.publisher.Mono;

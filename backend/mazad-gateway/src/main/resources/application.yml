@@ -1,9 +1,3 @@
 spring:
   application:
     name: mazad-gateway
-
-  cloud:
-    gateway:
-      server:
-        webflux:
-          routes:
