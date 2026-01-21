@@ -26,6 +26,6 @@ public record UserRequestDTO(
     @Size(min = 3, max = 15, message="Last Name Must Be At Least 3 Char")
     String lastName
 ) {
-    public interface OnLogin{};
-    public interface OnRegister extends Default{};
+    public interface OnLogin{}
+    public interface OnRegister extends Default{}
 }
