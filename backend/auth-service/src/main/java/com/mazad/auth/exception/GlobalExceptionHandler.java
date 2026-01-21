@@ -1,5 +1,8 @@
 package com.mazad.auth.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,14 +20,29 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail validationExceptionHandler(MethodArgumentNotValidException e){
-        return ProblemDetail
-                        .forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+        Map<String, Object> errors = new HashMap<>();
+        ProblemDetail problem = ProblemDetail
+                        .forStatus(HttpStatus.BAD_REQUEST);
+
+        problem
+            .setTitle("Validation Failed");
+        e.getBindingResult()
+                    .getFieldErrors()
+                    .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        problem.setProperty("Errors", errors);
+        return problem;
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ProblemDetail userNotFoundHandler(UserNotFoundException e){
         return ProblemDetail
                         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ProblemDetail badCredentialsExceptionHandler(UnauthorizedException e){
+        return ProblemDetail
+                        .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
