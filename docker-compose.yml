@@ -42,10 +42,10 @@ services:
     container_name: item-service-c
     image: items-service
     environment:
-      - SPRING_DATASOURCE_URL=${DB_URL}/${ITEMS_DB_NAME}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      - SERVER_PORT=${ITEMS_SERVICE_PORT}
+      - DB_URL=${DB_URL}/${ITEMS_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
     depends_on:
       - postgres
     ports:
