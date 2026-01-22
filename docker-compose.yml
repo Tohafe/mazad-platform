@@ -42,18 +42,35 @@ services:
     container_name: item-service-c
     image: items-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${ITEMS_DB_NAME}
+      - SPRING_DATASOURCE_URL=${DB_URL}/${ITEMS_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SERVER_PORT=${ITEMS_SERVICE_PORT}
     depends_on:
       - postgres
     ports:
-    - "4000:8000"
+    - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}"
     networks:
       mazad-network:
     restart: on-failure
-    
+
+
+
+  auth-service:
+    build: ./backend/auth-service/
+    container_name: auth-service
+    image: auth-service-img
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    ports:
+      - "${AUTH_SERVER_PORT}:${AUTH_SERVER_PORT}"
+    networks:
+      mazad-network:
+    restart: on-failure
+
+
 
 networks:
   mazad-network:
