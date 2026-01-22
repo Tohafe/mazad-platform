@@ -37,7 +37,7 @@ import reactor.core.publisher.Mono;
 public class GatewayConfig {
 
     @Bean
-    public RouteLocator routeItemsService(RouteLocatorBuilder builder, KeyResolver resolveKey, RedisRateLimiter rateLimiter) {
+    public RouteLocator routeItemsService(RouteLocatorBuilder builder, KeyResolver resolveKey, RedisRateLimiter rateLimiter, ApiKeyFilter apiKeyFilter) {
         return builder.routes()
                 .route("item-service-route", r -> r
                         .path("/api/v1/items/**", "/api/v1/categories/**")
@@ -51,7 +51,7 @@ public class GatewayConfig {
                                 )
                                 .filters(
                                         MazadFilters.logger(),
-                                        MazadFilters.totalTime()
+                                        apiKeyFilter
 
                                 )
                         )
