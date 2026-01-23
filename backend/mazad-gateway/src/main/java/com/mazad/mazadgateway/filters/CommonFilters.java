@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class MazadFilters {
+public class CommonFilters {
 
     public static GatewayFilter logger() {
         return ((exchange, chain) -> {

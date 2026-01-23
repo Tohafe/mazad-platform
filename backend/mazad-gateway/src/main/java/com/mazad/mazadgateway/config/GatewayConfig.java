@@ -47,10 +47,6 @@ public class GatewayConfig {
         };
     }
 
-    @Bean
-    public RedisRateLimiter rateLimiter() {
-        return new RedisRateLimiter(1, 2, 1);
-    }
 }
 
 

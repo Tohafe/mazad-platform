@@ -6,21 +6,28 @@ spring:
     gateway:
       server:
         webflux:
+          default-filters:
+            - AddRequestHeader=X-Source, Mazad-Gateway
+            - name: ApiKeyFilter
+            - name: RequestRateLimiter
+              args:
+                  redis-rate-limiter.replenishRate: 1
+                  redis-rate-limiter.burstCapacity: 2
+                  redis-rate-limiter.requestedTokens: 1
+                  key-resolver: "#{@resolveKey}"
+
           routes:
             - id: item-service-route
               uri: http://items-service:8000
               predicates:
                 - Path=/api/v1/items/**, /api/v1/categories/**
-                - Method=GET
-              filters:
-                - AddRequestHeader=X-Source, Mazad-Gateway1
-                - name: ApiKeyFilter
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@resolveKey}"
-                    redis-rate-limiter.replenishRate: 1
-                    redis-rate-limiter.burstCapacity: 2
-                    redis-rate-limiter.requestedTokens: 1
+                - Method=GET, PATCH, POST
+
+            - id: auth-service-route
+              uri: http://auth-service:8001
+              predicates:
+                - Path=/api/auth/**
+                - Method=GET, POST
 
   config:
     import: optional:file:../../.env[.properties]
