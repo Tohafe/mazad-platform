@@ -32,21 +32,21 @@ import lombok.RequiredArgsConstructor;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth/")
 @RequiredArgsConstructor
 public class UserController {
     public final UserService userService;
     @Value("${auth.refresh-token-validity-days:4}")
     long    refreshValidity;
 
-    @PostMapping("auth/register")
+    @PostMapping("register")
     public UserResponseDTO adddUser(
         @RequestBody @Validated(UserRequestDTO.OnRegister.class) UserRequestDTO userRequest
     ) {
         return userService.addUser(userRequest);
     }
 
-    @PostMapping("auth/login")
+    @PostMapping("login")
     public ResponseEntity<LoginResponseDto> userLogin(
         @RequestBody @Validated(UserRequestDTO.OnLogin.class) UserRequestDTO userRequest,
         @CookieValue(name="refresh_token", required=false) String refreshToken
@@ -62,7 +62,7 @@ public class UserController {
                             .httpOnly(true)
                             .sameSite("Strict")
                             .secure(false) // true for HTTPS on production
-                            .path("/api/auth")
+                            .path("/api/v1/auth/")
                             .maxAge(Duration.ofDays(refreshValidity))
                             .build();
         loginResponse = LoginResponseDto
@@ -77,7 +77,7 @@ public class UserController {
                         .body(loginResponse);
     }
     
-    @PostMapping("/auth/logout")
+    @PostMapping("logout")
     public ResponseEntity<String> userLogout(
         @CookieValue(name = "refresh_token", required=false) String refreshToken
     ){
@@ -94,7 +94,7 @@ public class UserController {
                             .body("User Logout");
     }
 
-    @PostMapping("auth/refresh")
+    @PostMapping("refresh")
     public String  refresh(
         @CookieValue(name="refresh_token", required=false) String refreshToken
     ){

@@ -1,3 +1,14 @@
 spring:
   application:
     name: mazad-gateway
+  config:
+    import: optional:file:../../.env[.properties]
+
+
+    
+auth:
+    secrets:
+      jwt-secret-key: ${AUTH_SECRET_KEY}
+    server:
+        port: ${AUTH_SERVER_PORT}
+    
