@@ -1,5 +1,7 @@
-package com.mazad.mazadgateway;
+package com.mazad.mazadgateway.config;
 
+
+import com.mazad.mazadgateway.filters.CommonFilters;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -37,35 +39,11 @@ import reactor.core.publisher.Mono;
 public class GatewayConfig {
 
     @Bean
-    public RouteLocator routeItemsService(RouteLocatorBuilder builder, KeyResolver resolveKey, RedisRateLimiter rateLimiter, ApiKeyFilter apiKeyFilter) {
-        return builder.routes()
-                .route("item-service-route", r -> r
-                        .path("/api/v1/items/**", "/api/v1/categories/**")
-                        .and()
-                        .method("GET")
-                        .filters(f -> f
-                                .addRequestHeader("X-Source", "Mazad-Gateway")
-                                .requestRateLimiter(config -> config
-                                        .setKeyResolver(resolveKey)
-                                        .setRateLimiter(rateLimiter)
-                                )
-                                .filters(
-                                        MazadFilters.logger(),
-                                        apiKeyFilter
-
-                                )
-                        )
-                        .uri("http://items-service:8000")
-                )
-                .build();
-    }
-
-    @Bean
     public KeyResolver resolveKey() {
         return (exchange) -> {
-            String ip = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
-            System.out.println("CLIENT IP ADDRESS: " + ip);
-            return Mono.just(ip);
+            String apiKey = exchange.getRequest().getHeaders().getFirst("X-API-KEY");
+            System.out.println("CLIENT API KEY: " + apiKey);
+            return Mono.justOrEmpty(apiKey);
         };
     }
 

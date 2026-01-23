@@ -1,14 +1,34 @@
 spring:
   application:
     name: mazad-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: item-service-route
+              uri: http://items-service:8000
+              predicates:
+                - Path=/api/v1/items/**, /api/v1/categories/**
+                - Method=GET
+              filters:
+                - AddRequestHeader=X-Source, Mazad-Gateway1
+                - name: ApiKeyFilter
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@resolveKey}"
+                    redis-rate-limiter.replenishRate: 1
+                    redis-rate-limiter.burstCapacity: 2
+                    redis-rate-limiter.requestedTokens: 1
+
   config:
     import: optional:file:../../.env[.properties]
 
 
-    
+
 auth:
     secrets:
       jwt-secret-key: ${AUTH_SECRET_KEY}
     server:
         port: ${AUTH_SERVER_PORT}
-    

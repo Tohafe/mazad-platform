@@ -1,4 +1,4 @@
-package com.mazad.mazadgateway;
+package com.mazad.mazadgateway.filters;
 
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import reactor.core.publisher.Mono;
@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-class MazadFilters {
+public class MazadFilters {
 
     public static GatewayFilter logger() {
         return ((exchange, chain) -> {
