@@ -4,5 +4,5 @@ while [ 1 ]; do
   echo -n " "
   curl localhost:8080/api/v1/items -s -o /dev/null -w "%{http_code}"
   sleep 1
-  echo
+  echo ""
 done
