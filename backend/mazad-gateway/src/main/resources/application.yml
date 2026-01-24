@@ -17,7 +17,6 @@ spring:
               uri: http://items-service:${ITEMS_SERVICE_PORT}
               predicates:
                 - Path=/api/v1/items/**, /api/v1/categories/**
-                - Method=GET
               filters:
                 - name: ApiKeyFilter
                 - name: RequestRateLimiter
@@ -31,15 +30,6 @@ spring:
               uri: http://auth-service:${AUTH_SERVER_PORT}
               predicates:
                 - Path=/api/v1/auth/**
-                - Method=GET, POST
               filters:
                 - StripPrefix=2
 
-
-
-
-auth:
-    secrets:
-      jwt-secret-key: ${AUTH_SECRET_KEY}
-    server:
-        port: ${AUTH_SERVER_PORT}
