@@ -7,8 +7,6 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password TEXT NOT NULL,
     username VARCHAR(15) UNIQUE NOT NULL,
-    first_name VARCHAR(15) NOT NULL,
-    last_name VARCHAR(15) NOT NULL,
     is_2fa_enabled BOOLEAN DEFAULT FALSE,
     is_verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,

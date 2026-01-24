@@ -44,12 +44,6 @@ public class UserEntity implements UserDetails{
     @Column(name="username", unique=true, nullable=false, length=15)
     private String userName;
 
-    @Column(name="first_name", nullable=false, length=15)
-    private String firstName;
-
-    @Column(name="last_name",nullable=false, length=15)
-    private String lastName;
-
     @Column(name="is_2fa_enabled")
     @Builder.Default
     private boolean twoFaEnabled = false;

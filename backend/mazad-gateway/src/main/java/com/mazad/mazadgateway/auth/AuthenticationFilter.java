@@ -46,10 +46,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered{
             token = token.substring(7);
 
             try {
-                String userId = jwtUtil.extractUserId(token);
                 ServerHttpRequest modifiedRequest = request
                                                         .mutate()
-                                                        .header("X-User-Id", userId)
+                                                        .header("X-User-Id", jwtUtil.extractUserId(token))
+                                                        .header("X-User-Email", jwtUtil.extractEmail(token))
+                                                        .header("X-User-Name", jwtUtil.extractUserName(token))
                                                         .build();
                 return chain.filter(exchange.mutate().request(modifiedRequest).build());
                 
