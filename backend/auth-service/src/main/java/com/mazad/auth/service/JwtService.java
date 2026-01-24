@@ -36,8 +36,9 @@ public class JwtService {
 
     public String generateAccessToken(UserEntity user){
        return Jwts.builder()
-            .subject(user.getUserName())
             .claim("userId", user.getId())
+            .claim("userName", user.getUserName())
+            .claim("email", user.getEmail())
             .issuedAt(Date.from(Instant.now()))
             .expiration(Date.from(Instant.now().plusMillis(TimeUnit.MINUTES.toMillis(accessValidity))))
             .signWith(generateKeyFromString(secretKey))
