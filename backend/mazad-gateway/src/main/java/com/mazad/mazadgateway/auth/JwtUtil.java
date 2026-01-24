@@ -22,6 +22,13 @@ public class JwtUtil {
     public String extractUserId(String token){
         return extractClaim(token, claims -> claims.get("userId", String.class));
     }
+    public String extractUserName(String token){
+        return extractClaim(token, claims -> claims.get("userName", String.class));
+    }
+    public String extractEmail(String token){
+        return extractClaim(token, claims -> claims.get("email", String.class));
+    }
+    
     
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver){
         final Claims claims = extractAllClaims(token);
