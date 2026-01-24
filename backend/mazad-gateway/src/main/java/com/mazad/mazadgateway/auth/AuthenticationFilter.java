@@ -35,32 +35,35 @@ public class AuthenticationFilter implements GlobalFilter, Ordered{
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest  request = exchange.getRequest();
 
-        if (RouterValidator.isSecured.test(request)){
-
-            if (isAuthMissing(request))
-                return onError(exchange, "Authorization header is missing", HttpStatus.UNAUTHORIZED);
-            String token = getAccessToken(request);
-
-            if (token == null || token.isEmpty() || !token.startsWith("Bearer "))
-                return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
-            token = token.substring(7);
-
-            try {
-                ServerHttpRequest modifiedRequest = request
-                                                        .mutate()
-                                                        .header("X-User-Id", jwtUtil.extractUserId(token))
-                                                        .header("X-User-Email", jwtUtil.extractEmail(token))
-                                                        .header("X-User-Name", jwtUtil.extractUserName(token))
-                                                        .build();
-                return chain.filter(exchange.mutate().request(modifiedRequest).build());
-                
-            } catch (ExpiredJwtException e) {
-                return onError(exchange, "Token has expired", HttpStatus.UNAUTHORIZED);
-            }catch (Exception e){
-                return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
-            }
+        if (RouterValidator.isPublicEndpoint.test(request)){
+            return chain.filter(exchange);
         }
-        return chain.filter(exchange);
+        if (RouterValidator.isPublicPath.test(request)){
+            return onError(exchange, "Method Not Allowed For This Path", HttpStatus.METHOD_NOT_ALLOWED);
+        }
+            
+        if (isAuthMissing(request))
+            return onError(exchange, "Authorization header is missing", HttpStatus.UNAUTHORIZED);
+        String token = getAccessToken(request);
+
+        if (token == null || token.isEmpty() || !token.startsWith("Bearer "))
+            return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
+        token = token.substring(7);
+
+        try {
+            ServerHttpRequest modifiedRequest = request
+                                                    .mutate()
+                                                    .header("X-User-Id", jwtUtil.extractUserId(token))
+                                                    .header("X-User-Email", jwtUtil.extractEmail(token))
+                                                    .header("X-User-Name", jwtUtil.extractUserName(token))
+                                                    .build();
+            return chain.filter(exchange.mutate().request(modifiedRequest).build());
+            
+        } catch (ExpiredJwtException e) {
+            return onError(exchange, "Token has expired", HttpStatus.UNAUTHORIZED);
+        }catch (Exception e){
+            return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
+        }
     }
     
     
