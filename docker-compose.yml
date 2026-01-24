@@ -29,13 +29,14 @@ services:
     environment:
       - SPRING_DATA_REDIS_HOST=${GATEWAY_REDIS_HOST}
       - SPRING_DATA_REDIS_PORT=${GATEWAY_REDIS_PORT}
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+      # - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       
     ports:
       - "8080:8080"
     networks:
       mazad-network:
     restart: on-failure
-    env_file: .env
   
   items-service:
     build: ./backend/item-service/
@@ -49,7 +50,7 @@ services:
     depends_on:
       - postgres
     ports:
-    - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}"
+    - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
     networks:
       mazad-network:
     restart: on-failure
@@ -64,8 +65,17 @@ services:
       - .env
     depends_on:
       - postgres
-    ports:
-      - "${AUTH_SERVER_PORT}:${AUTH_SERVER_PORT}"
+    environment:
+      - DB_URL=${DB_URL}
+      - AUTH_DB_NAME=${AUTH_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+      - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
+      - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
+    # ports:
+    #   - "${AUTH_SERVER_PORT}:${AUTH_SERVER_PORT}"
     networks:
       mazad-network:
     restart: on-failure
