@@ -14,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
 
@@ -59,5 +60,12 @@ public class ItemController {
         @ModelAttribute ItemSearch itemSearch,
         @PageableDefault(size = 15, sort = "endsAt", direction = Sort.Direction.ASC) Pageable pageable) {
             return itemService.listItemsBy(itemSearch, pageable);
+    }
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    @PostMapping("/kafka-send")
+    public String sendMessage(@RequestParam String message) {
+        kafkaTemplate.send("items-topic", message);
+        return "Message Sent!: " + message;
     }
 }

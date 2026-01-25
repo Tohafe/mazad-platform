@@ -80,6 +80,28 @@ services:
       mazad-network:
     restart: on-failure
 
+  kafka-service:
+    container_name: kafka-c
+    image: apache/kafka:latest
+    ports:
+      - "${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}"
+    environment:
+      KAFKA_NODE_ID: 1 # unique id for this kafka node
+      KAFKA_PROCESS_ROLES: broker,controller # defines the role of this node
+      KAFKA_LISTENERS: INTERNAL://localhost:9092,EXTERNAL://kafka-service:9093,CONTROLLER://localhost:9094 # ports that this node listens for (9092/9093 for produces/consumers & 9094 for controllers)
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://localhost:9092,EXTERNAL://kafka-service:9093 # the host and port the clients should use to connect to this node
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9094 # # list of the controller nodes (in this case only this same instance)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+
+
+    networks:
+      mazad-network:
+    restart: on-failure
+
 
 
 networks:
