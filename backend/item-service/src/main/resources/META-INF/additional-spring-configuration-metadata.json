@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "item.updated.topic",
+      "type": "java.lang.String",
+      "description": "Description for item.updated.topic."
+  }
+] }
