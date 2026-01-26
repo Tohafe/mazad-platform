@@ -1,23 +1,25 @@
 package com.mazad.auth.service;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mazad.auth.dto.AuthResponseDto;
+import com.mazad.auth.dto.EmailResetDto;
+import com.mazad.auth.dto.PasswordResetDto;
 import com.mazad.auth.dto.TokensDto;
 import com.mazad.auth.dto.UserRequestDTO;
 import com.mazad.auth.dto.UserResponseDTO;
 import com.mazad.auth.entity.RefreshToken;
 import com.mazad.auth.entity.UserEntity;
 import com.mazad.auth.exception.DuplicateResourceException;
+import com.mazad.auth.exception.ResourceNotFoundException;
 import com.mazad.auth.exception.UnauthorizedException;
-import com.mazad.auth.exception.UserNotFoundException;
 import com.mazad.auth.mapper.UserMapper;
 import com.mazad.auth.repo.RefreshTokenRepo;
 import com.mazad.auth.repo.UserRepo;
@@ -34,24 +36,7 @@ public class UserService {
     private  final  AuthenticationManager authManager;
     private  final  JwtService jwtService;
     private  final  RefreshTokenRepo tokenRepo;
-
-    public List<UserResponseDTO> getAllUsers(){
-        List<UserResponseDTO> users;
-
-        users = repo.findAll()
-                .stream()
-                .map(mapper::toResponseDTO)
-                .toList();
-        return users;
-    }
-
-    public UserResponseDTO getUserById(UUID id){
-        UserEntity user = repo
-                            .findById(id)
-                            .orElseThrow(UserNotFoundException::new);
-        return mapper.toResponseDTO(user);
-        
-    }
+    private  final  PasswordEncoder encoder;
 
     public UserResponseDTO addUser(UserRequestDTO userRequest) {
         UserEntity user = mapper.toEntity(userRequest);
@@ -103,6 +88,32 @@ public class UserService {
             throw new UnauthorizedException("Expired Refresh Token");
         }
         return jwtService.generateAccessToken(token.getUser());
+    }
+
+    public void delete(UUID userId) {
+        if (!repo.existsById(userId))
+            throw new ResourceNotFoundException("User Not Found");
+        repo.deleteById(userId);
+    }
+// can the user change his email or not ? the same for username
+    public void resetPassword(UUID userId, PasswordResetDto data) {
+        UserEntity user = repo
+                    .findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User Not Found."));
+                    
+        if (!encoder.matches(data.oldPassword(), user.getPassword()))
+            throw new UnauthorizedException("The old password you provided is incorrect.");
+        user.setPassword(encoder.encode(data.newPassword()));
+        repo.save(user);
+    }
+                
+    public void resetEmail(UUID userId, EmailResetDto dto){
+        UserEntity user = repo
+                    .findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User Not Found."));
+        //shoul get updated on the profile first
+        user.setEmail(dto.email());
+        repo.save(user);
     }
 
 }

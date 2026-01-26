@@ -1,28 +1,32 @@
 package com.mazad.auth.controller;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mazad.auth.dto.AuthResponseDto;
+import com.mazad.auth.dto.EmailResetDto;
 import com.mazad.auth.dto.LoginResponseDto;
+import com.mazad.auth.dto.PasswordResetDto;
 import com.mazad.auth.dto.UserRequestDTO;
 import com.mazad.auth.dto.UserResponseDTO;
 import com.mazad.auth.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -38,6 +42,9 @@ public class UserController {
     public final UserService userService;
     @Value("${auth.refresh-token-validity-days:4}")
     long    refreshValidity;
+
+    @Value("${auth-user.sync.key}")
+    String    syncKey;
 
     @PostMapping("register")
     public UserResponseDTO adddUser(
@@ -101,16 +108,29 @@ public class UserController {
         return userService.refresh(refreshToken);
     }
     
+    @DeleteMapping("delete")
+    public ResponseEntity<String> delete(
+        @RequestHeader(name="X-User-Id") UUID userId
+    ){
+        userService.delete(userId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted");
+    }
 
-    @GetMapping("users")
-    public List<UserResponseDTO> allUsers() {
-        return userService.getAllUsers();
+    @PatchMapping("reset/password")
+    public ResponseEntity<String> resetPassword(
+        @RequestHeader(name="X-User-Id") UUID userId,
+        @RequestBody @Valid PasswordResetDto dto
+    ){
+        userService.resetPassword(userId, dto);
+        return ResponseEntity.ok("Password changed successfully.");
     }
- 
-    @GetMapping("users/{userId}")
-    public UserResponseDTO getUserById(@PathVariable UUID userId) {
-        return userService.getUserById(userId);
+
+    @PatchMapping("reset/email")
+    public ResponseEntity<String> resetEmail(
+        @RequestHeader(name="X-User-Id") UUID userId,
+        @RequestBody @Valid EmailResetDto dto
+    ){
+        userService.resetEmail(userId, dto);
+        return ResponseEntity.ok("Email changed successfully.");
     }
-    
-    
 }

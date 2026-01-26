@@ -42,8 +42,8 @@ public class GlobalExceptionHandler {
                 .forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ProblemDetail userNotFoundHandler(UserNotFoundException e){
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail userNotFoundHandler(ResourceNotFoundException e){
         return ProblemDetail
                         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
     }
