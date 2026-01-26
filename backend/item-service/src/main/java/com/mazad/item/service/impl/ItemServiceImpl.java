@@ -102,6 +102,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemNotEditableException("Item (" + id + ") can't be edited: status = " + entity.getStatus());
         jsonMapper.readerForUpdating(entity).readValue(patchNode);
         ItemEntity savedEntity = itemRepo.save(entity);
+        producer.sendItemUpdatedEvent(mapper.toItemEventDto(savedEntity));
         return mapper.toItemDetailsDto(savedEntity);
     }
 

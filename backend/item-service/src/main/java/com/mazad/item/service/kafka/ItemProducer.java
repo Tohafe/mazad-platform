@@ -31,12 +31,12 @@ public class ItemProducer {
                 });
     }
 
-//    public void sendItemUpdatedEvent(ItemEventDto event) {
-//        String data = jsonMapper.writeValueAsString(event);
-//        kafkaTemplate.send(itemUpdatedTopic, data)
-//                .whenComplete((result, error) -> {
-//                    if (error != null) log.error("Failed to send item update event!: {}", error.getMessage());
-//                    else log.info("Item update event sent successfully!: {}", data);
-//                });
-//    }
+   public void sendItemUpdatedEvent(ItemEventDto event) {
+       String data = jsonMapper.writeValueAsString(event);
+       kafkaTemplate.send(itemUpdatedTopic, data)
+               .whenComplete((result, error) -> {
+                   if (error != null) log.error("Failed to send item update event!: {}", error.getMessage());
+                   else log.info("Item update event sent successfully!: {}", data);
+               });
+   }
 }
