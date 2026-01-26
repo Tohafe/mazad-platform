@@ -14,13 +14,18 @@ import com.mazad.upload.dto.ErrorResponse;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
-	public ResponseEntity<ErrorResponse> handlMaxSize(MaxUploadSizeExceededException exc){
+	public ResponseEntity<ErrorResponse> handlMaxSize(MaxUploadSizeExceededException e){
 		return buildResponse(HttpStatus.EXPECTATION_FAILED, "File is too large! Please check the limits.");
 	}
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleBadInput(IllegalArgumentException e) {
+        return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
 	
 	@ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception exc) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + exc.getMessage());
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception e) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
     }
 
 	private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message) {

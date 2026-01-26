@@ -8,6 +8,7 @@ import lombok.Data;
 public class FileResponse {
 	private String id;
 	private String url;
+	private String thumbnailUrl;
 	private String name; 
     private String type;         
     private long size;           
