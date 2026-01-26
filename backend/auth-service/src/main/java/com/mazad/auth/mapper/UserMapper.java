@@ -25,8 +25,6 @@ public class UserMapper {
                             .email(request.email())
                             .password(passwordHash)
                             .userName(request.userName())
-                            .firstName(request.firstName())
-                            .lastName(request.lastName())
                             .build();
     }
 
@@ -37,8 +35,6 @@ public class UserMapper {
                                     .id(userEntity.getId())
                                     .email(userEntity.getEmail())
                                     .userName(userEntity.getUserName())
-                                    .firstName(userEntity.getFirstName())
-                                    .lastName(userEntity.getLastName())
                                     .build();
     }
 }

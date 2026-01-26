@@ -1,6 +1,6 @@
 package com.mazad.auth.entity;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -44,12 +44,6 @@ public class UserEntity implements UserDetails{
     @Column(name="username", unique=true, nullable=false, length=15)
     private String userName;
 
-    @Column(name="first_name", nullable=false, length=15)
-    private String firstName;
-
-    @Column(name="last_name",nullable=false, length=15)
-    private String lastName;
-
     @Column(name="is_2fa_enabled")
     @Builder.Default
     private boolean twoFaEnabled = false;
@@ -60,11 +54,11 @@ public class UserEntity implements UserDetails{
 
     @CreationTimestamp
     @Column(name="created_at", updatable=false, nullable=false)
-    private OffsetDateTime  createdAt;
+    private Instant  createdAt;
 
     @UpdateTimestamp
     @Column(name="updated_at", nullable=false)
-    private OffsetDateTime    updatedAt;
+    private Instant    updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

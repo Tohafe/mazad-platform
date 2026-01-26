@@ -1,7 +1,7 @@
 package com.mazad.item.service.impl;
 
-import com.mazad.item.dto.ItemRequest;
-import com.mazad.item.dto.ItemResponse;
+import com.mazad.item.dto.ItemRequestDto;
+import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.entity.AuctionStatus;
 import com.mazad.item.entity.ItemEntity;
@@ -10,13 +10,10 @@ import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.mapper.ItemMapper;
 import com.mazad.item.repository.ItemRepository;
 import jakarta.validation.ValidationException;
-import org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.data.domain.*;
-import org.springframework.data.web.PagedModel;
 import tools.jackson.databind.json.JsonMapper;
 
 
@@ -64,27 +61,27 @@ class ItemServiceImplTest {
     @Test
     public void createItem_ShouldSaveItem_whenValid() {
         // Arrange
-        ItemRequest itemRequest = new ItemRequest(1L, "TestItem 1", "Test Item description 1", AuctionStatus.ACTIVE, BigDecimal.valueOf(100.00), Instant.now(), Instant.parse("2026-12-30T21:43:46.514394Z"));
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "TestItem 1", "Test Item description 1", AuctionStatus.ACTIVE, null, null, null,BigDecimal.valueOf(100.00), Instant.now(), Instant.parse("2026-12-30T21:43:46.514394Z"));
         when(itemRepoMock.save(any(ItemEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
         // Act
-        ItemResponse itemResponse = itemService.createItem(itemRequest, USER_ID);
+        ItemDetailsDto itemDetailsDto = itemService.createItem(itemRequestDto, USER_ID);
         // Assert
-        assertThat(itemResponse).isNotNull();
-        assertThat(itemResponse.title()).isEqualTo(itemRequest.title());
-        assertThat(itemResponse.sellerId()).isEqualTo(USER_ID);
-        assertThat(itemResponse.currentBid()).isEqualTo(BigDecimal.ZERO);
-        assertThat(itemResponse.status()).isEqualTo(AuctionStatus.ACTIVE);
+        assertThat(itemDetailsDto).isNotNull();
+        assertThat(itemDetailsDto.title()).isEqualTo(itemRequestDto.title());
+        assertThat(itemDetailsDto.sellerId()).isEqualTo(USER_ID);
+        assertThat(itemDetailsDto.currentBid()).isEqualTo(BigDecimal.ZERO);
+        assertThat(itemDetailsDto.status()).isEqualTo(AuctionStatus.ACTIVE);
     }
 
     @Test
     public void createItem_throwException_whenInvalidStatus() {
         // Arrange
-        ItemRequest itemRequest = new ItemRequest(1L, "TestItem 1", "Test Item description 1", AuctionStatus.SOLD, BigDecimal.valueOf(100.00), Instant.now(), Instant.parse("2026-12-30T21:43:46.514394Z"));
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "TestItem 1", "Test Item description 1", AuctionStatus.SOLD, null, null, null, BigDecimal.valueOf(100.00), Instant.now(), Instant.parse("2026-12-30T21:43:46.514394Z"));
         when(itemRepoMock.save(any(ItemEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
         // Act & Assert
-        assertThatThrownBy(() -> itemService.createItem(itemRequest, USER_ID))
+        assertThatThrownBy(() -> itemService.createItem(itemRequestDto, USER_ID))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("Can't create an item with status of " + itemRequest.status());
+                .hasMessage("Can't create an item with status of " + itemRequestDto.status());
 
     }
 
@@ -94,7 +91,7 @@ class ItemServiceImplTest {
 
         when(itemRepoMock.findById(any(Long.class))).thenReturn(Optional.of(entity));
         // Act
-        ItemResponse result = itemService.getItem(entity.getId());
+        ItemDetailsDto result = itemService.getItem(entity.getId());
 
         // Assert
         assertThat(result).isNotNull();
@@ -164,12 +161,12 @@ class ItemServiceImplTest {
                 .startsAt(Instant.now())
                 .endsAt(Instant.MAX)
                 .build();
-        ItemRequest itemRequest = mapper.toRequest(itemEntity);
+        ItemRequestDto itemRequestDto = mapper.toItemRequestDto(itemEntity);
 
         when(itemRepoMock.findById(id)).thenReturn(Optional.of(itemEntity));
         when(itemRepoMock.save(itemEntity)).thenReturn(itemEntity);
         // Act & Assert
-        assertThatCode(() -> itemService.updateItem(id, itemRequest))
+        assertThatCode(() -> itemService.updateItem(id, itemRequestDto))
                 .doesNotThrowAnyException();
 
     }
@@ -190,12 +187,12 @@ class ItemServiceImplTest {
                 .startsAt(Instant.now())
                 .endsAt(Instant.MAX)
                 .build();
-        ItemRequest itemRequest = mapper.toRequest(itemEntity);
+        ItemRequestDto itemRequestDto = mapper.toItemRequestDto(itemEntity);
 
         when(itemRepoMock.findById(id)).thenReturn(Optional.of(itemEntity));
         when(itemRepoMock.save(itemEntity)).thenReturn(itemEntity);
         // Act & Assert
-        assertThatCode(() -> itemService.updateItem(id, itemRequest))
+        assertThatCode(() -> itemService.updateItem(id, itemRequestDto))
                 .doesNotThrowAnyException();
 
     }
@@ -216,12 +213,12 @@ class ItemServiceImplTest {
                 .startsAt(Instant.now())
                 .endsAt(Instant.MAX)
                 .build();
-        ItemRequest itemRequest = mapper.toRequest(itemEntity);
+        ItemRequestDto itemRequestDto = mapper.toItemRequestDto(itemEntity);
 
         when(itemRepoMock.findById(id)).thenReturn(Optional.of(itemEntity));
         when(itemRepoMock.save(itemEntity)).thenReturn(itemEntity);
         // Act & Assert
-        assertThatThrownBy(() -> itemService.updateItem(id, itemRequest))
+        assertThatThrownBy(() -> itemService.updateItem(id, itemRequestDto))
                 .isInstanceOf(ItemNotEditableException.class)
                 .hasMessage("Item (" + id + ") can't be updated: status = " + itemEntity.getStatus());
     }

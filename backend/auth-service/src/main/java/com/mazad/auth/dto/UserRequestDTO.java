@@ -16,16 +16,9 @@ public record UserRequestDTO(
     
     @NotBlank(message="Not A Valid User Name")
     @Size(min = 4, max = 15, message="User Name Must Be At Least 4 Char")
-    String userName,
+    String userName
     
-    @NotBlank(message="Not A Valid First Name")
-    @Size(min = 3, max = 15, message="First Name Must Be At Least 3 Char")
-    String firstName,
-    
-    @NotBlank(message="Not A Valid Last Name")
-    @Size(min = 3, max = 15, message="Last Name Must Be At Least 3 Char")
-    String lastName
 ) {
-    public interface OnLogin{};
-    public interface OnRegister extends Default{};
+    public interface OnLogin{}
+    public interface OnRegister extends Default{}
 }

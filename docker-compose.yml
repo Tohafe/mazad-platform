@@ -29,27 +29,81 @@ services:
     environment:
       - SPRING_DATA_REDIS_HOST=${GATEWAY_REDIS_HOST}
       - SPRING_DATA_REDIS_PORT=${GATEWAY_REDIS_PORT}
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+      - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
+      - API_KEY=${API_KEY}
+      - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       
     ports:
       - "8080:8080"
     networks:
       mazad-network:
     restart: on-failure
-    env_file: .env
   
   items-service:
     build: ./backend/item-service/
     container_name: item-service-c
     image: items-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/${ITEMS_DB_NAME}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      - SERVER_PORT=${ITEMS_SERVICE_PORT}
+      - DB_URL=${DB_URL}/${ITEMS_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
     depends_on:
       - postgres
     ports:
-    - "4000:8000"
+    - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
+    networks:
+      mazad-network:
+    restart: on-failure
+
+  bidding-service:
+    image: bidding-service-img:1
+    build: ./backend/bidding-service/
+    container_name: bidding-service
+    depends_on:
+      - postgres
+    networks:
+      mazad-network:
+    restart: on-failure
+
+  auth-service:
+    build: ./backend/auth-service/
+    container_name: auth-service
+    image: auth-service-img
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    environment:
+      - DB_URL=${DB_URL}
+      - AUTH_DB_NAME=${AUTH_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+      - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
+      - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
+    networks:
+      mazad-network:
+    restart: on-failure
+
+  kafka-service:
+    container_name: kafka-c
+    image: apache/kafka:latest
+    ports:
+      - "${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}"
+    environment:
+      KAFKA_NODE_ID: 1 # unique id for this kafka node
+      KAFKA_PROCESS_ROLES: broker,controller # defines the role of this node
+      KAFKA_LISTENERS: INTERNAL://localhost:9092,EXTERNAL://kafka-service:9093,CONTROLLER://localhost:9094 # ports that this node listens for (9092/9093 for produces/consumers & 9094 for controllers)
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://localhost:9092,EXTERNAL://kafka-service:9093 # the host and port the clients should use to connect to this node
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9094 # # list of the controller nodes (in this case only this same instance)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
     networks:
       mazad-network:
     restart: on-failure
