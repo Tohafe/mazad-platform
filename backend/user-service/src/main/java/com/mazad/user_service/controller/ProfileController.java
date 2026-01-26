@@ -83,7 +83,7 @@ public class ProfileController {
     
     @PatchMapping("internal/sync")
     public void syncAuthData(
-        @RequestHeader(name="Auth-User-Sync-Key") String key,
+        @RequestHeader(name="User-Auth-Sync-Key") String key,
         @RequestBody CurrentUser userData
     ){
         ObjectNode node = mapper.createObjectNode();
@@ -97,7 +97,7 @@ public class ProfileController {
 
     @DeleteMapping("internal/sync")
     public void syncAuthData(
-        @RequestHeader(name="Auth-User-Sync-Key") String key,
+        @RequestHeader(name="User-Auth-Sync-Key") String key,
         @RequestBody UUID userId
     ){
         service.deleteProfile(userId);

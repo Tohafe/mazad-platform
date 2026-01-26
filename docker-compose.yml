@@ -33,7 +33,7 @@ services:
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - API_KEY=${API_KEY}
       - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
-      
+      - USER_SERVER_PORT=${USER_SERVER_PORT}
     ports:
       - "8080:8080"
     networks:
@@ -51,6 +51,7 @@ services:
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
     depends_on:
       - postgres
+      - mazad-gateway
     ports:
     - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
     networks:
@@ -63,6 +64,7 @@ services:
     container_name: bidding-service
     depends_on:
       - postgres
+      - mazad-gateway
     networks:
       mazad-network:
     restart: on-failure
@@ -71,10 +73,9 @@ services:
     build: ./backend/auth-service/
     container_name: auth-service
     image: auth-service-img
-    env_file:
-      - .env
     depends_on:
       - postgres
+      - mazad-gateway
     environment:
       - DB_URL=${DB_URL}
       - AUTH_DB_NAME=${AUTH_DB_NAME}
@@ -84,6 +85,25 @@ services:
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
       - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
       - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
+      - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
+    networks:
+      mazad-network:
+    restart: on-failure
+
+  user-service:
+    build: ./backend/user-service/
+    container_name: user-service
+    image: user-service-img
+    depends_on:
+      - postgres
+      - mazad-gateway
+    environment:
+      - DB_URL=${DB_URL}
+      - USER_DB_NAME=${USER_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - USER_SERVER_PORT=${USER_SERVER_PORT}
+      - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
     networks:
       mazad-network:
     restart: on-failure

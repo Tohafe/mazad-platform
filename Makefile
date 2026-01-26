@@ -1,5 +1,5 @@
 COMPOSE = docker compose
-SERVICES = postgres redis mazad-gateway items-service auth-service
+SERVICES = postgres redis mazad-gateway items-service auth-service user-service
 
 up:
 	$(COMPOSE) up -d
