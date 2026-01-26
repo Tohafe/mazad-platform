@@ -1,15 +1,13 @@
 package com.mazad.item.service.impl;
 
-import com.mazad.item.dto.ItemSummaryDto;
+import com.mazad.item.dto.*;
 import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.exceptions.ResourceNotFoundException;
-import com.mazad.item.dto.ItemRequestDto;
-import com.mazad.item.dto.ItemDetailsDto;
-import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.entity.AuctionStatus;
 import com.mazad.item.entity.ItemEntity;
 import com.mazad.item.mapper.ItemMapper;
 import com.mazad.item.repository.ItemRepository;
+import com.mazad.item.service.kafka.ItemProducer;
 import com.mazad.item.service.ItemService;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper mapper;
     private final ItemRepository itemRepo;
     private final JsonMapper jsonMapper;
+    private final ItemProducer producer;
 
 
     @Override
@@ -45,7 +44,10 @@ public class ItemServiceImpl implements ItemService {
         if (status != AuctionStatus.ACTIVE && status != AuctionStatus.DRAFT)
             throw new ValidationException("Can't create an item with status of " + status);
         entity.setStatus(status);
-        return mapper.toItemDetailsDto(itemRepo.save(entity));
+        ItemEntity createdItem = itemRepo.save(entity);
+        // Sending an item creation event to kafka broker
+        producer.sendItemCreatedEvent(mapper.toItemEventDto(entity));
+        return mapper.toItemDetailsDto(createdItem);
     }
 
     @Override
