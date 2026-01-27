@@ -13,11 +13,11 @@ done
 echo "Connected! Setting up buckets..."
 
 
-mc mb myminio/mazad-uploads --ignore-existing
+mc mb myminio/"$MINIO_BUCKET_NAME" --ignore-existing
 
 
 echo "Setting policy to public..."
-mc anonymous set download myminio/mazad-uploads
+mc anonymous set download myminio/"$MINIO_BUCKET_NAME"
 
 echo "MinIO setup complete. Exiting."
 exit 0

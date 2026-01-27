@@ -134,13 +134,14 @@ services:
     environment:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
     networks:
       - mazad-network
     depends_on:
       minio:
         condition: service_healthy 
     volumes:
-      - ./init-scripts/init-minio.sh:/usr/bin/init-minio.sh
+      - ./infrastructure/minio-service/init-minio.sh:/usr/bin/init-minio.sh
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
   upload-service:
@@ -150,6 +151,8 @@ services:
     environment:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      MINIO_PUB_URL: ${MINIO_PUB_URL}
     ports:
       - "${UPLOAD_PORT}:8080" 
     networks:
