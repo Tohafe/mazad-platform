@@ -9,10 +9,12 @@ import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.mapper.ItemMapper;
 import com.mazad.item.repository.ItemRepository;
+import com.mazad.item.service.kafka.ItemProducer;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.springframework.data.domain.*;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -38,12 +40,15 @@ class ItemServiceImplTest {
 
     private ItemEntity entity;
 
+    @InjectMocks
+    private ItemProducer producer;
+
     @BeforeEach
     public void setup() {
         itemRepoMock = mock(ItemRepository.class);
 //        itemServiceMock = mock(ItemServiceImpl.class);
         mapper = new ItemMapper();
-        itemService = new ItemServiceImpl(mapper, itemRepoMock, JsonMapper.builder().build());
+        itemService = new ItemServiceImpl(mapper, itemRepoMock, JsonMapper.builder().build(), producer);
         entity = ItemEntity.builder()
                 .id(1000L)
                 .categoryId(3L)
