@@ -46,8 +46,8 @@ public class BidService {
 
         auction.setCurrentPrice(amount);
 
-        bidRepository.save(bid);
-        auctionRepository.save(auction);
+        // bidRepository.save(bid);
+        // auctionRepository.save(auction);
 
         return bid;
     }
