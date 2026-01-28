@@ -1,9 +1,13 @@
-package com.mazad.bidding_service.exception;
+package com.mazad.bidding_service.web.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.mazad.bidding_service.domain.exception.AuctionClosedException;
+import com.mazad.bidding_service.domain.exception.AuctionNotFoundException;
+import com.mazad.bidding_service.domain.exception.InvalidBidAmountException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

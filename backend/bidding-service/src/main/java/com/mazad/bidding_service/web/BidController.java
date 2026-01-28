@@ -1,11 +1,11 @@
-package com.mazad.bidding_service.controller;
+package com.mazad.bidding_service.web;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mazad.bidding_service.domain.Bid;
-import com.mazad.bidding_service.dto.CreateBidRequest;
-import com.mazad.bidding_service.service.BidService;
+import com.mazad.bidding_service.application.bid.BidService;
+import com.mazad.bidding_service.domain.bid.Bid;
+import com.mazad.bidding_service.web.dto.CreateBidRequest;
 
 import jakarta.validation.Valid;
 

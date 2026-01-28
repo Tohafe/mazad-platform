@@ -1,6 +1,8 @@
-package com.mazad.bidding_service.dto;
+package com.mazad.bidding_service.web.dto;
 
 import java.math.BigDecimal;
+
+import com.mazad.bidding_service.domain.auction.AuctionStatus;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +13,7 @@ public class AuctionCreatedEvent {
 
     private Long id;
 
-    private boolean status;
+    private AuctionStatus status;
     
     private BigDecimal startingPrice;
 }
