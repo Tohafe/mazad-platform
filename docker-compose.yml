@@ -4,7 +4,7 @@ services:
     image: postgres:latest
     volumes:
       - postgres-v:${PGDATA}
-      - ./init-scripts:/docker-entrypoint-initdb.d/
+      - ./infrastructure/postgres/init-scripts:/docker-entrypoint-initdb.d/
     ports:
       - "5000:5432"
     networks:
