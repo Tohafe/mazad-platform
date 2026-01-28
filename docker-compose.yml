@@ -106,6 +106,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
+      - USER_AVATAR_URL=${USER_AVATAR_URL}
+      - USER_AVATAR_THUMBNAIL_URL=${USER_AVATAR_THUMBNAIL_URL}
     networks:
       mazad-network:
     restart: on-failure

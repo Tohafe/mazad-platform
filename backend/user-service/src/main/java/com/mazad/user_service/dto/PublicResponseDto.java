@@ -7,5 +7,6 @@ public record  PublicResponseDto(
     String userName,
     String bio,
     String avatarUrl,
+    String thumbnail,
     String country
 ) {}
