@@ -36,10 +36,10 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> 
-                    auth.requestMatchers("/auth/login", "/auth/register", "/auth/refresh", "/auth/logout").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated())
+                // .authorizeHttpRequests(auth -> 
+                //     auth.requestMatchers("/auth/login", "/auth/register", "/auth/refresh", "/auth/logout", "/auth/delete").permitAll()
+                //         .requestMatchers("/error").permitAll()
+                //         .anyRequest().authenticated())
                 .build();
     }
     

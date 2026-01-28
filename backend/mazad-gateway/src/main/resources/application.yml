@@ -33,3 +33,10 @@ spring:
               filters:
                 - StripPrefix=2
 
+            - id: user-service-route
+              uri: http://user-service:${USER_SERVER_PORT}
+              predicates:
+                - Path=/api/v1/profile/**
+              filters:
+                - StripPrefix=2
+
