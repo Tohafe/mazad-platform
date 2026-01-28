@@ -3,6 +3,8 @@ package com.mazad.auth.controller;
 import java.time.Duration;
 import java.util.UUID;
 
+import com.mazad.auth.exception.BadRequestException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,23 +30,18 @@ import com.mazad.auth.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-
-
-
-
+import tools.jackson.databind.JsonNode;
 
 
 @RestController
 @RequestMapping("/auth/")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     public final UserService userService;
+
     @Value("${auth.refresh-token-validity-days:4}")
     long    refreshValidity;
-
-    @Value("${auth-user.sync.key}")
-    String    syncKey;
 
     @PostMapping("register")
     public UserResponseDTO adddUser(
@@ -110,9 +107,16 @@ public class UserController {
     
     @DeleteMapping("delete")
     public ResponseEntity<String> delete(
-        @RequestHeader(name="X-User-Id") UUID userId
+        @RequestHeader(name="X-User-Id") UUID userId,
+        @RequestBody JsonNode passNode
     ){
-        userService.delete(userId);
+        String password;
+        if (!passNode.has("password"))
+            throw new BadRequestException("Password Required!");
+        password = passNode.get("password").asString();
+        if (password == null || password.isBlank())
+            throw new BadRequestException("Password Can't Be Empty!");
+        userService.delete(userId, passNode.get("password").asString());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted");
     }
 
@@ -129,8 +133,10 @@ public class UserController {
     public ResponseEntity<String> resetEmail(
         @RequestHeader(name="X-User-Id") UUID userId,
         @RequestBody @Valid EmailResetDto dto
-    ){
+    ){ 
+        //here you should call user service and send to it the secret key and check the response ....
         userService.resetEmail(userId, dto);
+
         return ResponseEntity.ok("Email changed successfully.");
     }
 }

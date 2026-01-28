@@ -86,6 +86,7 @@ services:
       - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
       - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
+      - USER_SERVICE_URL=${USER_SERVICE_URL}
     networks:
       mazad-network:
     restart: on-failure

@@ -3,7 +3,6 @@ package com.mazad.auth.exception;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -66,7 +65,12 @@ public class GlobalExceptionHandler {
     }
 
 
-    
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ProblemDetail internalServerErrorHandler(Exception e){
+        return ProblemDetail
+                        .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ProblemDetail runTimeExceptionHandler(Exception e){
         return ProblemDetail

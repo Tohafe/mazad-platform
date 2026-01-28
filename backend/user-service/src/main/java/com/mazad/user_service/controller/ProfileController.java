@@ -3,6 +3,9 @@ package com.mazad.user_service.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.mazad.user_service.exception.UnauthorizedException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,10 +35,14 @@ import tools.jackson.databind.node.ObjectNode;
 @RestController
 @RequestMapping("/profile")
 @RequiredArgsConstructor
+@Slf4j
 public class ProfileController {
 
     private final ProfileService service;
     private final ObjectMapper mapper;
+
+    @Value("${auth-user.sync.key}")
+    String syncKey;
 
     @GetMapping
     public ResponseEntity<PrivateResponseDto> getPrivateProfile(@RequestHeader(name="X-User-Id") UUID userId) {
@@ -86,8 +93,9 @@ public class ProfileController {
         @RequestHeader(name="User-Auth-Sync-Key") String key,
         @RequestBody CurrentUser userData
     ){
+        if (!key.equals(syncKey))
+            throw new UnauthorizedException("Invalid Sync Key!");
         ObjectNode node = mapper.createObjectNode();
-
         if (userData.email() != null && !userData.email().isBlank())
             node.put("email", userData.email());
         if (userData.userName() != null && !userData.userName().isBlank())
@@ -100,6 +108,8 @@ public class ProfileController {
         @RequestHeader(name="User-Auth-Sync-Key") String key,
         @RequestBody UUID userId
     ){
+        if (!key.equals(syncKey))
+            throw new UnauthorizedException("Invalid Sync Key!");
         service.deleteProfile(userId);
     }
 

@@ -6,5 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 public record EmailResetDto(
     @Email(message = "Invalid email")
     @NotBlank(message = "New Email Required")
-    String email
+    String email,
+
+    @NotBlank(message = "Password Required")
+    String password
 ) {}

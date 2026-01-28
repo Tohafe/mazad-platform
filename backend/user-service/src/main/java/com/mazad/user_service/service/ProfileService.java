@@ -17,6 +17,7 @@ import com.mazad.user_service.validation.ProfilePatchValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -64,7 +65,7 @@ public class ProfileService {
         profile = repo.save(profile);
         return mapper.toPrivateResponseDto(profile);
     }
-
+    @Transactional
     public void deleteProfile(UUID userId) {
         if (repo.existsByUserId(userId))
             repo.deleteByUserId(userId);
