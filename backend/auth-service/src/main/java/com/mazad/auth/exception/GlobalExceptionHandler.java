@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,8 +35,14 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ProblemDetail userNotFoundHandler(UserNotFoundException e){
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail badCredentialException(BadCredentialsException e){
+        return ProblemDetail
+                .forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail userNotFoundHandler(ResourceNotFoundException e){
         return ProblemDetail
                         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
     }
@@ -43,6 +51,24 @@ public class GlobalExceptionHandler {
     public ProblemDetail badCredentialsExceptionHandler(UnauthorizedException e){
         return ProblemDetail
                         .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail badRequestHandler(BadRequestException e){
+        return ProblemDetail
+                    .forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail httpMessageNotReadableHandler(HttpMessageNotReadableException e){
+        return badRequestHandler(new BadRequestException("Request body is required"));
+    }
+
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ProblemDetail internalServerErrorHandler(Exception e){
+        return ProblemDetail
+                        .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)

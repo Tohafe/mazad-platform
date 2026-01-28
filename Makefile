@@ -1,7 +1,7 @@
 COMPOSE = docker compose
-SERVICES = postgres redis mazad-gateway items-service auth-service
+SERVICES = postgres redis mazad-gateway items-service auth-service user-service
 
-up:
+up: build
 	$(COMPOSE) up -d
 down:
 	$(COMPOSE) down
@@ -9,6 +9,7 @@ build:
 	$(COMPOSE) build
 
 re: down prune-img build up
+re-s: clean-s build-s up-s
 
 restart:
 	$(COMPOSE) restart
