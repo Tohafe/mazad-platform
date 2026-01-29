@@ -7,6 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -24,19 +26,21 @@ import lombok.Setter;
 public class Auction {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "auction_id")
     private Long auctionId; 
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length=20)
     private AuctionStatus status;
     
-    @Column(name = "starting_rice", nullable = false )
+    @Column(name = "starting_rice", precision = 19, scale = 2)
     private BigDecimal startingPrice;
     
-    @Column(name = "current_highest_bid", nullable = false)
+    @Column(name = "current_highest_bid", precision = 19, scale = 2)
     private BigDecimal currentHighestBid;
     
-    @Column(name = "current_highest_bidder_id", nullable = false)
+    @Column(name = "current_highest_bidder_id")
     private Long currentHighestBidderId;
     
     @Column(name = "ents_at", nullable = false)

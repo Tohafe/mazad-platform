@@ -63,6 +63,8 @@ services:
     image: bidding-service-img:1
     build: ./backend/bidding-service/
     container_name: bidding-service
+    environment:
+     - BID_SERVICE_DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       - postgres
       - mazad-gateway
