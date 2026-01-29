@@ -8,7 +8,7 @@ import lombok.Builder;
 @Builder
 public record AvatarDto(
     @NotBlank(message="Invalid Image Id")
-    UUID avatarImageId,
+    String avatarImageId,
 
     @NotBlank(message="Invalid Image Url")
     String avatarUrl,
