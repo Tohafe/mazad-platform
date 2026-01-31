@@ -40,3 +40,9 @@ spring:
               filters:
                 - StripPrefix=2
 
+            - id: bidding-service-route
+              uri: http://bidding-service:${BIDDING_SERVICE_PORT:8081}
+              predicates:
+                - Path=/api/v1/bids/**
+              filters:
+                - StripPrefix=2
