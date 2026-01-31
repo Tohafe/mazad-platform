@@ -23,9 +23,9 @@ CREATE TABLE bids (
 
     amount DECIMAL(19, 2) NOT NULL,
 
-    created_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-    status VARCHAR(20) NOT NULL,
+    -- status VARCHAR(20) NOT NULL,
 
     -- This ensures we don't have orphan bids for non-existent auctions
     CONSTRAINT fk_bids_auction

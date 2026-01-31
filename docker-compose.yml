@@ -64,10 +64,15 @@ services:
     build: ./backend/bidding-service/
     container_name: bidding-service
     environment:
-     - BID_SERVICE_DB_PASSWORD=${DB_PASSWORD}
+     - DB_URL=${DB_URL}
+     - DB_NAME=${BID_DB_NAME}
+     - DB_USER=${BID_DB_USER}
+     - DB_PASSWORD=${BID_DB_PASSWORD}
     depends_on:
       - postgres
       - mazad-gateway
+    ports:
+      - "9999:9999"
     networks:
       mazad-network:
     restart: on-failure

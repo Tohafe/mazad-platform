@@ -8,7 +8,7 @@ down:
 build:
 	$(COMPOSE) build
 
-re: down prune-img build up
+re: clean-all up
 
 re-s: clean-s build-s up-s
 

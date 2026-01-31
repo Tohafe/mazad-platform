@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Builder
 public record ItemEventDto(
         Long id,
-        boolean status,
+        AuctionStatus status,
         BigDecimal startingPrice
 ) {
 }

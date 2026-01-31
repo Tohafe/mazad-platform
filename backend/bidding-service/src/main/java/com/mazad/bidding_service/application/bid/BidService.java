@@ -34,13 +34,12 @@ public class BidService {
         Bid bid = new Bid();
         bid.setAmount(amount);
         bid.setBidderId(userId);
-        bid.setAuctionId(auctionId);
-        bid.setCreatedAt(LocalDateTime.now());
+        bid.setAuction(auction);
 
         auction.setCurrentHighestBid(amount);
 
-        // bidRepository.save(bid);
-        // auctionRepository.save(auction);
+        bidRepository.save(bid);
+        auctionRepository.save(auction);
 
         return bid;
     }
