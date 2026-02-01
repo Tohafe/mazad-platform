@@ -67,11 +67,15 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public  ProblemDetail unauthorizedHandler(UnauthorizedException e){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail globalHandler(Exception e){
         ProblemDetail problem = ProblemDetail
                 .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        problem.setTitle("CHECK THIS CASE THAT THROW THIS EXCEPTION AND ADD IT TO THE GLOBAL HANDLER");
         return problem;
     }
 }

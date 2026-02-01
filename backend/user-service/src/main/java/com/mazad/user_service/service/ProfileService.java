@@ -1,7 +1,9 @@
 package com.mazad.user_service.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.mazad.user_service.dto.CurrentUser;
@@ -17,6 +19,7 @@ import com.mazad.user_service.validation.ProfilePatchValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -29,17 +32,18 @@ public class ProfileService {
     private final ProfileMapper mapper;
     private final JsonMapper jsonMapper;
 
+
     public PrivateResponseDto getPrivateProfile(UUID userId) {
         ProfileEntity profile = repo
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
+                .findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
         return mapper.toPrivateResponseDto(profile);
     }
 
-    public PublicResponseDto getPublicProfile(String userName){
+    public PublicResponseDto getPublicProfile(String userName) {
         ProfileEntity profile = repo
-                        .findByUserName(userName)
-                        .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
+                .findByUserName(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
         return mapper.toPublicResponseDto(profile);
     }
 
@@ -51,20 +55,30 @@ public class ProfileService {
         profile.setEmail(user.email());
         profile.setUserName(user.userName());
 
+        if (isAvatarValid(requestDto.avatarImageId(), requestDto.avatarUrl(), requestDto.avatarThumbnailUrl())) {
+            profile.setAvatarUrl(requestDto.avatarUrl());
+            profile.setAvatarImageId(requestDto.avatarImageId());
+            profile.setAvatarThumbnailUrl(requestDto.avatarThumbnailUrl());
+        }
         profile = repo.save(profile);
         return mapper.toPrivateResponseDto(profile);
+    }
+
+    private boolean isAvatarValid(String avatarId, String avatarUrl, String thumbnail) {
+        return avatarId != null && !avatarId.isBlank() && avatarUrl != null && !avatarUrl.isBlank() && thumbnail != null && !thumbnail.isBlank();
     }
 
     public PrivateResponseDto patch(UUID userId, ObjectNode jsonNode) {
         ProfilePatchValidator.validate(jsonNode);
         ProfileEntity profile = repo
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
+                .findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
         jsonMapper.readerForUpdating(profile).readValue(jsonNode);
         profile = repo.save(profile);
         return mapper.toPrivateResponseDto(profile);
     }
 
+    @Transactional
     public void deleteProfile(UUID userId) {
         if (repo.existsByUserId(userId))
             repo.deleteByUserId(userId);

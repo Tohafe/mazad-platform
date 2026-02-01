@@ -1,4 +1,6 @@
 HELP.md
+.apt_generated_tests
+bin/
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

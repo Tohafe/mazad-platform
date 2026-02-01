@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS user_profile (
     last_name VARCHAR(255) NOT NULL,
     bio TEXT,
     
-    avatar_image_id UUID,
+    avatar_image_id TEXT,
     avatar_url TEXT,
     avatar_thumbnail_url TEXT,
 

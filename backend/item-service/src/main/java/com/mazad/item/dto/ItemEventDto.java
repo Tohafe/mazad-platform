@@ -4,11 +4,13 @@ import com.mazad.item.entity.AuctionStatus;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Builder
 public record ItemEventDto(
         Long id,
-        boolean status,
-        BigDecimal startingPrice
+        AuctionStatus status,
+        BigDecimal startingPrice,
+        Instant endsAt
 ) {
 }

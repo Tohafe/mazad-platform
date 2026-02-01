@@ -1,17 +1,16 @@
-package com.mazad.bidding_service.service;
+package com.mazad.bidding_service.application.bid;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.mazad.bidding_service.domain.Auction;
-import com.mazad.bidding_service.domain.Bid;
-import com.mazad.bidding_service.exception.AuctionClosedException;
-import com.mazad.bidding_service.exception.AuctionNotFoundException;
-import com.mazad.bidding_service.exception.InvalidBidAmountException;
-import com.mazad.bidding_service.repository.AuctionRepository;
-import com.mazad.bidding_service.repository.BidRepository;
+import com.mazad.bidding_service.domain.auction.Auction;
+import com.mazad.bidding_service.domain.auction.AuctionRepository;
+import com.mazad.bidding_service.domain.bid.Bid;
+import com.mazad.bidding_service.domain.bid.BidRepository;
+import com.mazad.bidding_service.domain.bid.BidValidator;
+import com.mazad.bidding_service.domain.exception.AuctionNotFoundException;
 
 @Service
 public class BidService {
@@ -30,21 +29,14 @@ public class BidService {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionNotFoundException());
 
-        if (!auction.isOpen()) {
-            throw new AuctionClosedException();
-        }
-
-        if (amount.compareTo(auction.getCurrentPrice()) <= 0) {
-            throw new InvalidBidAmountException();
-        }
+        BidValidator.validate(auction, amount);
 
         Bid bid = new Bid();
         bid.setAmount(amount);
-        bid.setUserId(userId);
+        bid.setBidderId(userId);
         bid.setAuction(auction);
-        bid.setCreatedAt(LocalDateTime.now());
 
-        auction.setCurrentPrice(amount);
+        auction.setCurrentHighestBid(amount);
 
         bidRepository.save(bid);
         auctionRepository.save(auction);
