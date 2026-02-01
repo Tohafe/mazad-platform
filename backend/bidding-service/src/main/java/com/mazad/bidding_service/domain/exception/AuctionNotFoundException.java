@@ -1,4 +1,4 @@
-package com.mazad.bidding_service.exception;
+package com.mazad.bidding_service.domain.exception;
 
 public class AuctionNotFoundException extends RuntimeException {
     public AuctionNotFoundException() {

@@ -1,4 +1,4 @@
-package com.mazad.bidding_service.dto;
+package com.mazad.bidding_service.web.dto;
 
 import java.math.BigDecimal;
 import jakarta.validation.constraints.NotNull;

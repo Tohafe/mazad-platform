@@ -1,6 +1,5 @@
-package com.mazad.bidding_service.repository;
+package com.mazad.bidding_service.domain.auction;
 
-import com.mazad.bidding_service.domain.Auction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuctionRepository extends JpaRepository<Auction, Long> {
