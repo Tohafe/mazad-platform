@@ -97,8 +97,9 @@ public class ItemMapper {
         if (entity == null) return null;
         return ItemEventDto.builder()
                 .id(entity.getId())
-                .status(entity.getStatus() == AuctionStatus.ACTIVE)
+                .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())
+                .endsAt(entity.getEndsAt())
                 .build();
     }
 }
