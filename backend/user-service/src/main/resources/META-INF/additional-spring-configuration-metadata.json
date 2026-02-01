@@ -4,5 +4,15 @@
       "name": "auth-user.sync.key",
       "type": "java.lang.String",
       "description": "The key used to sync with auth"
-  }
-] }
+    },
+    {
+      "name": "user.default.avatar",
+      "type": "java.lang.String",
+      "description": "user default avatar url"
+    },
+    {
+      "name": "user.default.thumbnail",
+      "type": "java.lang.String",
+      "description": "user default avatar thumbnail url"
+    }
+  ] }

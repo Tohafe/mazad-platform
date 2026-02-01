@@ -99,6 +99,7 @@ public class ItemMapper {
                 .id(entity.getId())
                 .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())
+                .endsAt(entity.getEndsAt())
                 .build();
     }
 }
