@@ -68,11 +68,12 @@ services:
      - DB_NAME=${BID_DB_NAME}
      - DB_USER=${BID_DB_USER}
      - DB_PASSWORD=${BID_DB_PASSWORD}
+     - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
     depends_on:
       - postgres
       - mazad-gateway
     ports:
-      - "9999:9999"
+      - "${BIDDING_SERVICE_PORT}:${BIDDING_SERVICE_PORT}"
     networks:
       mazad-network:
     restart: on-failure
