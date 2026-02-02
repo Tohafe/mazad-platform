@@ -18,43 +18,43 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Table(name="user_profile")
+@Table(name = "user_profile")
 @Entity
 public class ProfileEntity {
     @Id
-    @Column(name="user_id", nullable=false)
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    @Column(name="username", nullable=false, unique=true)
+    @Column(name = "username", nullable = false, unique = true)
     private String userName;
 
-    @Column(nullable=false, unique=true)
+    @Column(nullable = false, unique = true)
     private String email;
-    
-    @Column(name="first_name", nullable=false)
+
+    @Column(name = "first_name", nullable = false)
     private String firstName;
-    @Column(name="last_name", nullable=false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     private String bio;
-    
-    @Column(name="avatar_image_id")
-    private UUID avatarImageId;
-    @Column(columnDefinition="TEXT")
+
+    @Column(name = "avatar_image_id")
+    private String avatarImageId;
+    @Column(columnDefinition = "TEXT")
     private String avatarUrl;
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     private String avatarThumbnailUrl;
-    
-    @Column(nullable=false)
+
+    @Column(nullable = false)
     private String phoneNumber;
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String address;
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String city;
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String country;
 
-    @Column(name="is_complete")
+    @Column(name = "is_complete")
     @Builder.Default
     private boolean isComplete = false;
 

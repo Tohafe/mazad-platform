@@ -11,7 +11,7 @@ services:
       mazad-network:
     restart: unless-stopped
     env_file: .env
-
+#
   redis:
     container_name: redis-c
     image: redis:8.4.0-bookworm
@@ -39,7 +39,7 @@ services:
     networks:
       mazad-network:
     restart: on-failure
-  
+##
   items-service:
     build: ./backend/item-service/
     container_name: item-service-c
@@ -114,6 +114,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
+      - USER_AVATAR_URL=${USER_AVATAR_URL}
+      - USER_AVATAR_THUMBNAIL_URL=${USER_AVATAR_THUMBNAIL_URL}
     networks:
       mazad-network:
     restart: on-failure
@@ -134,7 +136,7 @@ services:
         CLIENT://0.0.0.0:9093,
         CONTROLLER://0.0.0.0:9094
 
-      KAFKA_ADVERTISED_LISTENERS: > 
+      KAFKA_ADVERTISED_LISTENERS: >
         CLIENT://kafka-service:9093,
         BROKER://kafka-service:9092
 
@@ -142,7 +144,7 @@ services:
         BROKER:PLAINTEXT,
         CLIENT:PLAINTEXT,
         CONTROLLER:PLAINTEXT
-      
+
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-service:9094
 
@@ -153,27 +155,27 @@ services:
       mazad-network:
     restart: on-failure
 
-  
+
   minio:
     image: minio/minio:latest
     container_name: mazad-minio
     ports:
-      - "${MINIO_API_PORT}:9000"  
-      - "${MINIO_CONSOLE_PORT}:9001"  
+      - "${MINIO_API_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
     networks:
       - mazad-network
     volumes:
-      - minio_data:/data   
+      - minio_data:/data
     command: server /data --console-address ":9001"
-    
+
     healthcheck:
           test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-          interval: 30s
-          timeout: 20s
-          retries: 3
+          interval: 7s
+          timeout: 6s
+          retries: 10
 
   minio-setup:
     image: minio/mc:latest
@@ -182,13 +184,17 @@ services:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      AVATAR_NAME: ${AVATAR_NAME}
+      AVATAR_URL: ${AVATAR_URL}
+      AVATAR_THUMBNAIL_NAME: ${AVATAR_THUMBNAIL_NAME}
     networks:
       - mazad-network
     depends_on:
       minio:
-        condition: service_healthy 
+        condition: service_healthy
     volumes:
       - ./infrastructure/minio-service/init-minio.sh:/usr/bin/init-minio.sh
+      - ${AVATAR_PATH}:/default-images
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
   upload-service:
@@ -201,7 +207,7 @@ services:
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
       MINIO_PUB_URL: ${MINIO_PUB_URL}
     ports:
-      - "${UPLOAD_PORT}:8080" 
+      - "${UPLOAD_PORT}:8080"
     networks:
       - mazad-network
     depends_on:
