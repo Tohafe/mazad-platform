@@ -4,7 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mazad.bidding_service.application.bid.BidService;
-import com.mazad.bidding_service.domain.bid.Bid;
+
+import com.mazad.bidding_service.web.dto.BidResponse;
 import com.mazad.bidding_service.web.dto.CreateBidRequest;
 
 import jakarta.validation.Valid;
@@ -25,8 +26,8 @@ public class BidController {
     }
 
     @PostMapping
-    public ResponseEntity<Bid> placeBid(@RequestBody @Valid CreateBidRequest request) {
-        Bid bid = bidService.placeBid(
+    public ResponseEntity<BidResponse> placeBid(@RequestBody @Valid CreateBidRequest request) {
+        BidResponse bid = bidService.placeBid(
             request.getAuctionId(),
             request.getUserId(),
             request.getAmount()
