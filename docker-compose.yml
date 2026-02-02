@@ -34,6 +34,7 @@ services:
       - API_KEY=${API_KEY}
       - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
+      - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
     ports:
       - "8080:8080"
     networks:
@@ -223,5 +224,6 @@ volumes:
   postgres-v:
     name: postgres-v
   minio_data:
+
 
 
