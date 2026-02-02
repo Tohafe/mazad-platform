@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: notification-service
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:kafka-c:9093}
+    topics:
+      bid-events: ${BID_TOPIC:bid-events}
+    consumer:
+      group-id: ${KAFKA_GROUP_ID:notification-group}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
