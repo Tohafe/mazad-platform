@@ -172,9 +172,9 @@ services:
 
     healthcheck:
           test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-          interval: 30s
-          timeout: 20s
-          retries: 3
+          interval: 7s
+          timeout: 6s
+          retries: 10
 
   minio-setup:
     image: minio/mc:latest
@@ -183,6 +183,9 @@ services:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      AVATAR_NAME: ${AVATAR_NAME}
+      AVATAR_URL: ${AVATAR_URL}
+      AVATAR_THUMBNAIL_NAME: ${AVATAR_THUMBNAIL_NAME}
     networks:
       - mazad-network
     depends_on:
@@ -190,6 +193,7 @@ services:
         condition: service_healthy
     volumes:
       - ./infrastructure/minio-service/init-minio.sh:/usr/bin/init-minio.sh
+      - ${AVATAR_PATH}:/default-images
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
   upload-service:
