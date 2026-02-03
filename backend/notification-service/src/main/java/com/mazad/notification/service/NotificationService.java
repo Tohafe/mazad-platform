@@ -7,10 +7,11 @@ import com.mazad.notification.dto.BidEvent;
 import lombok.RequiredArgsConstructor;
 
 
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;   
 
 
     @KafkaListener(
@@ -18,10 +19,12 @@ public class NotificationService {
         groupId = "${spring.kafka.consumer.group-id}"
     )
     public void fetchBids(String event){
-
-        BidEvent bidEvent = objectMapper.readValue(event, BidEvent.class);
-        System.err.println(bidEvent);
-
+        try {
+            BidEvent bidEvent = objectMapper.readValue(event, BidEvent.class);
+            System.out.println(bidEvent);            
+        } catch (Exception e) { 
+            throw new RuntimeException("Failed to deserialize bid event JSON into BidEvent DTO" + e.getMessage());
+        }
     }
     
 }
