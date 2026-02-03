@@ -1,5 +1,6 @@
 package com.mazad.bidding_service.domain.bid;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 import com.mazad.bidding_service.domain.auction.Auction;
@@ -44,7 +45,7 @@ public class Bid {
     private BigDecimal amount;
 
     @Column(name = "created_at", nullable = false)
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
     // @Enumerated(EnumType.STRING)
     // @Column(nullable = false, length = 20)
@@ -52,7 +53,7 @@ public class Bid {
 
     @PrePersist
     void onCreate() {
-        this.createdAt = OffsetDateTime.now();
+        this.createdAt = Instant.now();
     }
 }
 

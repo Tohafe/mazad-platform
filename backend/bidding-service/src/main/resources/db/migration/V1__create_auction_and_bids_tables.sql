@@ -9,7 +9,7 @@ CREATE TABLE auctions (
 
     current_highest_bidder_id BIGINT,
 
-    ends_at TIMESTAMPTZ NOT NULL,
+    ends_at TIMESTAMP NOT NULL,
 
     version BIGINT NOT NULL DEFAULT 0
 );
@@ -23,7 +23,7 @@ CREATE TABLE bids (
 
     amount DECIMAL(19, 2) NOT NULL,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
 
     -- status VARCHAR(20) NOT NULL,
 
@@ -36,3 +36,4 @@ CREATE TABLE bids (
 
 -- Indexing for performance: We will often search for bids by auction_id
 CREATE INDEX idx_bids_auction_id ON bids(auction_id);
+CREATE INDEX idx_auctions_status_ends_at ON auctions (status, ends_at);
