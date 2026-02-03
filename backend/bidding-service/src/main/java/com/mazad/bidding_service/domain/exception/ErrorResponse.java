@@ -1,9 +1,9 @@
 package com.mazad.bidding_service.domain.exception;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 public record ErrorResponse(
     int status,
     String message,
-    OffsetDateTime timestamp
+    Instant timestamp
 ) {}

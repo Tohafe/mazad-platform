@@ -1,7 +1,9 @@
 package com.mazad.bidding_service.domain.auction;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class Auction {
     private Long currentHighestBidderId;
     
     @Column(name = "ends_at", nullable = false)
-    private LocalDateTime endsAt;
+    private Instant endsAt;
     
     @Version
     @Column(nullable = false)

@@ -1,7 +1,7 @@
 package com.mazad.bidding_service.web.exception;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         ErrorResponse body = new ErrorResponse(
             HttpStatus.NOT_FOUND.value(),
             ex.getMessage(),
-            OffsetDateTime.now()
+            Instant.now()
         );
 
         return ResponseEntity
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
         ErrorResponse body = new ErrorResponse(
             HttpStatus.UNPROCESSABLE_CONTENT.value(),
             ex.getMessage(),
-            OffsetDateTime.now()
+            Instant.now()
         );
 
         return ResponseEntity
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
         ErrorResponse body = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             ex.getMessage(),
-            OffsetDateTime.now()
+            Instant.now()
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.CONFLICT.value(),
             "This item was updated by another user. Please refresh and try again.",
-            OffsetDateTime.now()
+            Instant.now()
         );
     
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);

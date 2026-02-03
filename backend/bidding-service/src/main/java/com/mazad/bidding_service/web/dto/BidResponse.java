@@ -1,7 +1,7 @@
 package com.mazad.bidding_service.web.dto;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,5 +12,5 @@ public class BidResponse {
     private Long id;
     private BigDecimal amount;
     private Long userId;
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 }

@@ -1,6 +1,7 @@
 package com.mazad.bidding_service.web.dto;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import com.mazad.bidding_service.domain.auction.AuctionStatus;
 
@@ -20,4 +21,7 @@ public class AuctionCreatedEvent {
     
     @NotNull
     private BigDecimal startingPrice;
+
+    @NotNull
+    private Instant endsAt;
 }
