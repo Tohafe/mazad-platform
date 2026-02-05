@@ -27,8 +27,8 @@ services:
     container_name: mazad-gateway-c
     image: mazad-gateway
     environment:
-      - SPRING_DATA_REDIS_HOST=${GATEWAY_REDIS_HOST}
-      - SPRING_DATA_REDIS_PORT=${GATEWAY_REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - API_KEY=${API_KEY}
@@ -117,6 +117,8 @@ services:
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
       - USER_AVATAR_URL=${USER_AVATAR_URL}
       - USER_AVATAR_THUMBNAIL_URL=${USER_AVATAR_THUMBNAIL_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     networks:
       mazad-network:
     restart: on-failure
