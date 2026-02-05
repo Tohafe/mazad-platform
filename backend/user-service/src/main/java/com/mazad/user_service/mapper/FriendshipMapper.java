@@ -11,7 +11,7 @@ public class FriendshipMapper {
     String defaultThumbnail;
 
 
-    public FriendResponseDto toFriendshipResponseDto(ProfileEntity entity){
+    public FriendResponseDto toFriendshipResponseDto(ProfileEntity entity, boolean onlineStatus){
 
         if (entity.getAvatarThumbnailUrl() != null)
             defaultThumbnail = entity.getAvatarThumbnailUrl();
@@ -19,7 +19,7 @@ public class FriendshipMapper {
                 .builder()
                 .userName(entity.getUserName())
                 .thumbnail(defaultThumbnail)
-                .onlineStatus("Online")
+                .onlineStatus(onlineStatus)
                 .build();
     }
 }
