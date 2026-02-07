@@ -1,9 +1,5 @@
 package com.mazad.bidding_service.infrastructure.kafka;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +21,7 @@ public class AuctionOpenedConsumer {
 
     private JsonMapper jsonMapper;
 
-    @KafkaListener(topics = "item.created", groupId = "new-group")
+    @KafkaListener(topics = "${item.updated.topic}", groupId = "bidder")
     public void handleAuctionCreated(String event) {
 
         Auction auction = new Auction();

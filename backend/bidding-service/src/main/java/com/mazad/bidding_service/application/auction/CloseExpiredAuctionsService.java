@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CloseExpiredAuctionsService {
 
     final public AuctionRepository auctionRepository;
+    private final AuctionUpdateProducer auctionUpdateProducer;
 
     public void closeExpiredAuctions() {
         log.info("Cron triggered at {}",  OffsetDateTime.now());
@@ -45,5 +47,8 @@ public class CloseExpiredAuctionsService {
 
         // auctionUpdateProducer.sendUpdate(auction); 
         log.info("Auction {} has been closed successfully.", auction.getAuctionId());
+
+        // Trigger the Kafka event
+        auctionUpdateProducer.sendUpdate(auction);
     }
 }
