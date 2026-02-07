@@ -10,9 +10,11 @@ import com.mazad.user_service.repo.FriendshipRepo;
 import com.mazad.user_service.repo.ProfileRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,7 +26,7 @@ public class FriendshipService {
     private final FriendshipRepo    friendRepo;
     private final ProfileRepo       profileRepo;
     private final FriendshipMapper  mapper;
-    private FriendshipEntity        entity;
+    private final StringRedisTemplate redisTemplate;
 
     @Transactional
     public void addOrUnFriendUser(UUID requesterId, String userName) {
@@ -37,6 +39,7 @@ public class FriendshipService {
                 .orElseThrow(() -> new ResourceNotFoundException("The receiver doesn't exist or doesn't have a profile!"));
         if (requesterId.equals(receiver.getUserId()))
             return;
+        FriendshipEntity entity;
         if (friendRepo.friendshipExists(requesterId, receiver.getUserId())){
             entity = friendRepo.findFriendship(requesterId, receiver.getUserId()).get();
             log.info("\nEntity Found Id = {}\n", entity.getId());
@@ -56,19 +59,55 @@ public class FriendshipService {
         }
     }
 
-    public List<FriendResponseDto> getFriendByStatus(UUID userId, FriendshipStatus status) {
-        List<FriendshipEntity> friends;
+    private List<FriendResponseDto> getFriendsWithOnlineStatus(List<ProfileEntity> friends){
+        List<String> values = new ArrayList<>();
+        List<String> keys = friends
+                .stream()
+                .map(f -> "user:online:" + f.getUserId())
+                .toList();
+        try {
+            values = redisTemplate
+                    .opsForValue()
+                    .multiGet(keys);
+        }catch(RuntimeException e){
+            log.error("Redis is down, skipping online status: {}", e.getMessage());
+        }
+        List<FriendResponseDto> response = new ArrayList<>();
 
-        friends = friendRepo.getAllFriendsByStatus(userId, status);
-        if (friends.isEmpty())
-            throw new ResourceNotFoundException("The user has no friends!");
-        return friends
+        for(int i = 0; i < friends.size(); i++){
+            boolean isOnline = false;
+
+            if (values != null && !values.isEmpty())
+                isOnline = values.get(i) != null;
+            response.add(mapper.toFriendshipResponseDto(friends.get(i), isOnline));
+        }
+
+        return response;
+    }
+
+    public List<FriendResponseDto> getFriendByStatus(UUID userId, FriendshipStatus status) {
+        List<FriendshipEntity> friendships;
+        List<ProfileEntity> friends;
+
+        friendships = friendRepo.getAllFriendsByStatus(userId, status);
+        if (friendships.isEmpty())
+            return  new ArrayList<>();
+        if (status.equals(FriendshipStatus.PENDING)) {
+            friendships = friendships
+                    .stream()
+                    .filter(f -> !f.getRequester().getUserId().equals(userId))
+                    .toList();
+        }
+        friends = friendships
                 .stream()
                 .map(friendship -> {
                     if (!friendship.getRequester().getUserId().equals(userId))
-                        return mapper.toFriendshipResponseDto(friendship.getRequester());
+                        return friendship.getRequester();
                     else
-                        return mapper.toFriendshipResponseDto(friendship.getReceiver());
+                        return friendship.getReceiver();
                 }).toList();
+        if (status.equals(FriendshipStatus.PENDING))
+            return friends.stream().map(f -> mapper.toFriendshipResponseDto(f, false)).toList();
+        return getFriendsWithOnlineStatus(friends);
     }
 }

@@ -22,7 +22,7 @@ public class FriendshipController {
     @GetMapping
     public ResponseEntity<List<FriendResponseDto>> getAllFriends(
             @RequestHeader("X-User-Id") UUID userId
-    ){
+    ) {
         List<FriendResponseDto> response;
 
         response = service.getFriendByStatus(userId, FriendshipStatus.ACCEPTED);
@@ -33,14 +33,15 @@ public class FriendshipController {
     public ResponseEntity<Void> addFriend(
             @RequestHeader("X-User-Id") UUID requesterId,
             @PathVariable("userName") String userName
-            ){
+    ) {
         service.addOrUnFriendUser(requesterId, userName);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/requests")
     public ResponseEntity<List<FriendRequestsDto>> pendingFriendRequests(
             @RequestHeader("X-User-Id") UUID userId
-    ){
+    ) {
         List<FriendRequestsDto> response;
 
         response = service.getFriendByStatus(userId, FriendshipStatus.PENDING)

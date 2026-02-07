@@ -6,5 +6,5 @@ import lombok.Builder;
 public record FriendResponseDto(
         String userName,
         String thumbnail,
-        String onlineStatus
+        boolean onlineStatus
 ) {}
