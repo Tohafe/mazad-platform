@@ -70,6 +70,8 @@ services:
      - DB_USER=${BID_DB_USER}
      - DB_PASSWORD=${BID_DB_PASSWORD}
      - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
+     - AUCTION_UPDATE_TOPIC=${ITEM_CREATED_TOPIC} #Replace it with ITEM_UPDATED_TOPIC
+     - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC} 
     depends_on:
       - postgres
       - mazad-gateway
