@@ -3,9 +3,9 @@ CREATE TABLE auctions (
 
     status VARCHAR(20) NOT NULL,
 
-    starting_price DECIMAL(19, 2) NOT NULL,
+    starting_price BIGINT NOT NULL,
 
-    current_highest_bid DECIMAL(19, 2),
+    current_highest_bid BIGINT,
 
     current_highest_bidder_id BIGINT,
 
@@ -21,7 +21,7 @@ CREATE TABLE bids (
 
     bidder_id BIGINT NOT NULL,
 
-    amount DECIMAL(19, 2) NOT NULL,
+    amount BIGINT NOT NULL,
 
     created_at TIMESTAMP NOT NULL DEFAULT now(),
 

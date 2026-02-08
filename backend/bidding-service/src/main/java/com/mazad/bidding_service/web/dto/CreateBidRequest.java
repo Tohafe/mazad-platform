@@ -1,6 +1,5 @@
 package com.mazad.bidding_service.web.dto;
 
-import java.math.BigDecimal;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -10,14 +9,14 @@ import lombok.Setter;
 @Setter
 public class CreateBidRequest {
 
-    @NotNull
+    @NotNull(message = "Auction ID is required")
     private Long auctionId;
 
-    @NotNull
+    @NotNull(message = "User ID is required")
     private Long userId;
 
-    @NotNull
-    @Positive
-    private BigDecimal amount;
+    @NotNull(message = "Bid amount is required")
+    @Positive(message = "Bid must be greater than zero")
+    private Long amount;
 
 }

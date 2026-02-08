@@ -31,7 +31,7 @@ public class BidService {
     private final AuctionUpdateProducer auctionUpdateProducer;
 
     @Transactional
-    public BidResponse placeBid(Long auctionId, Long userId, BigDecimal amount) {
+    public BidResponse placeBid(Long auctionId, Long userId, Long amount) {
 
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionNotFoundException());

@@ -42,7 +42,7 @@ public class Bid {
     private Long bidderId;
 
     @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal amount;
+    private Long amount;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

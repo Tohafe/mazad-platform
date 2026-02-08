@@ -20,7 +20,7 @@ public class AuctionCreatedEvent {
     private AuctionStatus status;
     
     @NotNull
-    private BigDecimal startingPrice;
+    private Long startingPrice;
 
     @NotNull
     private Instant endsAt;
