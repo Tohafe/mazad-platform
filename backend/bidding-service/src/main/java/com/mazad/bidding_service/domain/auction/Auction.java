@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.mazad.bidding_service.domain.bid.Bid;
 
@@ -46,7 +47,7 @@ public class Auction {
     private Long currentHighestBid;
     
     @Column(name = "current_highest_bidder_id")
-    private Long currentHighestBidderId;
+    private UUID currentHighestBidderId;
     
     @Column(name = "ends_at", nullable = false)
     private Instant endsAt;

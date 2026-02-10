@@ -7,7 +7,7 @@ CREATE TABLE auctions (
 
     current_highest_bid BIGINT,
 
-    current_highest_bidder_id BIGINT,
+    current_highest_bidder_id UUID,
 
     ends_at TIMESTAMP NOT NULL,
 
@@ -19,7 +19,7 @@ CREATE TABLE bids (
 
     auction_id BIGINT NOT NULL,
 
-    bidder_id BIGINT NOT NULL,
+    bidder_id UUID NOT NULL,
 
     amount BIGINT NOT NULL,
 

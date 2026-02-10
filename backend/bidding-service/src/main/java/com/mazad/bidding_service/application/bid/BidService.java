@@ -2,6 +2,7 @@ package com.mazad.bidding_service.application.bid;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class BidService {
     private final AuctionUpdateProducer auctionUpdateProducer;
 
     @Transactional
-    public BidResponse placeBid(Long auctionId, Long userId, Long amount) {
+    public BidResponse placeBid(Long auctionId, UUID userId, Long amount) {
 
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionNotFoundException());
@@ -47,6 +48,7 @@ public class BidService {
         bid.setAuction(auction);
 
         auction.setCurrentHighestBid(amount);
+        auction.setCurrentHighestBidderId(userId);
 
         bidRepository.save(bid);
         auctionRepository.save(auction);

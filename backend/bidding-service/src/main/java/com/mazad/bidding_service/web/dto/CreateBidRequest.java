@@ -9,11 +9,11 @@ import lombok.Setter;
 @Setter
 public class CreateBidRequest {
 
-    @NotNull(message = "Auction ID is required")
-    private Long auctionId;
+    // @NotNull(message = "Auction ID is required")
+    // private Long auctionId;
 
-    @NotNull(message = "User ID is required")
-    private Long userId;
+    // @NotNull(message = "User ID is required")
+    // private Long userId;
 
     @NotNull(message = "Bid amount is required")
     @Positive(message = "Bid must be greater than zero")
