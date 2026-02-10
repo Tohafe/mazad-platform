@@ -1,0 +1,95 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+@utility no-scrollbar {
+    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+
+.hero-pagination {
+}
+
+.hero-pagination .swiper-pagination-bullet {
+    width: 100%;
+    height: 4px;
+    border-radius: 0;
+}
+
+
+
+
+
+@theme {
+    /* 🎨 Main color */
+    --color-brand: #003cff;
+
+    /* 🧱 Backgrounds (Only generates bg-*) */
+    --background-color-main: #ffffff;
+    --background-color-muted: #f3f4f6;
+
+    /* ✍️ Text (Only generates text-*) */
+    --text-color-primary: #111827;
+    --text-color-secondary: #4b5563;
+    --text-color-muted: #95979b;
+    --text-color-onbrand: #fff;
+    --text-color-onbackground: var(--color-brand);
+
+    /* 🫥 Borders (Only generates border-*) */
+    --color-border: #d1d5dc;
+
+    /* 🚦 Status (Generates bg-, text-, border-) */
+    --color-success: #16a34a;
+    --color-warning: #f59e0b;
+    --color-error: #dc2626;
+
+
+    /* 2. Map the Google Fonts to Tailwind variables */
+    /* This overrides the default font-sans */
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+    /* This creates font-noto and font-nunito utilities */
+    --font-noto: "Noto Sans", sans-serif;
+    --font-nunito: "Nunito", sans-serif;
+    --font-serif: "Playfair Display", serif;
+
+
+    /* 3. Set Inter as the global default font (Optional but recommended) */
+    --default-font-family: var(--font-sans);
+    /* 🔤 Font */
+    /*--font-sans: Inter ,sans-serif;*/
+
+    /* 🔲 Radius */
+    --radius-md: 1px;
+
+    --breakpoint-2lg: 1300px;
+}
+
+/* 🌙 Dark mode */
+.dark {
+    --color-bg: #0f172a;
+    --color-muted: #1e293b;
+    --color-border: #334155;
+
+    --color-text: #f8fafc;
+    --color-text-muted: #94a3b8;
+}
+
+
+.embla__viewport {
+    overflow: hidden;
+}
+
+.embla__container {
+    display: flex;
+    touch-action: pan-y pinch-zoom;
+}
+
+.embla__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+}
