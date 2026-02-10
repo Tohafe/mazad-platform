@@ -27,13 +27,14 @@ services:
     container_name: mazad-gateway-c
     image: mazad-gateway
     environment:
-      - SPRING_DATA_REDIS_HOST=${GATEWAY_REDIS_HOST}
-      - SPRING_DATA_REDIS_PORT=${GATEWAY_REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - API_KEY=${API_KEY}
       - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
+      - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
     ports:
       - "8080:8080"
     networks:
@@ -63,6 +64,14 @@ services:
     image: bidding-service-img:1
     build: ./backend/bidding-service/
     container_name: bidding-service
+    environment:
+     - DB_URL=${DB_URL}
+     - DB_NAME=${BID_DB_NAME}
+     - DB_USER=${BID_DB_USER}
+     - DB_PASSWORD=${BID_DB_PASSWORD}
+     - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
+     - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+     - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC} 
     depends_on:
       - postgres
       - mazad-gateway
@@ -110,6 +119,8 @@ services:
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
       - USER_AVATAR_URL=${USER_AVATAR_URL}
       - USER_AVATAR_THUMBNAIL_URL=${USER_AVATAR_THUMBNAIL_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     networks:
       mazad-network:
     restart: on-failure
@@ -167,9 +178,9 @@ services:
 
     healthcheck:
           test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-          interval: 30s
-          timeout: 20s
-          retries: 3
+          interval: 7s
+          timeout: 6s
+          retries: 10
 
   minio-setup:
     image: minio/mc:latest
@@ -178,6 +189,9 @@ services:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      AVATAR_NAME: ${AVATAR_NAME}
+      AVATAR_URL: ${AVATAR_URL}
+      AVATAR_THUMBNAIL_NAME: ${AVATAR_THUMBNAIL_NAME}
     networks:
       - mazad-network
     depends_on:
@@ -185,6 +199,7 @@ services:
         condition: service_healthy
     volumes:
       - ./infrastructure/minio-service/init-minio.sh:/usr/bin/init-minio.sh
+      - ${AVATAR_PATH}:/default-images
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
   upload-service:
@@ -213,5 +228,7 @@ volumes:
   postgres-v:
     name: postgres-v
   minio_data:
+
+
 
 
