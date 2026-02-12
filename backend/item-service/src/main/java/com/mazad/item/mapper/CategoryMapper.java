@@ -12,6 +12,7 @@ public class CategoryMapper {
         return CategoryDto.builder()
                 .id(entity.getId())
                 .name(entity.getName())
+                .slug(entity.getSlug())
                 .description(entity.getDescription())
                 .imageUrl(entity.getImageUrl())
                 .hexColor(entity.getHexColor())

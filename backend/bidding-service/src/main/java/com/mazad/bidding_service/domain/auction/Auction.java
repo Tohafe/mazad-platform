@@ -1,9 +1,12 @@
 package com.mazad.bidding_service.domain.auction;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.mazad.bidding_service.domain.bid.Bid;
 
@@ -37,17 +40,17 @@ public class Auction {
     @Column(nullable = false, length=20)
     private AuctionStatus status;
     
-    @Column(name = "starting_price", precision = 19, scale = 2, nullable = false)
-    private BigDecimal startingPrice;
+    @Column(name = "starting_price", nullable = false)
+    private Long startingPrice;
     
-    @Column(name = "current_highest_bid", precision = 19, scale = 2)
-    private BigDecimal currentHighestBid;
+    @Column(name = "current_highest_bid")
+    private Long currentHighestBid;
     
     @Column(name = "current_highest_bidder_id")
-    private Long currentHighestBidderId;
+    private UUID currentHighestBidderId;
     
     @Column(name = "ends_at", nullable = false)
-    private LocalDateTime endsAt;
+    private Instant endsAt;
     
     @Version
     @Column(nullable = false)
