@@ -9,12 +9,14 @@ import FilterList from "../components/FilterList.tsx";
 import {useAuctions} from "../hooks/useAuctions.ts";
 import type {ItemSummary} from "../types/item.ts";
 import type {Page} from "../types/pagination.ts";
-import {useCategories} from "../hooks/useCategories.ts";
+import {usePopularCategories} from "../hooks/useCategories.ts";
 
 const HomePageContent = () => {
+    const {data, isLoading} = usePopularCategories()
+    if (isLoading) return (<div>Is Loading...</div>)
     return <div className="flex flex-col gap-18  w-full py-12 max-w-305">
         <HeroCarousel/>
-        <CategoryGrid/>
+        {data && <CategoryGrid categories={data}/>}
         <ItemCarousel carouselTitle="Auctions ending soon"/>
         <ItemCarousel carouselTitle="You might also like"/>
         <ItemCarousel carouselTitle="Recently viewed"/>
@@ -29,13 +31,11 @@ const CategoryPageContent = ({data}: { data: Page<ItemSummary> | undefined }) =>
 }
 
 const HomePageHeader = () => {
-    const {data, isLoading} = useCategories();
 
-    if (isLoading) return (<div>Categories Is Loading...</div>)
     return <div className="flex flex-col  items-center gap-2 w-full max-w-305">
         <HeaderSection className="w-full"/>
         <div className="w-screen h-10 bg-gray-50"></div>
-        { data && <CategorySection data={[DEFAULT_CATEGORY, ...data]} className="w-full h-21"/>}
+        <CategorySection className="w-full h-21"/>
     </div>
 }
 

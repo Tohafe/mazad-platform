@@ -52,51 +52,52 @@ INSERT INTO categories (name, slug, description, image_url, hex_color, icon, act
 VALUES
     ('Watches', 'watches', 'Luxury and collectible watches',
      'https://images.unsplash.com/photo-1524592094714-0f0654e20314',
-     '#1E3A8A', 'LuWatch', true),
+     '#7DA7D9', 'LuWatch', true),
 
     ('Sneakers', 'sneakers', 'Limited edition and collectible sneakers',
      'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519',
-     '#DC2626', 'LuFootprints', true),
+     '#F28B82', 'LuFootprints', true),
 
     ('Trading Cards', 'trading-cards', 'Sports and gaming trading cards',
      'https://images.unsplash.com/photo-1606813907291-d86efa9b94db',
-     '#16A34A', 'LuLayers', true),
+     '#A4D4AE', 'LuLayers', true),
 
     ('Art', 'art', 'Paintings and digital artworks',
      'https://images.unsplash.com/photo-1547891654-e66ed7ebb968',
-     '#9333EA', 'LuPalette', true),
+     '#CBA5F7', 'LuPalette', true),
 
     ('Electronics', 'electronics', 'Rare and collectible electronics',
      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
-     '#F59E0B', 'LuSmartphone', true),
+     '#FFD580', 'LuSmartphone', true),
 
     ('Cars', 'cars', 'Classic, luxury, and collectible cars',
      'https://images.unsplash.com/photo-1503376780353-7e6692767b70',
-     '#EF4444', 'LuCar', true),
+     '#FFB3B3', 'LuCar', true),
 
     ('Jewelry', 'jewelry', 'Fine jewelry and luxury accessories',
-     'https://images.unsplash.com/photo-1599942298930-5b1d4cbf257e',
-     '#F472B6', 'LuGem', true),
+     'https://images.unsplash.com/photo-1608042314453-ae338d80c427?q=80&w=1020&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',  -- working image
+     '#F5C3D1', 'LuGem', true),
 
     ('Fashion', 'fashion', 'Designer fashion and apparel',
-     'https://images.unsplash.com/photo-1520975920782-9117f5beec7f',
-     '#10B981', 'LuShirt', true),
+     'https://plus.unsplash.com/premium_photo-1675186049563-000f7ac02c44?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',  -- replace with working image
+     '#B8E0D2', 'LuShirt', true),
 
     ('Comics', 'comics', 'Vintage and modern comic books',
      'https://images.unsplash.com/photo-1571624630223-cc7d6e6ab730',
-     '#F59E0B', 'LuBookOpen', true),
+     '#FFE5A5', 'LuBookOpen', true),
 
     ('Coins', 'coins', 'Rare and collectible coins',
      'https://images.unsplash.com/photo-1570857301950-637c03f72a6d',
-     '#FBBF24', 'LuCoins', true),
+     '#FEE2B3', 'LuCoins', true),
 
     ('Photography', 'photography', 'Cameras and photographic art',
      'https://images.unsplash.com/photo-1519183071298-a2962fca9b33',
-     '#3B82F6', 'LuCamera', true),
+     '#AEDFF7', 'LuCamera', true),
 
     ('Luxury Bags', 'luxury-bags', 'Designer handbags and wallets',
      'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
-     '#8B5CF6', 'LuShoppingBag', true);
+     '#D6B8F5', 'LuShoppingBag', true);
+
 
 
 
