@@ -28,7 +28,7 @@ public class CloseExpiredAuctionsService {
         log.info("Cron triggered at {}",  OffsetDateTime.now());
 
         List<Auction> expiredAuctions  = auctionRepository.findAllByStatusAndEndsAtLessThanEqual(
-                                        AuctionStatus.ACTIVE, Instant.now());
+                                        AuctionStatus.ACTIVE, Instant.now().plusSeconds(1));
 
         for (Auction auction : expiredAuctions) {
             try {

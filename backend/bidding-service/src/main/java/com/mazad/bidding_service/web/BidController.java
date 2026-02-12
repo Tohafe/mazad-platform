@@ -10,9 +10,14 @@ import com.mazad.bidding_service.web.dto.CreateBidRequest;
 
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 
 @RestController
@@ -25,15 +30,26 @@ public class BidController {
         this.bidService = bidService;
     }
 
-    @PostMapping
-    public ResponseEntity<BidResponse> placeBid(@RequestBody @Valid CreateBidRequest request) {
-        BidResponse bid = bidService.placeBid(
-            request.getAuctionId(),
-            request.getUserId(),
-            request.getAmount()
-        );
+    @PostMapping("/{auctionId}")
+    public ResponseEntity<ProblemDetail> placeBid(
+            @PathVariable Long auctionId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @Valid @RequestBody CreateBidRequest request) {
         
-        return ResponseEntity.status(201).body(bid);
+        bidService.placeBid(auctionId, userId, request.getAmount());
+        
+        return ResponseEntity.ok().build();
     }
+    
+    // @PostMapping
+    // public ResponseEntity<BidResponse> placeBid(@RequestBody @Valid CreateBidRequest request) {
+    //     BidResponse bid = bidService.placeBid(
+    //         request.getAuctionId(),
+    //         request.getUserId(),
+    //         request.getAmount()
+    //     );
+        
+    //     return ResponseEntity.status(201).body(bid);
+    // }
     
 }
