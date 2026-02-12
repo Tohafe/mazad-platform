@@ -26,4 +26,9 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
+
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<CategoryDto> getBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(categoryService.getCategoryBySlug(slug));
+    }
 }

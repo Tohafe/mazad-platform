@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS categories
 (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255) NOT NULL UNIQUE,
+    slug        VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     image_url   TEXT,
     hex_color   VARCHAR(255),
@@ -47,85 +48,151 @@ CREATE TABLE IF NOT EXISTS item_images
 
 -- Generating random data
 
--- 1. Insert Categories with new visual fields
-INSERT INTO categories (name, description, image_url, hex_color, icon, active)
-VALUES ('Electronics',
-        'Gadgets, computers, and phones',
-        'https://example.com/images/electronics.jpg',
-        '#2563EB',
-        'fa-laptop',
-        true),
-       ('Furniture',
-        'Home and office furniture',
-        'https://example.com/images/furniture.jpg',
-        '#D97706',
-        'fa-couch',
-        true),
-       ('Art',
-        'Paintings, sculptures, and digital art',
-        'https://example.com/images/art.jpg',
-        '#9333EA',
-        'fa-palette',
-        true),
-       ('Fashion',
-        'Clothing, shoes, and accessories',
-        'https://example.com/images/fashion.jpg',
-        '#DB2777',
-        'fa-tshirt',
-        true),
-       ('Collectibles',
-        'Rare items and memorabilia',
-        'https://example.com/images/collectibles.jpg',
-        '#F59E0B',
-        'fa-gem',
-        true)
-ON CONFLICT (name) DO NOTHING;
+INSERT INTO categories (name, slug, description, image_url, hex_color, icon, active)
+VALUES
+    ('Watches', 'watches', 'Luxury and collectible watches',
+     'https://images.unsplash.com/photo-1524592094714-0f0654e20314',
+     '#1E3A8A', 'watch', true),
 
--- 2. Insert 1,000 Items (Updated for new Schema)
-INSERT INTO items (title, description,
-                   starting_price, current_bid,
-                   starts_at, ends_at, status,
-                   seller_id, category_id,
-                   specs, shipping_info, -- NEW
-                   created_at, updated_at -- NEW (Required)
-)
-SELECT 'Item #' || seq,
-       'Description for item #' || seq,
+    ('Sneakers', 'sneakers', 'Limited edition and collectible sneakers',
+     'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519',
+     '#DC2626', 'shoe', true),
 
-       -- Prices
-       (random() * 100 + 10)::DECIMAL(10, 2), -- Starting Price
-       0.00,
+    ('Trading Cards', 'trading-cards', 'Sports and gaming trading cards',
+     'https://images.unsplash.com/photo-1606813907291-d86efa9b94db',
+     '#16A34A', 'cards', true),
 
-       -- Dates
-       NOW(),
-       NOW() + (random() * INTERVAL '30 days'),
+    ('Art', 'art', 'Paintings and digital artworks',
+     'https://images.unsplash.com/photo-1547891654-e66ed7ebb968',
+     '#9333EA', 'palette', true),
 
-       -- Status
-       CASE WHEN random() > 0.2 THEN 'ACTIVE' ELSE 'SOLD' END,
+    ('Electronics', 'electronics', 'Rare and collectible electronics',
+     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
+     '#F59E0B', 'chip', true);
 
-       -- IDs
-       gen_random_uuid(),
-       (SELECT id FROM categories ORDER BY random() LIMIT 1),
+INSERT INTO items
+(title, description, starting_price, current_bid,
+ starts_at, ends_at, status, specs, shipping_info,
+ seller_id, category_id, created_at, updated_at)
+SELECT
+    'Auction Item #' || gs,
+    'High quality collectible item number ' || gs,
+    (random() * 900 + 100)::numeric(10,2),
+    (random() * 1200 + 150)::numeric(10,2),
+    NOW() - INTERVAL '1 day',
+    NOW() + (gs % 10 + 3) * INTERVAL '1 day',
+    'ACTIVE',
 
-       -- NEW: Random JSON Specs
-       jsonb_build_object(
-               'Brand', 'Generic Brand ' || (floor(random() * 10)::int),
-               'Year', (2010 + floor(random() * 14)::int)::text,
-               'Condition', CASE WHEN random() > 0.5 THEN 'New' ELSE 'Used' END
-       ),
+    jsonb_build_object(
+            'condition', 'Excellent',
+            'origin', 'Collector Market',
+            'batch', gs
+    ),
 
-       -- NEW: Shipping
-       'Ships from Netherlands - €15.00',
+    'Worldwide shipping available.',
 
-       -- NEW: Timestamps (Required by NOT NULL constraint)
-       NOW(),
-       NOW()
-FROM generate_series(1, 1000) AS seq;
+    CASE (gs % 5)
+        WHEN 0 THEN '11111111-1111-1111-1111-111111111111'::uuid
+        WHEN 1 THEN '22222222-2222-2222-2222-222222222222'::uuid
+        WHEN 2 THEN '33333333-3333-3333-3333-333333333333'::uuid
+        WHEN 3 THEN '44444444-4444-4444-4444-444444444444'::uuid
+        ELSE        '55555555-5555-5555-5555-555555555555'::uuid
+        END,
 
--- 3. Insert Fake Images (CRITICAL)
--- This adds 3 fake placeholder images for every item you just created.
+    (gs % 5) + 1,
+    NOW(),
+    NOW()
+FROM generate_series(1, 50) gs;
+
+
 INSERT INTO item_images (item_id, image_url)
-SELECT i.id,
-       'https://placehold.co/600x400?text=' || i.title || '_Image_' || img_num
-FROM items i
-         CROSS JOIN generate_series(1, 3) AS img_num; -- 3 images per item
+SELECT
+    id,
+    'https://picsum.photos/seed/item' || id || '/800/600'
+FROM items
+WHERE id > (SELECT COALESCE(MAX(item_id), 0) FROM item_images);
+
+
+
+-- -- 1. Insert Categories with new visual fields
+-- INSERT INTO categories (name, description, image_url, hex_color, icon, active)
+-- VALUES ('Electronics',
+--         'Gadgets, computers, and phones',
+--         'https://example.com/images/electronics.jpg',
+--         '#2563EB',
+--         'fa-laptop',
+--         true),
+--        ('Furniture',
+--         'Home and office furniture',
+--         'https://example.com/images/furniture.jpg',
+--         '#D97706',
+--         'fa-couch',
+--         true),
+--        ('Art',
+--         'Paintings, sculptures, and digital art',
+--         'https://example.com/images/art.jpg',
+--         '#9333EA',
+--         'fa-palette',
+--         true),
+--        ('Fashion',
+--         'Clothing, shoes, and accessories',
+--         'https://example.com/images/fashion.jpg',
+--         '#DB2777',
+--         'fa-tshirt',
+--         true),
+--        ('Collectibles',
+--         'Rare items and memorabilia',
+--         'https://example.com/images/collectibles.jpg',
+--         '#F59E0B',
+--         'fa-gem',
+--         true)
+-- ON CONFLICT (name) DO NOTHING;
+--
+-- -- 2. Insert 1,000 Items (Updated for new Schema)
+-- INSERT INTO items (title, description,
+--                    starting_price, current_bid,
+--                    starts_at, ends_at, status,
+--                    seller_id, category_id,
+--                    specs, shipping_info, -- NEW
+--                    created_at, updated_at -- NEW (Required)
+-- )
+-- SELECT 'Item #' || seq,
+--        'Description for item #' || seq,
+--
+--        -- Prices
+--        (random() * 100 + 10)::DECIMAL(10, 2), -- Starting Price
+--        0.00,
+--
+--        -- Dates
+--        NOW(),
+--        NOW() + (random() * INTERVAL '30 days'),
+--
+--        -- Status
+--        CASE WHEN random() > 0.2 THEN 'ACTIVE' ELSE 'SOLD' END,
+--
+--        -- IDs
+--        gen_random_uuid(),
+--        (SELECT id FROM categories ORDER BY random() LIMIT 1),
+--
+--        -- NEW: Random JSON Specs
+--        jsonb_build_object(
+--                'Brand', 'Generic Brand ' || (floor(random() * 10)::int),
+--                'Year', (2010 + floor(random() * 14)::int)::text,
+--                'Condition', CASE WHEN random() > 0.5 THEN 'New' ELSE 'Used' END
+--        ),
+--
+--        -- NEW: Shipping
+--        'Ships from Netherlands - €15.00',
+--
+--        -- NEW: Timestamps (Required by NOT NULL constraint)
+--        NOW(),
+--        NOW()
+-- FROM generate_series(1, 1000) AS seq;
+--
+-- -- 3. Insert Fake Images (CRITICAL)
+-- -- This adds 3 fake placeholder images for every item you just created.
+-- INSERT INTO item_images (item_id, image_url)
+-- SELECT i.id,
+--        'https://placehold.co/600x400?text=' || i.title || '_Image_' || img_num
+-- FROM items i
+--          CROSS JOIN generate_series(1, 3) AS img_num; -- 3 images per item
