@@ -12,26 +12,27 @@ export interface Item {
 
 
 interface ItemCardCompactProps {
-    item: Item
+    item: ItemSummary
     className?: string
     imgClassName?: string
 }
 
 import IconButton from "../Button/IconButton.tsx";
 import {LuHeart} from "react-icons/lu";
+import type {ItemSummary} from "../../types/item.ts";
 
-const ItemCardCompact = ({className = "", imgClassName = "", item: Item}: ItemCardCompactProps) => {
+const ItemCardCompact = ({className = "", imgClassName = "", item}: ItemCardCompactProps) => {
     const baseStyles = "flex flex-col w-full aspect-square justify-center gap-2 shrink-0 cursor-pointer";
     return (
         <div className={cn(baseStyles, className)}>
             <div className={cn("relative w-full h-full", imgClassName)}>
-                <img src="src/assets/item_photo.jpg" alt="Not Found" className="w-full h-full object-cover"/>
+                <img src={item.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
                 <IconButton className="absolute top-3 left-3 bg-main" variant="outlined" icon={LuHeart}
                             iconClassName="text-brand">759</IconButton>
             </div>
             <div className="flex flex-col start-0 pt-1">
                 <label className="text-muted font-mono tracking-widest text-[12px]">CURRENT BID</label>
-                <label className="text-black font-medium text-xl text-start">{Item.currentBid}</label>
+                <label className="text-black font-medium text-xl text-start">{item.currentBid}</label>
             </div>
         </div>
     )

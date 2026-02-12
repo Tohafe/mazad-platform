@@ -4,6 +4,7 @@ import IconButton from "../components/Button/IconButton.tsx";
 import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
 import {useSearchParams} from "react-router-dom"
 import {cn} from "../lib/utils.ts";
+import type {Category} from "../types/category.ts";
 
 interface Tab {
     id: number;
@@ -12,45 +13,44 @@ interface Tab {
     icon: IconKey
 }
 
-export const DEFAULT_TAB: Tab = {
+export const DEFAULT_CATEGORY: Category = {
     id: 0,
     name: "This Week",
     slug: "this_week",
+    description: "desc",
+    imageUrl: "image",
+    hexColor: "#color",
     icon: "BiSearch",
 };
-
-const tabs: Tab[] = [
-    DEFAULT_TAB,
-    { id: 1, name: "Trending", slug: "trending", icon: "LiaFireAltSolid" },
-    { id: 2, name: "Watches", slug: "watches", icon: "LuWatch" },
-    { id: 3, name: "Art", slug: "art", icon: "LuPalette" },
-    { id: 4, name: "Jewelry", slug: "jewelry", icon: "LuGem" },
-    { id: 5, name: "Cars", slug: "cars", icon: "LuCar" },
-    { id: 6, name: "Collectibles", slug: "collectibles", icon: "LuPackage" },
-    { id: 7, name: "Fashion", slug: "fashion", icon: "LuShirt" },
-    { id: 8, name: "Sneakers", slug: "sneakers", icon: "LuFootprints" },
-    { id: 9, name: "Comics", slug: "comics", icon: "LuBookOpen" },
-    { id: 10, name: "Coins", slug: "coins", icon: "LuCoins" },
-    { id: 11, name: "Electronics", slug: "electronics", icon: "LuSmartphone" },
-    { id: 13, name: "Design", slug: "design", icon: "LuPenTool" },
-    { id: 14, name: "Photography", slug: "photography", icon: "LuCamera" },
-    { id: 15, name: "Luxury Bags", slug: "luxury-bags", icon: "LuShoppingBag" },
-    { id: 16, name: "Trading Cards", slug: "trading-cards", icon: "LuLayers" },
-    { id: 17, name: "Memorabilia", slug: "memorabilia", icon: "LuTrophy" },
-];
+// { id: 2, name: "Watches", slug: "watches", icon: "LuWatch" },
+// { id: 3, name: "Art", slug: "art", icon: "LuPadescriptionlette" },
+// { id: 4, name: "Jewelry", slug: "jewelry", icon: "LuGem" },
+// { id: 5, name: "Cars", slug: "cars", icon: "LuCar" },
+// { id: 6, name: "Collectibles", slug: "collectibles", icon: "LuPackage" },
+// { id: 7, name: "Fashion", slug: "fashion", icon: "LuShirt" },
+// { id: 8, name: "Sneakers", slug: "sneakers", icon: "LuFootprints" },
+// { id: 9, name: "Comics", slug: "comics", icon: "LuBookOpen" },
+// { id: 10, name: "Coins", slug: "coins", icon: "LuCoins" },
+// { id: 11, name: "Electronics", slug: "electronics", icon: "LuSmartphone" },
+// { id: 13, name: "Design", slug: "design", icon: "LuPenTool" },
+// { id: 14, name: "Photography", slug: "photography", icon: "LuCamera" },
+// { id: 15, name: "Luxury Bags", slug: "luxury-bags", icon: "LuShoppingBag" },
+// { id: 16, name: "Trading Cards", slug: "trading-cards", icon: "LuLayers" },
+// { id: 17, name: "Memorabilia", slug: "memorabilia", icon: "LuTrophy" },
 
 
 interface CategorySectionProps extends React.HTMLAttributes<HTMLDivElement> {
     className?: string
+    data: Category[]
 }
 
 
-const CategorySection = ({className = "", ...props}: CategorySectionProps) => {
+const CategorySection = ({className = "", data: categories, ...props}: CategorySectionProps) => {
     const navRef = useRef<HTMLDivElement>(null);
     const [canScrollRight, setCanScrollRight] = useState(true)
     const [canScrollLeft, setCanScrollLeft] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams();
-    const selectedTab = searchParams.get("tab") || DEFAULT_TAB.slug;
+    const selectedTab = searchParams.get("category") || DEFAULT_CATEGORY.slug;
 
     const checkScrollPos = () => {
         const nav = navRef.current;
@@ -80,11 +80,11 @@ const CategorySection = ({className = "", ...props}: CategorySectionProps) => {
         })
     }
 
-    const onTabClick = (tab: Tab) => {
-        if (tab != DEFAULT_TAB)
-            setSearchParams({tab: tab.slug});
+    const onTabClick = (category: Category) => {
+        if (category != DEFAULT_CATEGORY)
+            setSearchParams({category: category.slug});
         else {
-            searchParams.delete("tab");
+            searchParams.delete("category");
             setSearchParams(searchParams, {replace: true});
         }
     }
@@ -98,7 +98,7 @@ const CategorySection = ({className = "", ...props}: CategorySectionProps) => {
                         icon={MdKeyboardArrowRight} iconClassName="text-brand"/>
             <nav ref={navRef} onScroll={checkScrollPos}
                  className="flex flex-row h-full w-full gap-2 whitespace-nowrap overflow-x-auto no-scrollbar">
-                {tabs.map((tab) => (
+                {categories.map((tab) => (
                     <Tab variant={selectedTab === tab.slug ? "selected" : "unselected"}
                          onClick={() => onTabClick(tab)} iconKey={tab.icon}>{tab.name}</Tab>
                 ))}

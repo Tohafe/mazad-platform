@@ -26,6 +26,8 @@ services:
     build: ./backend/mazad-gateway/
     container_name: mazad-gateway-c
     image: mazad-gateway
+    depends_on:
+      - redis
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
