@@ -28,4 +28,10 @@ public class CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category (" + id + ") can't be found"));
         return mapper.toResponse(entity);
     }
+
+    public CategoryDto getCategoryBySlug(String slug) {
+        CategoryEntity entity = repository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Category (" + slug + ") can't be found"));
+        return mapper.toResponse(entity);
+    }
 }
