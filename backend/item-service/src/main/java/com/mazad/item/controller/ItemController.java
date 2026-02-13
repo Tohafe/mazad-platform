@@ -18,6 +18,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -62,10 +63,11 @@ public class ItemController {
             return itemService.listItemsBy(itemSearch, pageable);
     }
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    @PostMapping("/kafka-send")
-    public String sendMessage(@RequestParam String message) {
-        kafkaTemplate.send("items-topic", message);
-        return "Message Sent!: " + message;
+    @GetMapping("/ending-soon")
+    public ResponseEntity<List<ItemSummaryDto>> endingSoon(
+            @RequestParam(defaultValue = "24") int hours,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return ResponseEntity.ok(itemService.endingSoonItems(hours, limit));
     }
 }

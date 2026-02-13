@@ -10,6 +10,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -20,10 +21,11 @@ public class CatalogService {
     public List<CategorizedItemsDto> getCategorizedItems(int categoriesLimit, int itemsLimit) {
         if (categoriesLimit <= 0 || itemsLimit <= 0)
             throw new ValidationException("categories_limit and items_limit must be positive integers");
+        Function<Long, ItemSearch> searchFor = (categoryId) -> ItemSearch.builder().categoryId(categoryId).build();
         return categoryService.getAllCategories().stream()
                 .limit(categoriesLimit)
                 .map(category -> {
-                    PagedModel<ItemSummaryDto> itemsPage = itemService.listItemsBy(new ItemSearch(), PageRequest.of(0, itemsLimit));
+                    PagedModel<ItemSummaryDto> itemsPage = itemService.listItemsBy(searchFor.apply(category.id()), PageRequest.of(0, itemsLimit));
                     return new CategorizedItemsDto(category, itemsPage.getContent());
                 })
                 .toList();

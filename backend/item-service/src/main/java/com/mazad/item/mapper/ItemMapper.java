@@ -84,6 +84,7 @@ public class ItemMapper {
     public ItemSummaryDto toItemSummaryDto(ItemEntity entity) {
         if (entity == null) return null;
         return ItemSummaryDto.builder()
+                .id(entity.getId())
                 .title(entity.getTitle())
                 .thumbnail(entity.getImages().isEmpty() ? null : entity.getImages().get(0))
                 .currentBid(entity.getCurrentBid())
