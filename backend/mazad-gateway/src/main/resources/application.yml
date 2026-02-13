@@ -20,7 +20,7 @@ spring:
             - id: item-service-route
               uri: http://items-service:${ITEMS_SERVICE_PORT}
               predicates:
-                - Path=/api/v1/items/**, /api/v1/categories/**
+                - Path=/api/v1/items/**, /api/v1/categories/**, /api/v1/catalog/**
               filters:
                 - name: ApiKeyFilter
                 - name: RequestRateLimiter
