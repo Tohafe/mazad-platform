@@ -12,14 +12,14 @@ export interface Item {
 
 
 interface ItemCardCompactProps {
-    item: ItemSummary
+    item: AuctionSummary
     className?: string
     imgClassName?: string
 }
 
 import IconButton from "../Button/IconButton.tsx";
 import {LuHeart} from "react-icons/lu";
-import type {ItemSummary} from "../../types/item.ts";
+import type {AuctionSummary} from "../../types/item.ts";
 
 const ItemCardCompact = ({className = "", imgClassName = "", item}: ItemCardCompactProps) => {
     const baseStyles = "flex flex-col w-full aspect-square justify-center gap-2 shrink-0 cursor-pointer";

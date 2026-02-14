@@ -1,3 +1,5 @@
+import type {Category} from "./category.ts";
+
 export type AuctionStatus =
     | "DRAFT"
     | "ACTIVE"
@@ -5,7 +7,8 @@ export type AuctionStatus =
     | "EXPIRED"
     | "CANCELLED";
 
-export interface ItemSummary {
+export interface AuctionSummary {
+    id: number;
     title: string;
     thumbnail: string;
     currentBid: number;
@@ -14,3 +17,14 @@ export interface ItemSummary {
     endsAt: string;
 }
 
+export interface CategorizedAuctions {
+    category: Category;
+    items: AuctionSummary[]
+}
+
+export interface AuctionFilters {
+    page?: number;
+    size?: number;
+    categoryId?: number;
+    status?: string;
+}

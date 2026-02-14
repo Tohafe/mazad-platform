@@ -134,7 +134,7 @@ SELECT
     (gs % 12) + 1,
     NOW(),
     NOW()
-FROM generate_series(1, 50) gs;
+FROM generate_series(1, 500) gs;
 
 
 INSERT INTO item_images (item_id, image_url)

@@ -5,7 +5,6 @@ import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
 import {useSearchParams} from "react-router-dom"
 import {cn} from "../lib/utils.ts";
 import type {Category} from "../types/category.ts";
-import {useCategories} from "../hooks/useCategories.ts";
 
 export const DEFAULT_CATEGORY: Category = {
     id: 0,
@@ -18,20 +17,18 @@ export const DEFAULT_CATEGORY: Category = {
 };
 
 interface CategorySectionProps extends React.HTMLAttributes<HTMLDivElement> {
-    className?: string
+    className?: string;
+    data: Category[];
 }
 
 
-const CategorySection = ({className = "", ...props}: CategorySectionProps) => {
+const CategorySection = ({className = "", data, ...props}: CategorySectionProps) => {
     const navRef = useRef<HTMLDivElement>(null);
-    const {data = [], isLoading} = useCategories();
     const categories = [DEFAULT_CATEGORY, ...data];
     const [canScrollRight, setCanScrollRight] = useState(true)
     const [canScrollLeft, setCanScrollLeft] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedTab = searchParams.get("category") || DEFAULT_CATEGORY.slug;
-
-    if (isLoading) return (<div>Is Loading...</div>)
 
     const checkScrollPos = () => {
         const nav = navRef.current;

@@ -2,7 +2,7 @@ import {type Item} from "../Card/ItemCard.tsx";
 import {type HTMLAttributes} from "react";
 import {cn} from "../../lib/utils.ts";
 import ItemCardCompact from "../Card/ItemCardCompact.tsx";
-import type { ItemSummary } from "../../types/item.ts";
+import type { AuctionSummary } from "../../types/item.ts";
 import type {Page} from "../../types/pagination.ts";
 
 
@@ -138,7 +138,7 @@ export const items: Item[] = [
 interface ItemGridProps extends HTMLAttributes<HTMLDivElement> {
     noTitle?: boolean;
     className?: string;
-    data: Page<ItemSummary>
+    data: Page<AuctionSummary>
 }
 
 const ItemGrid = ({data, noTitle = false, className = "", ...props}: ItemGridProps) => {
