@@ -9,8 +9,11 @@ spring:
   config:
     import: optional:file:../../.env[.properties]
 
+
   cloud:
     gateway:
+
+
       server:
         webflux:
           default-filters:
@@ -50,3 +53,22 @@ spring:
                 - Path=/api/v1/bids/**
               filters:
                 - StripPrefix=2
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins:
+                  - "*"
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowed-headers:
+                  - Authorization
+                  - Content-Type
+                  - Accept
+                  - X-API-KEY
+                exposed-headers:
+                  - X-API-KEY
