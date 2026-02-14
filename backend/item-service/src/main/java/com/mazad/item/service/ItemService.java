@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import tools.jackson.databind.JsonNode;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ItemService {
@@ -26,4 +27,6 @@ public interface ItemService {
     ItemDetailsDto patchItem(Long id, JsonNode jsonPatch);
 
     public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
+
+    List<ItemSummaryDto> endingSoonItems(int hours, int limit);
 }

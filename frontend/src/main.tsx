@@ -1,18 +1,18 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import './index.css'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
-import Home from "./pages/Home.tsx";
-const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <Home/>,
-        errorElement: <span className="text-lg font-semibold p-6">404 NOT FOUND</span>
-    }
-]);
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import App from "./App.tsx";
+
+
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <RouterProvider router={router}/>
+        <QueryClientProvider client={queryClient}>
+            <App/>
+            <ReactQueryDevtools initialIsOpen={false}/>
+        </QueryClientProvider>
     </StrictMode>
 )
