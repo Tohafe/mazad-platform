@@ -1,10 +1,20 @@
 spring:
   application:
     name: notification-service
+  datasource:
+    url: ${DB_URL} 
+    username: ${NOTIFACTION_DB_USER}
+    password: ${NOTIFACTION_DB_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
   kafka:
     bootstrap-servers: ${KAFKA_URL:kafka-c:9093}
     topics:
-      bid-events: ${BID_TOPIC:bid-events}
+      bid-events: ${AUCTION_UPDATE_TOPIC:bid-events}
     consumer:
       group-id: ${KAFKA_GROUP_ID:notification-group}
       auto-offset-reset: earliest
