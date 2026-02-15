@@ -1,6 +1,8 @@
 import Home from "./pages/Home.tsx";
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import HeaderSection from "./sections/HeaderSection.tsx";
+import Footer from "./components/Footer.tsx";
+
 
 const router = createBrowserRouter([
     {
@@ -12,9 +14,10 @@ const router = createBrowserRouter([
 
 const App = () => {
     return (
-        <div className="flex bg-white flex-col px-12 w-screen h-screen items-center gap-0 overflow-x-hidden">
+        <div className="flex bg-white flex-col px-12 w-screen items-center h-screen gap-0 overflow-x-hidden">
             <HeaderSection className="w-full max-w-305"/>
             <RouterProvider router={router}/>
+            <Footer className="w-full max-w-305"/>
         </div>
     )
 };
