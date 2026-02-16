@@ -6,20 +6,21 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import javax.annotation.Generated;
+
 
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructors
+@NoArgsConstructor
 
 @Entity
 @Table(name = "message")
 public class Message {
     
     @Id
-    @GeneratedValue(Strategy = GeneratinoType.UUID)
-    private UIID    id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID    id;
+    
     
     
     @Column(nullable = false)
