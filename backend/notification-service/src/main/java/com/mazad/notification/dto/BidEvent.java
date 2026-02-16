@@ -7,7 +7,7 @@ import lombok.Data;
 @NoArgsConstructor
 public class BidEvent {
     private Long itemId;      
-    private Long bidderId;    
+    private String bidderId;    
     private Double amount;    
     
 }

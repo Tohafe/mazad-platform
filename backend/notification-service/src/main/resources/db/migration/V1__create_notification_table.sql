@@ -7,4 +7,4 @@ CREATE TABLE notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_notification_user ON notifications(user_id create_at DESC);
+CREATE INDEX idx_notification_user ON notifications(user_id, created_at DESC);

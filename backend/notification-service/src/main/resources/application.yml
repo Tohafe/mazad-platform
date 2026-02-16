@@ -2,9 +2,9 @@ spring:
   application:
     name: notification-service
   datasource:
-    url: ${DB_URL} 
-    username: ${NOTIFACTION_DB_USER}
-    password: ${NOTIFACTION_DB_PASSWORD}
+    url: ${DB_URL}/${NOTIFICATION_DB_NAME} 
+    username: ${NOTIFICATION_DB_USER}
+    password: ${NOTIFICATION_DB_PASSWORD}
   jpa:
     show-sql: true
     hibernate:
