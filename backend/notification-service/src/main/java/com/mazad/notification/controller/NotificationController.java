@@ -1,6 +1,7 @@
 package com.mazad.notification.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,9 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.mazad.notification.service.NotificationService;
 import org.springframework.web.bind.annotation.PutMapping;
 import com.mazad.notification.entity.NotificationEntity;
+
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
-import java.util.List;
 
 
 
@@ -23,8 +25,18 @@ public class NotificationController {
     private final NotificationService notifactionService;
 
     @GetMapping("/unread")
-    public ResponseEntity<List<NotificationEntity>> getUnreadNotifications(@RequestHeader("X-User-Id") String userId) {
-        return ResponseEntity.ok(notifactionService.getUnreadNotifications(userId)) ;
+    public ResponseEntity<Slice<NotificationEntity>> getUnreadNotifications(@RequestHeader("X-User-Id") String userId,
+                                                                        @RequestParam(defaultValue = "20") int pageSize,
+                                                                        @RequestParam(defaultValue = "0" ) int pageNumber) {
+        return ResponseEntity.ok(notifactionService.getUnreadNotification(userId, pageNumber, pageSize)) ;
+    }
+    
+    @GetMapping("")
+    public ResponseEntity<Slice<NotificationEntity>> getNotifications(@RequestHeader("X-User-Id") String userId,
+                                                                        @RequestParam(defaultValue = "20") int pageSize,
+                                                                        @RequestParam(defaultValue = "0" ) int pageNumber){
+        return ResponseEntity.ok(notifactionService.getNotifications(userId, pageNumber, pageSize));
+
     }
         
     @PutMapping("/{id}/read")
@@ -39,6 +51,4 @@ public class NotificationController {
         notifactionService.markAllAsRead(userId);
         return ResponseEntity.ok().build();
     }
-
-
 }

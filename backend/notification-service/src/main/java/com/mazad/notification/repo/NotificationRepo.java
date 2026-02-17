@@ -5,18 +5,21 @@ import org.springframework.data.jpa.repository.Modifying;
 import com.mazad.notification.entity.NotificationEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import jakarta.transaction.Transactional;
-import java.util.List;
 
 
 @Repository
 public interface NotificationRepo extends JpaRepository<NotificationEntity, Long> {
-    List<NotificationEntity> findByUserIdAndIsReadFalse(String userId);
+    Slice<NotificationEntity>  findByUserId(String userId, Pageable pageable);
 
-    List<NotificationEntity> findByUserIdOrderByCreatedAtDesc(String userId);
+    Slice<NotificationEntity> findByUserIdAndIsReadFalse(String userId, Pageable pageable);
+
+
 
     @Modifying 
     @Transactional 
-    @Query("UPDATE NotificationEntity n SET n.isRead = true WHERE n.userId = :userId")
+    @Query("UPDATE NotificationEntity n SET n.isRead = true WHERE n.userId = :userId AND n.isRead = false")
     void markAllAsRead(String userId);
 }

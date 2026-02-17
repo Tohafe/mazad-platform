@@ -2,9 +2,12 @@ package com.mazad.notification.service;
 
 import com.mazad.notification.entity.NotificationEntity;
 import com.mazad.notification.repo.NotificationRepo;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
-import java.util.List;
 
 
 @Service
@@ -13,10 +16,14 @@ public class NotificationService {
     
     private final NotificationRepo repository;   
 
-     public List<NotificationEntity> getUnreadNotifications(String userId) {
-        List<NotificationEntity> unread = repository.findByUserIdAndIsReadFalse(userId);
-        return unread;
-        
+    public Slice<NotificationEntity> getUnreadNotification(String userId, int pageNumber, int pageSize){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+        return repository.findByUserIdAndIsReadFalse(userId, pageable);
+    }
+
+    public Slice<NotificationEntity> getNotifications(String userId, int pageNumber, int pageSize){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+        return repository.findByUserId(userId, pageable);
     }
 
     public void markNotificationAsRead(Long notificationId, String userId) {
