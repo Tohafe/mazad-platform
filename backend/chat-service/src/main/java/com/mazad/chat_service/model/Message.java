@@ -1,10 +1,12 @@
-package src.main.java.com.mazad.chat_service.model;
+package com.mazad.chat_service.model;
 
 import lombok.* ;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import  java.time.ZonedDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 
 
@@ -14,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 
 @Entity
-@Table(name = "message")
+@Table(name = "messages")
 public class Message {
     
     @Id
@@ -26,16 +28,19 @@ public class Message {
     @Column(nullable = false)
     private long    chatId;
     
-    @Column(nullable = false)
+    @Column( nullable = false)
     private long    senderId;
    
     @Column(nullable = false)
     private long    receiverId;
     
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column( nullable = false, columnDefinition = "TEXT")
     private String    content;
     
     @Column(nullable = false)
-    private LocalDateTime   timestamp;
+    @CreationTimestamp
+    private ZonedDateTime timestamp;
+
+
 
 }
