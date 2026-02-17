@@ -1,8 +1,8 @@
-package src.main.java.com.mazad.chat_service.controller;
+package com.mazad.chat_service.controller;
 
 
-import src.main.java.com.mazad.chat_service.repository.MessageRepository;
-import src.main.java.com.mazad.chat_service.model.Message;
+import com.mazad.chat_service.repository.MessageRepository;
+import com.mazad.chat_service.model.Message;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class MessageController {
     public List<Message> receiveMessage(@PathVariable long userId)
     {
         System.out.println("In post RequestMapping");
-        return Repo.FindByreceiverId(userId);
+        return Repo.findByReceiverId(userId);
     }
 
 

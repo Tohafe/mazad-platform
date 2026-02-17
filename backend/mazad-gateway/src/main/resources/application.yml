@@ -53,6 +53,10 @@ spring:
                 - Path=/api/v1/bids/**
               filters:
                 - StripPrefix=2
+            - id: chat-service-route
+              uri: http://chat-service:8080
+              predicates:
+                - Path=/api/chat/**
           globalcors:
             cors-configurations:
               '[/**]':
@@ -72,3 +76,5 @@ spring:
                   - X-API-KEY
                 exposed-headers:
                   - X-API-KEY
+
+
