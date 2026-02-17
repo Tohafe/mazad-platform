@@ -14,7 +14,7 @@ const router = createBrowserRouter([
 
 const App = () => {
     return (
-        <div className="flex bg-white flex-col px-12 w-screen items-center h-screen gap-0 overflow-x-hidden">
+        <div className="flex bg-white flex-col px-12 w-full items-center min-h-screen gap-0 overflow-x-hidden">
             <HeaderSection className="w-full max-w-305"/>
             <RouterProvider router={router}/>
             <Footer className="w-full max-w-305"/>
