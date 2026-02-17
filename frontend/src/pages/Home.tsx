@@ -8,6 +8,8 @@ import FilterList from "../components/FilterList.tsx";
 import {useAuctions, useEndingSoonAuctions} from "../hooks/useAuctions.ts";
 import {useCategories, usePopularCategories} from "../hooks/useCategories.ts";
 import type {Category} from "../types/category.ts";
+import Pagination from "../components/Pagination.tsx";
+import {useEffect, useState} from "react";
 
 const HomePageContent = () => {
     const {data: Categories = [], isLoading: LoadingCategories} = usePopularCategories()
@@ -23,12 +25,18 @@ const HomePageContent = () => {
 }
 
 const CategoryPageContent = ({category}: { category: Category | undefined }) => {
-    const {data, isLoading} = useAuctions({size: 28, categoryId: category?.id});
-    if (isLoading || !data) return <div>Loading...</div>;
+    const [page, setPage] = useState<number>(0);
+    const {data, isLoading} = useAuctions({page: page, size: 16, categoryId: category?.id});
 
-    return <div className="flex flex-col gap-4 w-full py-8 max-w-305">
+    useEffect(() => window.scrollTo({top: 0, behavior: 'smooth'}), [page])
+
+    if (isLoading || !data) return <div>Loading...</div>;
+    return <div className="flex flex-col gap-6 w-full py-8 max-w-305">
         <FilterList/>
-        <ItemGrid data={data} noTitle={true} className="h-full w-full"/>
+        <ItemGrid items={data.content} noTitle={true} className="h-full w-full"/>
+        <Pagination page={data.page.number + 1} totalPages={data.page.totalPages} onPageChange={(pageNum: number) => {
+            setPage(pageNum - 1);
+        }} className="pt-10"/>
     </div>
 }
 

@@ -7,5 +7,5 @@ export interface PageInfo {
 
 export interface Page<T> {
     content: T[];
-    pageable: PageInfo;
+    page: PageInfo;
 }

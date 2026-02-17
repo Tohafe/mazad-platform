@@ -3,7 +3,6 @@ import {type HTMLAttributes} from "react";
 import {cn} from "../../lib/utils.ts";
 import ItemCardCompact from "../Card/ItemCardCompact.tsx";
 import type { AuctionSummary } from "../../types/item.ts";
-import type {Page} from "../../types/pagination.ts";
 
 
 export const items: Item[] = [
@@ -138,12 +137,11 @@ export const items: Item[] = [
 interface ItemGridProps extends HTMLAttributes<HTMLDivElement> {
     noTitle?: boolean;
     className?: string;
-    data: Page<AuctionSummary>
+    items: AuctionSummary[]
 }
 
-const ItemGrid = ({data, noTitle = false, className = "", ...props}: ItemGridProps) => {
+const ItemGrid = ({items, noTitle = false, className = "", ...props}: ItemGridProps) => {
     const baseStyles = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 xl:gap-6";
-    const items = data.content;
     return (
         <div className={cn(baseStyles, className)} {...props}>
             {items.map((item) => <ItemCardCompact className="pt-2" imgClassName="xl:h-88" item={item}/>)}
