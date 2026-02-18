@@ -217,6 +217,7 @@ services:
       - "POSTGRES_USER=${POSTGRES_USER}"
       - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
       # KAFKA ENV VARS
+      - "KAFKA_SERVICE_PORT=${KAFKA_SERVICE_PORT}"
     ports:
       - "${CHAT_SERVICE_PORT}:8080"
     networks:
