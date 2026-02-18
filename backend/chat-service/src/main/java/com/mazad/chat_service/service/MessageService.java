@@ -1,18 +1,30 @@
-package com.mazad.chat_service.service;
+figpackage com.mazad.chat_service.service;
 import  com.mazad.chat_service.repository.MessageRepository;
 import  com.mazad.chat_service.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.lang.Math;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 
 
-@Service
+
+
+
+
+@Service 
 public class MessageService {
 
     @Autowired
     MessageRepository repository;
+
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Value("${chat.kafka.topic}")
+    private String topicName;
 
 
     public Message sendMessage(Message message)
@@ -24,6 +36,16 @@ public class MessageService {
         message.setRoomId(roomId);
 
         Message savedMessage = repository.save(message);
+
+        try {
+            kafkaTemplate.send(topicName, roomId, savedMessage);
+            System.out.println("============ kafka event sendt succefully !! ============");
+        }
+        catch (Exception e)
+        {
+            System.err.println("XXXXXXXX kafka error ! XXXXXXXXX\n" + e.getMessage());
+            e.printStackTrace();
+        }
         return savedMessage;
     }
 
@@ -35,5 +57,6 @@ public class MessageService {
         String roomId   = minId + "_" + maxId;
         return repository.findByRoomIdOrderByTimestampAsc(roomId);
     }
+
     
 }
