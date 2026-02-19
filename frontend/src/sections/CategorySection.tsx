@@ -1,5 +1,5 @@
 import Tab from "../components/Card/Tab.tsx";
-import {useEffect, useRef, useState} from "react";
+import {useMemo, useRef, useState} from "react";
 import IconButton from "../components/Button/IconButton.tsx";
 import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
 import {useParams} from "react-router-dom"
@@ -33,22 +33,19 @@ const CategorySection = ({className = "", onCategoryChange, ...props}: CategoryS
     const navRef = useRef<HTMLDivElement>(null);
     const {data = [], isLoading} = useCategories();
     const categories = [DEFAULT_CATEGORY, ...data];
-    const [selectedCat, setSelectedCat] = useState<Category>(DEFAULT_CATEGORY);
 
     const [canScrollRight, setCanScrollRight] = useState(true)
     const [canScrollLeft, setCanScrollLeft] = useState(false)
     const {idSlug} = useParams();
 
-    useEffect(() => {
-        if (!idSlug) {
-            setSelectedCat(DEFAULT_CATEGORY);
-            return;
-        }
+    const selectedCat = useMemo(() => {
+        if (!idSlug) return DEFAULT_CATEGORY;
         const {id} = getCategoryInfo(idSlug)
         const category = categories.find(cat => cat.id === id) ?? DEFAULT_CATEGORY;
-        setSelectedCat(category);
+        console.log("selected Category: " + category.id);
         if (onCategoryChange) onCategoryChange(category);
-    }, [idSlug]);
+        return category
+    }, [idSlug, categories]);
 
     const checkScrollPos = () => {
         const nav = navRef.current;
