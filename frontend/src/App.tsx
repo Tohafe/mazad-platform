@@ -2,6 +2,7 @@ import Home from "./pages/Home.tsx";
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import HeaderSection from "./sections/HeaderSection.tsx";
 import Footer from "./components/Footer.tsx";
+import CategoryAuctions from "./pages/CategoryAuctions.tsx";
 
 
 const router = createBrowserRouter([
@@ -9,6 +10,10 @@ const router = createBrowserRouter([
         path: '/',
         element: <Home/>,
         errorElement: <span className="text-lg font-semibold p-6">404 NOT FOUND</span>
+    },
+    {
+        path: '/c/:idSlug',
+        element: <CategoryAuctions/>
     }
 ]);
 

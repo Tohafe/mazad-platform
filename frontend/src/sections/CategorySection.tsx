@@ -1,10 +1,11 @@
 import Tab from "../components/Card/Tab.tsx";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import IconButton from "../components/Button/IconButton.tsx";
 import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
-import {useSearchParams} from "react-router-dom"
+import {useParams} from "react-router-dom"
 import {cn} from "../lib/utils.ts";
 import type {Category} from "../types/category.ts";
+import {useCategories} from "../hooks/useCategories.ts";
 
 export const DEFAULT_CATEGORY: Category = {
     id: 0,
@@ -18,17 +19,36 @@ export const DEFAULT_CATEGORY: Category = {
 
 interface CategorySectionProps extends React.HTMLAttributes<HTMLDivElement> {
     className?: string;
-    data: Category[];
+    onCategoryChange?: (category: Category) => void;
 }
 
 
-const CategorySection = ({className = "", data, ...props}: CategorySectionProps) => {
+export const getCategoryInfo = (idSlug: string) => {
+    const [id, ...slugs] = idSlug?.split("-");
+    return {id: Number(id), slug: slugs?.join("-")};
+}
+
+
+const CategorySection = ({className = "", onCategoryChange, ...props}: CategorySectionProps) => {
     const navRef = useRef<HTMLDivElement>(null);
+    const {data = [], isLoading} = useCategories();
     const categories = [DEFAULT_CATEGORY, ...data];
+    const [selectedCat, setSelectedCat] = useState<Category>(DEFAULT_CATEGORY);
+
     const [canScrollRight, setCanScrollRight] = useState(true)
     const [canScrollLeft, setCanScrollLeft] = useState(false)
-    const [searchParams, setSearchParams] = useSearchParams();
-    const selectedTab = searchParams.get("category") || DEFAULT_CATEGORY.slug;
+    const {idSlug} = useParams();
+
+    useEffect(() => {
+        if (!idSlug) {
+            setSelectedCat(DEFAULT_CATEGORY);
+            return;
+        }
+        const {id} = getCategoryInfo(idSlug)
+        const category = categories.find(cat => cat.id === id) ?? DEFAULT_CATEGORY;
+        setSelectedCat(category);
+        if (onCategoryChange) onCategoryChange(category);
+    }, [idSlug]);
 
     const checkScrollPos = () => {
         const nav = navRef.current;
@@ -58,27 +78,31 @@ const CategorySection = ({className = "", data, ...props}: CategorySectionProps)
         })
     }
 
-    const onTabClick = (category: Category) => {
-        if (category != DEFAULT_CATEGORY)
-            setSearchParams({category: category.slug});
-        else {
-            searchParams.delete("category");
-            setSearchParams(searchParams, {replace: true});
-        }
+    const getLink = (category: Category) => {
+        if (category.id === DEFAULT_CATEGORY.id)
+            return `/`;
+        return `/c/${category.id}-${category.slug}`
     }
 
+    if (isLoading) return <div>Is Loading Categories</div>
     const baseStyles = "relative items-center w-full h-full";
     return (
         <div className={cn(baseStyles, className,)} {...props}>
-            <IconButton className={cn("absolute left-0 bg-linear-to-r from-white from-50% to-transparent w-16 h-full hover:opacity-100", canScrollLeft ? "visible" : "invisible")} onClick={scrollLeft}
-                        icon={MdKeyboardArrowLeft} iconClassName="text-brand"/>
-            <IconButton className={cn("absolute right-0 bg-linear-to-l from-white from-50% to-transparent w-16 h-full hover:opacity-100",canScrollRight ? "visible" : "invisible")} onClick={scrollRight}
-                        icon={MdKeyboardArrowRight} iconClassName="text-brand"/>
+            <IconButton
+                className={cn("absolute left-0 bg-linear-to-r from-white from-50% to-transparent w-16 h-full hover:opacity-100", canScrollLeft ? "visible" : "invisible")}
+                onClick={scrollLeft}
+                icon={MdKeyboardArrowLeft} iconClassName="text-brand"/>
+            <IconButton
+                className={cn("absolute right-0 bg-linear-to-l from-white from-50% to-transparent w-16 h-full hover:opacity-100", canScrollRight ? "visible" : "invisible")}
+                onClick={scrollRight}
+                icon={MdKeyboardArrowRight} iconClassName="text-brand"/>
             <nav ref={navRef} onScroll={checkScrollPos}
                  className="flex flex-row h-full w-full gap-2 whitespace-nowrap overflow-x-auto no-scrollbar">
-                {categories.map((tab) => (
-                    <Tab variant={selectedTab === tab.slug ? "selected" : "unselected"}
-                         onClick={() => onTabClick(tab)} iconKey={tab.icon}>{tab.name}</Tab>
+                {categories.map((catTab) => (
+                    <Tab link={getLink(catTab)} variant={`${selectedCat?.id === catTab.id ? "selected" : "unselected"}`}
+                         category={catTab}
+                         onClick={() => {
+                         }} iconKey={catTab.icon}>{catTab.name}</Tab>
                 ))}
             </nav>
         </div>

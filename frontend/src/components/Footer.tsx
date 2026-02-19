@@ -54,7 +54,7 @@ interface FooterProps {
     className?: string
 }
 
-const Footer = ({className = ""}) => {
+const Footer = ({className = ""}: FooterProps) => {
     return <div className={cn("flex flex-col gap-4 py-12", className)}>
         <Divider/>
         <AccountSection/>
