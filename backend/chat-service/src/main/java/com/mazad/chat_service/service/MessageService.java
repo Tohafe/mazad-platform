@@ -1,18 +1,31 @@
-figpackage com.mazad.chat_service.service;
+package com.mazad.chat_service.service;
+
 import  com.mazad.chat_service.repository.MessageRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import  com.mazad.chat_service.model.Message;
+
+import org.hibernate.type.descriptor.jdbc.JavaTimeJdbcType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.annotation.*;
 
 
+import org.springframework.kafka.support.SendResult;
 
+// import com.mazad.chat_service.infrastructure.kafka.SendMessageProducer;
 
-
-
+@Slf4j
 @Service 
 public class MessageService {
 
@@ -21,7 +34,17 @@ public class MessageService {
 
 
     @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    private final JsonMapper jsonMapper;
+    public MessageService(){
+        this.jsonMapper = new JsonMapper();
+        this.jsonMapper.registerModule(new JavaTimeModule());
+        this.jsonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
+
+
 
     @Value("${chat.kafka.topic}")
     private String topicName;
@@ -37,13 +60,31 @@ public class MessageService {
 
         Message savedMessage = repository.save(message);
 
+
         try {
-            kafkaTemplate.send(topicName, roomId, savedMessage);
-            System.out.println("============ kafka event sendt succefully !! ============");
+            String jsonPayload = jsonMapper.writeValueAsString(savedMessage);
+            CompletableFuture<SendResult<String, String>> completableFuture = kafkaTemplate.send(topicName, roomId, jsonPayload);
+            completableFuture.whenComplete(
+                (result, ex) -> {
+                    if (ex == null)
+                    {
+                        log.info("√: Kafka sent succefully: Topic: {}, Partition: {}, offset: {}", 
+                            topicName,
+                            result.getRecordMetadata().partition(),
+                            result.getRecordMetadata().offset());
+                    }
+                    else {
+                        log.error("X Kafka faild sending: message ID: {}. Error: {} ",
+                            savedMessage.getId(),
+                            ex.getMessage());
+
+                    }
+                }
+            );
         }
         catch (Exception e)
         {
-            System.err.println("XXXXXXXX kafka error ! XXXXXXXXX\n" + e.getMessage());
+            log.error("XXXXXXXX preparing kafka error: {} ! XXXXXXXXX\n", e.getMessage());
             e.printStackTrace();
         }
         return savedMessage;
