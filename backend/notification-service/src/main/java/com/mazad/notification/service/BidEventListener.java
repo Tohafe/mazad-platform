@@ -23,15 +23,16 @@ public class BidEventListener {
     )
     public void handleBidEvent(String event){
         try {
-
             BidEvent bidEvent = objectMapper.readValue(event, BidEvent.class);
             
             log.info("Received Bid Event for Item ID: {}", bidEvent.getItemId());
             
             webSocketService.sendGlobalUpdate("/topic/auction/" + bidEvent.getItemId(), bidEvent );
 
-            // webSocketService.sendPrivateMessage("userid", "/queue/privat", "txt", "type");
-        }
+            // webSocketService.sendPrivateMessage(bidEvent.getBidderId(),"/queue/chat",
+            //                                             "hellow we are in thest: " + bidEvent.getAmount(),
+            //                                              bidEvent, "type");
+        } 
         catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);
         }

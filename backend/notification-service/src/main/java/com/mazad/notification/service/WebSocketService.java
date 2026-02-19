@@ -18,7 +18,7 @@ public class WebSocketService {
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationRepo repository;
 
-    public void sendPrivateMessage(String userId, String destination,String message, String type){
+    public void sendPrivateMessage(String userId, String destination, String message,Object payload, String type){
         NotificationEntity entity = NotificationEntity.builder()
                                                 .userId(userId)
                                                 .message(message)
@@ -28,7 +28,7 @@ public class WebSocketService {
 
         NotificationEntity savedEntity = repository.save(entity);
         log.info("Saved Notification ID: {} for User: {} message {}", savedEntity.getId(), userId, message);
-        messagingTemplate.convertAndSendToUser(userId, destination, savedEntity);
+        messagingTemplate.convertAndSendToUser(userId, destination, payload);
     }
     
     public void sendGlobalUpdate(String destination, Object payload) {
