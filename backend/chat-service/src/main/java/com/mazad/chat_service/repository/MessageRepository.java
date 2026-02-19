@@ -2,6 +2,9 @@ package com.mazad.chat_service.repository;
 
 import com.mazad.chat_service.model.Message;
 import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID>
 {
-    List<Message> findByRoomIdOrderByTimestampAsc(String roomId);
+    Slice<Message> findByRoomIdOrderByTimestampAsc(String roomId, Pageable pageable);
     @Query(value = """
             SELECT * FROM (
                 SELECT DISTINCT ON (room_id) *

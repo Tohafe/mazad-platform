@@ -2,6 +2,8 @@ package com.mazad.chat_service.model;
 
 import lombok.* ;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import  java.time.ZonedDateTime;
 import java.util.UUID;
@@ -34,6 +36,9 @@ public class Message {
     @Column(nullable = false)
     private long    receiverId;
     
+
+    @Size(max = 500, message = "message's contenet too long!")
+    @NotBlank( message = "content connot be empty !")
     @Column( nullable = false, columnDefinition = "TEXT")
     private String    content;
     
