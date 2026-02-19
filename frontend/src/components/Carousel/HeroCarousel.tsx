@@ -5,8 +5,10 @@ import {cn} from "../../lib/utils.ts";
 import IconButton from "../Button/IconButton.tsx";
 import {MdKeyboardArrowRight} from "react-icons/md";
 import {useState} from "react";
-import {items} from "../Grid/ItemGrid.tsx";
 import ItemCardCompact from "../Card/ItemCardCompact.tsx";
+import {useCategoriesAuctions} from "../../hooks/useAuctions.ts";
+import type {AuctionSummary} from "../../types/item.ts";
+import type {Category} from "../../types/category.ts";
 
 interface Slide {
     image: string,
@@ -15,7 +17,7 @@ interface Slide {
     description: string,
 }
 
-export const heroSlides:Slide[] = [
+export const heroSlides: Slide[] = [
     {
         image: "src/assets/nature_img.jpg",
         title: "World Money Fair",
@@ -62,13 +64,18 @@ export const heroSlides:Slide[] = [
 
 
 const HeroCarousel = ({className = ""}) => {
+    const {data = [], isLoading} = useCategoriesAuctions(6, 4);
     const [currentSlide, setCurrentSlide] = useState(0);
+
+
+    if (isLoading) return <div>Loading...</div>;
+
 
     return (
         <div className={cn("flex flex-col w-full h-full", className)}>
             <div className={"flex flex-row gap-4 w-full h-76"}>
 
-                <InfoSlider className="flex-1" data={heroSlides[currentSlide]}/>
+                <InfoSlider className="flex-1" data={data[currentSlide].category}/>
 
                 <Swiper
                     className="w-full h-full flex-1"
@@ -85,27 +92,27 @@ const HeroCarousel = ({className = ""}) => {
                     navigation={{nextEl: ".hero-pagination-next"}}
                     onSlideChange={(swiper) => setCurrentSlide(swiper.realIndex)}
                 >
-                    {heroSlides.map((slide, index) =>
+                    {data.map((slide, index) =>
                         <SwiperSlide key={index} className="">
                             <div className="flex flex-row w-full h-full">
-                                <ImageSlide className="" url={slide.image}/>
+                                <ImageSlide className="" url={slide.category.imageUrl}/>
                             </div>
                         </SwiperSlide>
                     )}
                 </Swiper>
             </div>
 
-            <ItemsSlider className="w-full h-full mt-12"/>
+            <ItemsSlider key={currentSlide} auctions={data[currentSlide].items} className="w-full h-full mt-12"/>
 
         </div>
     )
 }
 
 
-const InfoSlider = ({className = "", data: Slide}) => {
+const InfoSlider = ({className = "", data: Slide}: { className: string, data: Category }) => {
     return <div className={cn("relative flex justify-start flex-col gap-4 py-4", className)}>
-        <h1 className="text-brand font-semibold font-serif text-3xl md:text-4xl lg:text-5xl line-clamp-2">{Slide.title}</h1>
-        <h1 className="text-black font-semibold text-3xl md:text-4xl lg:text-5xl">{Slide.subtitle}</h1>
+        <h1 className="text-brand font-semibold font-serif text-3xl md:text-4xl lg:text-5xl line-clamp-2">{Slide.name}</h1>
+        <h1 className="text-black font-semibold text-3xl md:text-4xl lg:text-5xl">Collection</h1>
         <p className="text-secondary font-medium  text-sm md:text-base line-clamp-3">{Slide.description}</p>
         <div className="absolute bottom-0 flex flex-row w-full items-center">
             <div className="hero-pagination flex gap-3 w-full h-2"></div>
@@ -115,21 +122,22 @@ const InfoSlider = ({className = "", data: Slide}) => {
     </div>
 }
 
-const ItemsSlider = ({className = ""}) => {
+const ItemsSlider = ({className = "", auctions}: { className: string, auctions: AuctionSummary[] }) => {
+
     return <Swiper
         modules={[Autoplay]}
         className={cn(className)}
         slidesPerView={2}
         slidesPerGroup={2}
         spaceBetween={8}
-        loop={true}
+        loop={false}
         autoplay={{delay: 3000}}
         breakpoints={{
             768: {slidesPerView: 3, slidesPerGroup: 3, spaceBetween: 16},
             1024: {slidesPerView: 4, slidesPerGroup: 4, spaceBetween: 24}
         }}
     >
-        {items.map((item, i) => (
+        {auctions.map((item, i) => (
             <SwiperSlide key={i}>
                 <ItemCardCompact item={item}/>
             </SwiperSlide>
@@ -137,7 +145,6 @@ const ItemsSlider = ({className = ""}) => {
 
     </Swiper>
 }
-
 
 
 export default HeroCarousel

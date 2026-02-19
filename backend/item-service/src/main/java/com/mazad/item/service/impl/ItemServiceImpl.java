@@ -13,16 +13,16 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -115,6 +115,17 @@ public class ItemServiceImpl implements ItemService {
             itemRepo.deleteById(id);
         });
     }
+
+
+    @Override
+    public List<ItemSummaryDto> endingSoonItems(int hours, int limit) {
+        Instant endDate = Instant.now().plus(hours, ChronoUnit.HOURS);
+        return itemRepo.findAllBetween(Instant.now(), endDate, Limit.of(limit))
+                .stream()
+                .map(mapper::toItemSummaryDto)
+                .toList();
+    }
+
 
     private boolean isEditable(ItemEntity entity) {
         return !(entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0);

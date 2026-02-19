@@ -7,6 +7,7 @@ import java.time.Instant;
 
 @Builder
 public record ItemSummaryDto(
+        Long id,
         String title,
         String thumbnail,
         BigDecimal currentBid,

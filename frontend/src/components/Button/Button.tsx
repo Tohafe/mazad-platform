@@ -33,7 +33,7 @@ const Button = ({
 }
 
 
-const baseStyles = "inline-flex items-center gap-2 justify-center whitespace-nowrap hover:opacity-80 font-semibold cursor-pointer"
+const baseStyles = "inline-flex items-center gap-2 justify-center whitespace-nowrap hover:opacity-80 font-medium cursor-pointer"
 const buttonVariants = cva(baseStyles, {
     variants: {
         variant: {
@@ -42,9 +42,9 @@ const buttonVariants = cva(baseStyles, {
             danger: "bg-main text-error border border-error"
         },
         size: {
-            sm: "text-sm px-3 h-10",
-            md: "text-base px-4 h-12",
-            lg: "text-lg px-8 h-14"
+            sm: "text-xs px-3 h-10",
+            md: "text-[15px] px-5 h-13",
+            lg: "text-base px-8 h-14"
         }
     },
     defaultVariants: {

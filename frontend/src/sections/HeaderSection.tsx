@@ -25,7 +25,6 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
         const ref = dialogRef.current;
         if (!ref) return;
         ref.showModal();
-        // return () => ref.close();
     }, [dialogOpen])
 
     const baseStyles = "flex flex-row items-center justify-between bg-white gap-6 py-3";

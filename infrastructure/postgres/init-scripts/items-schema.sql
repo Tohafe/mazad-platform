@@ -51,24 +51,56 @@ CREATE TABLE IF NOT EXISTS item_images
 INSERT INTO categories (name, slug, description, image_url, hex_color, icon, active)
 VALUES
     ('Watches', 'watches', 'Luxury and collectible watches',
-     'https://images.unsplash.com/photo-1524592094714-0f0654e20314',
-     '#1E3A8A', 'watch', true),
+     'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600&auto=format&fit=crop&q=80',
+     '#7DA7D9', 'LuWatch', true),
 
     ('Sneakers', 'sneakers', 'Limited edition and collectible sneakers',
-     'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519',
-     '#DC2626', 'shoe', true),
+     'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&auto=format&fit=crop&q=80',
+     '#F28B82', 'LuFootprints', true),
 
     ('Trading Cards', 'trading-cards', 'Sports and gaming trading cards',
-     'https://images.unsplash.com/photo-1606813907291-d86efa9b94db',
-     '#16A34A', 'cards', true),
+     'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&auto=format&fit=crop&q=80',
+     '#A4D4AE', 'LuLayers', true),
 
     ('Art', 'art', 'Paintings and digital artworks',
-     'https://images.unsplash.com/photo-1547891654-e66ed7ebb968',
-     '#9333EA', 'palette', true),
+     'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&auto=format&fit=crop&q=80',
+     '#CBA5F7', 'LuPalette', true),
 
     ('Electronics', 'electronics', 'Rare and collectible electronics',
-     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
-     '#F59E0B', 'chip', true);
+     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80',
+     '#FFD580', 'LuSmartphone', true),
+
+    ('Cars', 'cars', 'Classic, luxury, and collectible cars',
+     'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format&fit=crop&q=80',
+     '#FFB3B3', 'LuCar', true),
+
+    ('Jewelry', 'jewelry', 'Fine jewelry and luxury accessories',
+     'https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=600&auto=format&fit=crop&q=80',
+     '#F5C3D1', 'LuGem', true),
+
+    ('Fashion', 'fashion', 'Designer fashion and apparel',
+     'https://plus.unsplash.com/premium_photo-1675186049563-000f7ac02c44?w=600&auto=format&fit=crop&q=80',
+     '#B8E0D2', 'LuShirt', true),
+
+    ('Comics', 'comics', 'Vintage and modern comic books',
+     'https://images.unsplash.com/photo-1571624630223-cc7d6e6ab730?w=600&auto=format&fit=crop&q=80',
+     '#FFE5A5', 'LuBookOpen', true),
+
+    ('Coins', 'coins', 'Rare and collectible coins',
+     'https://images.unsplash.com/photo-1570857301950-637c03f72a6d?w=600&auto=format&fit=crop&q=80',
+     '#FEE2B3', 'LuCoins', true),
+
+    ('Photography', 'photography', 'Cameras and photographic art',
+     'https://images.unsplash.com/photo-1519183071298-a2962fca9b33?w=600&auto=format&fit=crop&q=80',
+     '#AEDFF7', 'LuCamera', true),
+
+    ('Luxury Bags', 'luxury-bags', 'Designer handbags and wallets',
+     'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
+     '#D6B8F5', 'LuShoppingBag', true);
+
+
+
+
 
 INSERT INTO items
 (title, description, starting_price, current_bid,
@@ -99,16 +131,16 @@ SELECT
         ELSE        '55555555-5555-5555-5555-555555555555'::uuid
         END,
 
-    (gs % 5) + 1,
+    (gs % 12) + 1,
     NOW(),
     NOW()
-FROM generate_series(1, 50) gs;
+FROM generate_series(1, 500) gs;
 
 
 INSERT INTO item_images (item_id, image_url)
 SELECT
     id,
-    'https://picsum.photos/seed/item' || id || '/800/600'
+    'https://picsum.photos/seed/item' || id || '/600/450'
 FROM items
 WHERE id > (SELECT COALESCE(MAX(item_id), 0) FROM item_images);
 

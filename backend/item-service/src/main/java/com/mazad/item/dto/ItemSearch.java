@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import java.time.Instant;
 import com.mazad.item.entity.AuctionStatus;
+import lombok.Builder;
 
+@Builder
 public record ItemSearch(
     UUID sellerId,
     Long categoryId,

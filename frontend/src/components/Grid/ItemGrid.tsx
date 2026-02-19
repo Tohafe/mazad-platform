@@ -1,7 +1,8 @@
 import {type Item} from "../Card/ItemCard.tsx";
-import type {HTMLAttributes} from "react";
+import {type HTMLAttributes} from "react";
 import {cn} from "../../lib/utils.ts";
 import ItemCardCompact from "../Card/ItemCardCompact.tsx";
+import type { AuctionSummary } from "../../types/item.ts";
 
 
 export const items: Item[] = [
@@ -133,22 +134,20 @@ export const items: Item[] = [
     },
 ];
 
-interface ItemGridProps extends HTMLAttributes<HTMLDivElement>{
+interface ItemGridProps extends HTMLAttributes<HTMLDivElement> {
     noTitle?: boolean;
     className?: string;
+    items: AuctionSummary[]
 }
 
-const ItemGrid = ({noTitle = false, className = "", ...props}: ItemGridProps) => {
-
+const ItemGrid = ({items, noTitle = false, className = "", ...props}: ItemGridProps) => {
     const baseStyles = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 xl:gap-6";
-
-  return (
-    <div className={cn(baseStyles, className)} {...props}>
-        {items.map((item) => <ItemCardCompact className="pt-2" imgClassName="xl:h-88" item={item}/> )}
-    </div>
-  );
+    return (
+        <div className={cn(baseStyles, className)} {...props}>
+            {items.map((item) => <ItemCardCompact className="pt-2" imgClassName="xl:h-88" item={item}/>)}
+        </div>
+    );
 };
-
 
 
 export default ItemGrid

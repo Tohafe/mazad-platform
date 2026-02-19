@@ -1,21 +1,20 @@
 import {Swiper, type SwiperRef, SwiperSlide} from 'swiper/react';
 import ItemCard from "../Card/ItemCard.tsx";
-import {items} from "../Grid/ItemGrid.tsx";
 import IconButton from "../Button/IconButton.tsx";
 import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
 import {useRef, useState} from "react";
 import {cn} from "../../lib/utils.ts";
 
-// const padding = "px-[max(1rem,calc((100vw-80rem)/2))]";
 import { Swiper as SwiperClass } from 'swiper';
-import ItemCardCompact from "../Card/ItemCardCompact.tsx";
+import type {AuctionSummary} from "../../types/item.ts";
 
 interface ItemCarouselProps {
     carouselTitle?: string;
     className?: string
+    auctions: AuctionSummary[]
 }
 
-const ItemCarousel = ({carouselTitle = "", className = ""}: ItemCarouselProps) => {
+const ItemCarousel = ({carouselTitle = "", className = "", auctions}: ItemCarouselProps) => {
     const swiperRef = useRef<SwiperRef>(null)
     const [canScrollRight, setCanScrollRight] = useState(true)
     const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -38,12 +37,12 @@ const ItemCarousel = ({carouselTitle = "", className = ""}: ItemCarouselProps) =
                 onSlideChange={updateState}
                 breakpoints={{
                     768: {slidesPerView: 3.2, slidesPerGroup: 3, spaceBetween: 16}, // tablet
-                    1024: {slidesPerView: 4.2, slidesPerGroup: 4, spaceBetween: 24}
+                    1024: {slidesPerView: 4.0, slidesPerGroup: 4, spaceBetween: 24}
                 }}
             >
-                {items.map(item => (
-                    <SwiperSlide className="" key={item.id}>
-                        <ItemCard item={item}/>
+                {auctions.map(auction => (
+                    <SwiperSlide className="" key={auction.id}>
+                        <ItemCard auction={auction}/>
                     </SwiperSlide>
                 ))}
                 {canScrollLeft && <IconButton className="absolute left-0 top-1/3 z-10"
