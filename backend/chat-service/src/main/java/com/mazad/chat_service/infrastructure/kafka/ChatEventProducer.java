@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.mazad.chat_service.model.Message;
+import com.mazad.chat_service.dto.MessageChateventDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,13 +29,14 @@ public class ChatEventProducer {
     
     public ChatEventProducer(KafkaTemplate<String, String> kafkaTemplate){
         this.kafkaTemplate = kafkaTemplate;
-        this.jsonMapper = new JsonMapper();
-        this.jsonMapper.registerModule(new JavaTimeModule());
-        this.jsonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.jsonMapper = JsonMapper.builder().
+        addModule(new JavaTimeModule()).
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .build();
     }
     
     
-    public void sendMessageEvent(Message savedMessage) throws JsonProcessingException{
+    public void sendMessageEvent(MessageChateventDTO savedMessage) throws JsonProcessingException{
         
         String jsonPayload = jsonMapper.writeValueAsString(savedMessage);
         CompletableFuture<SendResult<String, String>> completableFuture = kafkaTemplate.send(topicName, savedMessage.getRoomId(), jsonPayload);
@@ -56,9 +57,5 @@ public class ChatEventProducer {
                 }
             }
         );
-    
-    
     }
-
-    
 }
