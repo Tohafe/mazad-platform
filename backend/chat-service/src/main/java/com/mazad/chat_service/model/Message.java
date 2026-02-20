@@ -37,7 +37,7 @@ public class Message {
     private long    receiverId;
     
 
-    @Size(max = 500, message = "message's contenet too long!")
+    @Size(max = 500, message = "message content is too long!")
     @NotBlank( message = "content connot be empty !")
     @Column( nullable = false, columnDefinition = "TEXT")
     private String    content;
