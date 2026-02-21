@@ -8,14 +8,14 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID>
 {
-    Slice<Message> findByRoomIdOrderByTimestampAsc(String roomId, Pageable pageable);
+    Slice<Message> findByRoomIdOrderByTimestampDesc(String roomId, Pageable pageable);
+
     @Query(value = """
             SELECT * FROM (
                 SELECT DISTINCT ON (room_id) *
@@ -25,10 +25,6 @@ public interface MessageRepository extends JpaRepository<Message, UUID>
             ) sub
             ORDER BY timestamp DESC
             """, nativeQuery = true)
-    List<Message> findInbox(@Param("userId") long userId);
-
-    // List<Message> findByChatId(long chatId);
-    // List<Message> FindBySenderId(long senderId);
-    // List<Message> findByReceiverId(long receiverId);
+    Slice<Message> findInbox(@Param("userId") long userId, Pageable pageable);
     
 }
