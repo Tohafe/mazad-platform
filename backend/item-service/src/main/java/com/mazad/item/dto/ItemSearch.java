@@ -10,15 +10,13 @@ import lombok.Builder;
 public record ItemSearch(
     UUID sellerId,
     Long categoryId,
-    String title,
-    String description,
+    String keyword,
     AuctionStatus status,
-    BigDecimal startingPrice,
-    BigDecimal currentBid,
-    Instant startsAt,
-    Instant endsAt
+    BigDecimal minPrice,
+    BigDecimal maxPrice,
+    Instant endsBefore
 ) {
     public ItemSearch() {
-        this(null, null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null);
     }
 }
