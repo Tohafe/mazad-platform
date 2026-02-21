@@ -7,9 +7,9 @@ import com.mazad.chat_service.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import com.mazad.chat_service.dto.InboxResponseDTO;
 import com.mazad.chat_service.dto.MessageResponseDTO;
 import com.mazad.chat_service.model.Message;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -76,6 +76,38 @@ public class MessageController {
         })
         ;
     }
+    @GetMapping("/inbox")
+    public Slice<InboxResponseDTO> fetchInbox(@RequestHeader("X-User-Id") long myId,
+            @PageableDefault(
+                size = 20
+            )                                
+            Pageable pageable){
+        
+        
+        
+        log.info("In get (fetchInbox) for user {}", myId);
+
+        Slice<Message> inboxMessages = service.fetchInbox(myId, pageable);
+
+        return inboxMessages.map(message -> {
+            InboxResponseDTO dto = new InboxResponseDTO();
+            dto.setRoomId(message.getRoomId());
+            dto.setLastMessage(message.getContent());
+            dto.setTimestamp(message.getTimestamp());
+
+            long otherUserId;
+            if (myId == message.getSenderId())
+                otherUserId = message.getReceiverId();
+            else 
+                otherUserId = message.getSenderId();
+            dto.setOtherUserId(otherUserId);
+            return dto;
+        });
+    }
+
+
+
+
     // TODO : end point for fetching the chats 
     // @GetMapping("/inbox/{userId}")
     // public List<Message> fetchInboxChats(@PathVariable long userId)
