@@ -5,6 +5,7 @@ import  com.mazad.chat_service.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import  com.mazad.chat_service.model.Message;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -47,7 +48,7 @@ public class MessageService {
             savedMessageDTO.setSenderId(savedMessage.getSenderId());
             savedMessageDTO.setReceiverId(savedMessage.getReceiverId());
             savedMessageDTO.setContent(savedMessage.getContent());
-            savedMessageDTO.setTimestamp(savedMessageDTO.getTimestamp());
+            savedMessageDTO.setTimestamp(savedMessage.getTimestamp());
             
             chatEventProducer.sendMessageEvent(savedMessageDTO);
         }
@@ -65,6 +66,12 @@ public class MessageService {
         long maxId = Math.max(userId1, userId2);
 
         String roomId   = minId + "_" + maxId;
-        return repository.findByRoomIdOrderByTimestampAsc(roomId, pageable);
+        return repository.findByRoomIdOrderByTimestampDesc(roomId, pageable);
     }   
+
+    public Slice<Message> fetchInbox(long myId, Pageable pageable){
+
+        return repository.findInbox(myId, pageable);
+
+    }
 }
