@@ -37,6 +37,7 @@ services:
       - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
       - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
+      - MAZAD_IP=${MAZAD_IP}
     ports:
       - "8080:8080"
     networks:

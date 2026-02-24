@@ -16,8 +16,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ProblemDetail duplicateResourceException(DuplicateResourceException e){
-        return ProblemDetail
+        ProblemDetail problem = ProblemDetail
                         .forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+        problem.setProperty("field", e.getFieldName());
+        return problem;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -7,7 +7,6 @@ import com.mazad.user_service.dto.*;
 import com.mazad.user_service.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.repository.config.ResourceReaderRepositoryPopulatorBeanDefinitionParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,9 +47,9 @@ public class ProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{userName}")
-    public ResponseEntity<PublicResponseDto> getPublicProfile(@PathVariable("userName") String userName) {
-        PublicResponseDto response = service.getPublicProfile(userName);
+    @GetMapping("/{username}")
+    public ResponseEntity<PublicResponseDto> getPublicProfile(@PathVariable("username") String username) {
+        PublicResponseDto response = service.getPublicProfile(username);
         return ResponseEntity.ok(response);
     }
 
@@ -58,14 +57,14 @@ public class ProfileController {
     public ResponseEntity<PrivateResponseDto> addProfile(
             @RequestHeader(name = "X-User-Id") UUID userId,
             @RequestHeader(name = "X-User-Email") String email,
-            @RequestHeader(name = "X-User-Name") String userName,
+            @RequestHeader(name = "X-User-Name") String username,
             @RequestBody @Valid RequestDto requestDto
     ) {
         CurrentUser user = CurrentUser
                 .builder()
                 .id(userId)
                 .email(email)
-                .userName(userName)
+                .username(username)
                 .build();
         PrivateResponseDto response = service.addProfile(user, requestDto);
         return ResponseEntity
@@ -78,7 +77,7 @@ public class ProfileController {
             @RequestHeader(name = "X-User-Id") UUID userId,
             @RequestBody ObjectNode jsonNode
     ) {
-        jsonNode.remove(List.of("userId", "userName", "email", "isComplete"));
+        jsonNode.remove(List.of("userId", "username", "email", "isComplete"));
         if (jsonNode.isEmpty())
             throw new BadRequestException("No data provided");
         PrivateResponseDto response = service.patch(userId, jsonNode);
@@ -96,8 +95,8 @@ public class ProfileController {
         ObjectNode node = mapper.createObjectNode();
         if (userData.email() != null && !userData.email().isBlank())
             node.put("email", userData.email());
-        if (userData.userName() != null && !userData.userName().isBlank())
-            node.put("userName", userData.userName());
+        if (userData.username() != null && !userData.username().isBlank())
+            node.put("username", userData.username());
         service.patch(userData.id(), node);
     }
 

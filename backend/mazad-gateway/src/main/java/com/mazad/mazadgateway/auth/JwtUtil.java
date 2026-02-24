@@ -23,7 +23,7 @@ public class JwtUtil {
         return extractClaim(token, claims -> claims.get("userId", String.class));
     }
     public String extractUserName(String token){
-        return extractClaim(token, claims -> claims.get("userName", String.class));
+        return extractClaim(token, claims -> claims.get("username", String.class));
     }
     public String extractEmail(String token){
         return extractClaim(token, claims -> claims.get("email", String.class));

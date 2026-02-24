@@ -35,7 +35,7 @@ public class ProfileMapper {
         }
         return PrivateResponseDto
                     .builder()
-                    .userName(entity.getUserName())
+                    .username(entity.getUsername())
                     .email(entity.getEmail())
                     .firstName(entity.getFirstName())
                     .lastName(entity.getLastName())
@@ -56,7 +56,7 @@ public class ProfileMapper {
         }
         return PublicResponseDto
                 .builder()
-                .userName(entity.getUserName())
+                .username(entity.getUsername())
                 .bio(entity.getBio())
                 .avatarUrl(entity.getAvatarUrl())
                 .thumbnail(entity.getAvatarThumbnailUrl())

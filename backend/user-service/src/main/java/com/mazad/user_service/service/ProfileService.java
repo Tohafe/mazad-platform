@@ -1,9 +1,7 @@
 package com.mazad.user_service.service;
 
-import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.mazad.user_service.dto.CurrentUser;
@@ -40,9 +38,9 @@ public class ProfileService {
         return mapper.toPrivateResponseDto(profile);
     }
 
-    public PublicResponseDto getPublicProfile(String userName) {
+    public PublicResponseDto getPublicProfile(String username) {
         ProfileEntity profile = repo
-                .findByUserName(userName)
+                .findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
         return mapper.toPublicResponseDto(profile);
     }
@@ -53,7 +51,7 @@ public class ProfileService {
         ProfileEntity profile = mapper.toEntity(requestDto);
         profile.setUserId(user.id());
         profile.setEmail(user.email());
-        profile.setUserName(user.userName());
+        profile.setUsername(user.username());
 
         if (isAvatarValid(requestDto.avatarImageId(), requestDto.avatarUrl(), requestDto.avatarThumbnailUrl())) {
             profile.setAvatarUrl(requestDto.avatarUrl());

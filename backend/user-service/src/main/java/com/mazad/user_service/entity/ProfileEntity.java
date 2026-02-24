@@ -26,7 +26,7 @@ public class ProfileEntity {
     private UUID userId;
 
     @Column(name = "username", nullable = false, unique = true)
-    private String userName;
+    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
