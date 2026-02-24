@@ -13,7 +13,6 @@ interface PaginationProps {
 
 const Pagination = ({page, totalPages, onPageChange, className = ""}: PaginationProps) => {
     const [selectedPage, setSelectedPage] = useState(page);
-    console.log(page)
 
     const pageNumbers: (string | number)[] = useMemo(() => getPagesNums(totalPages, selectedPage), [selectedPage]);
 
@@ -40,7 +39,7 @@ const Pagination = ({page, totalPages, onPageChange, className = ""}: Pagination
         <div className="flex flex-row gap-8">
             {pageNumbers.map((num) => {
                 if (typeof num === 'string') return <span className="text-muted">{num}</span>;
-                return <PageNumber isSelected={num === selectedPage} page={num} onClick={() => handlePageChange(num)}/>
+                return <PageNumber key={num} isSelected={num === selectedPage} page={num} onClick={() => handlePageChange(num)}/>
             })}
         </div>
     </div>

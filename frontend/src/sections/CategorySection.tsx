@@ -1,5 +1,5 @@
 import Tab from "../components/Card/Tab.tsx";
-import {useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import IconButton from "../components/Button/IconButton.tsx";
 import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
 import {useParams} from "react-router-dom"
@@ -41,11 +41,12 @@ const CategorySection = ({className = "", onCategoryChange, ...props}: CategoryS
     const selectedCat = useMemo(() => {
         if (!idSlug) return DEFAULT_CATEGORY;
         const {id} = getCategoryInfo(idSlug)
-        const category = categories.find(cat => cat.id === id) ?? DEFAULT_CATEGORY;
-        console.log("selected Category: " + category.id);
-        if (onCategoryChange) onCategoryChange(category);
-        return category
+        return categories.find(cat => cat.id === id) ?? DEFAULT_CATEGORY;
     }, [idSlug, categories]);
+
+    useEffect(() => {
+        onCategoryChange?.(selectedCat);
+    }, [onCategoryChange, selectedCat]);
 
     const checkScrollPos = () => {
         const nav = navRef.current;
@@ -97,6 +98,7 @@ const CategorySection = ({className = "", onCategoryChange, ...props}: CategoryS
                  className="flex flex-row h-full w-full gap-2 whitespace-nowrap overflow-x-auto no-scrollbar">
                 {categories.map((catTab) => (
                     <Tab link={getLink(catTab)} variant={`${selectedCat?.id === catTab.id ? "selected" : "unselected"}`}
+                         key={catTab.id}
                          category={catTab}
                          onClick={() => {
                          }} iconKey={catTab.icon}>{catTab.name}</Tab>

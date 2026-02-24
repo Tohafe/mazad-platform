@@ -135,7 +135,7 @@ class ItemServiceImplTest {
     @Test
     public void listItemsBy_ShouldCreateCorrectQuery_WhenSearching() {
         // Arrange
-        ItemSearch search = new ItemSearch(null, null, "Old Watch used by a golem",  AuctionStatus.SOLD, null, null, null);
+        ItemSearch search = new ItemSearch(null, null, "Old Watch used by a golem",  AuctionStatus.SOLD, null, null, null, null);
         Pageable pageable = PageRequest.of(0, 3);
         when(itemRepoMock.findAll(any(Example.class), any(Pageable.class))).thenReturn(Page.empty());
         // Act

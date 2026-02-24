@@ -2,6 +2,7 @@ package com.mazad.item.specification;
 
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.entity.ItemEntity;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -30,6 +31,8 @@ public final class ItemSpec {
                 predicates.add(cb.lessThanOrEqualTo(root.get("currentBid"), search.maxPrice()));
             if (search.endsBefore() != null)
                 predicates.add(cb.lessThanOrEqualTo(root.get("endsAt"), search.endsBefore()));
+            if (search.endsAfter() != null)
+                predicates.add(cb.greaterThanOrEqualTo(root.get("endsAt"), search.endsAfter()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
