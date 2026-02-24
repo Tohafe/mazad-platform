@@ -1,7 +1,7 @@
 package com.mazad.item.mapper;
 
 import com.mazad.item.dto.*;
-import com.mazad.item.entity.AuctionStatus;
+import com.mazad.item.dto.event.ItemCreatedEventDto;
 import com.mazad.item.entity.ItemEntity;
 import org.springframework.stereotype.Component;
 
@@ -79,9 +79,9 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemEventDto toItemEventDto(ItemEntity entity) {
+    public ItemCreatedEventDto toItemEventDto(ItemEntity entity) {
         if (entity == null) return null;
-        return ItemEventDto.builder()
+        return ItemCreatedEventDto.builder()
                 .id(entity.getId())
                 .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())

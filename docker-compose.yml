@@ -53,9 +53,11 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
+      - ITEM_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
     depends_on:
       - postgres
       - mazad-gateway
+      - kafka-service
     ports:
     - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
     networks:
@@ -78,6 +80,7 @@ services:
     depends_on:
       - postgres
       - mazad-gateway
+      - kafka-service
     ports:
       - "${BIDDING_SERVICE_PORT}:${BIDDING_SERVICE_PORT}"
     networks:
