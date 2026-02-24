@@ -3,12 +3,6 @@ package com.mazad.auth.service;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.mazad.auth.client.UserServiceClient;
-import com.mazad.auth.dto.*;
-import com.mazad.auth.exception.*;
-import feign.FeignException;
-import jakarta.validation.constraints.NotNull;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,12 +10,27 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.mazad.auth.client.UserServiceClient;
+import com.mazad.auth.dto.AuthResponseDto;
+import com.mazad.auth.dto.CurrentUser;
+import com.mazad.auth.dto.EmailResetDto;
+import com.mazad.auth.dto.PasswordResetDto;
+import com.mazad.auth.dto.TokensDto;
+import com.mazad.auth.dto.UserRequestDTO;
+import com.mazad.auth.dto.UserResponseDTO;
 import com.mazad.auth.entity.RefreshToken;
 import com.mazad.auth.entity.UserEntity;
+import com.mazad.auth.exception.BadRequestException;
+import com.mazad.auth.exception.DuplicateResourceException;
+import com.mazad.auth.exception.InternalServerErrorException;
+import com.mazad.auth.exception.ResourceNotFoundException;
+import com.mazad.auth.exception.UnauthorizedException;
 import com.mazad.auth.mapper.UserMapper;
 import com.mazad.auth.repo.RefreshTokenRepo;
 import com.mazad.auth.repo.UserRepo;
 
+import feign.FeignException;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,9 +53,9 @@ public class UserService {
         UserEntity user = mapper.toEntity(userRequest);
 
         if (repo.existsByEmail(user.getEmail()))
-            throw new DuplicateResourceException("Email is already in use");
-        else if (repo.existsByUserName(user.getUserName()))
-            throw new DuplicateResourceException("Username is already taken");
+            throw new DuplicateResourceException("Email is already in use", "email");
+        else if (repo.existsByUsername(user.getUserName()))
+            throw new DuplicateResourceException("Username is already taken", "username");
 
         user = repo.save(user);
         return mapper.toResponseDTO(user);

@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record FriendResponseDto(
-        String userName,
+        String username,
         String thumbnail,
         boolean onlineStatus
 ) {}

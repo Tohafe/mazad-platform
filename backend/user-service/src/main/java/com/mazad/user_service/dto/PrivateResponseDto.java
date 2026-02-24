@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record PrivateResponseDto(
-    String userName,
+    String username,
     String email,
     String firstName,
     String lastName,

@@ -24,7 +24,7 @@ public class UserMapper {
         return UserEntity.builder()
                             .email(request.email())
                             .password(passwordHash)
-                            .userName(request.userName())
+                            .username(request.username())
                             .build();
     }
 
@@ -34,7 +34,7 @@ public class UserMapper {
         return UserResponseDTO.builder()
                                     .id(userEntity.getId())
                                     .email(userEntity.getEmail())
-                                    .userName(userEntity.getUserName())
+                                    .username(userEntity.getUserName())
                                     .build();
     }
 }

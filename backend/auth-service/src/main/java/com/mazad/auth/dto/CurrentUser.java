@@ -8,5 +8,5 @@ import java.util.UUID;
 public record CurrentUser(
     UUID id,
     String email,
-    String userName
+    String username
 ) {}
