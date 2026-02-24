@@ -1,11 +1,8 @@
 HELP.md
-.apt_generated_tests
-bin/
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-.DS_Store
 
 ### STS ###
 .apt_generated
@@ -34,11 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### env ###
-.env
-
-
-
-### AJBARI ###
-backend/chat-service/src/main/java/com/mazad/chat_service/TO_DO.TXT

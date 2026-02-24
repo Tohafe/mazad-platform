@@ -204,6 +204,29 @@ services:
       - ${AVATAR_PATH}:/default-images
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
+
+  chat-service:
+    build: ./backend/chat-service/
+    container_name: chat-service-c
+    image: chat-service
+    depends_on:
+      - postgres
+      - kafka-service
+    environment:
+      # DATABASE ENV VARS ====
+      - "DB_URL=${DB_URL}/${CHAT_SERVICE_DB_NAME}"
+      - "DB_NAME=${CHAT_SERVICE_DB_NAME}"
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+      # KAFKA ENV VARS
+      - "KAFKA_SERVICE_PORT=${KAFKA_SERVICE_PORT}"
+    ports:
+      - "${CHAT_SERVICE_PORT}:8080"
+    networks:
+      - mazad-network
+      
+
+
   upload-service:
     build: ./backend/upload-service
     container_name: upload-service-c
