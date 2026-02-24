@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -25,13 +26,13 @@ public class BidEventListener {
         try {
             BidEvent bidEvent = objectMapper.readValue(event, BidEvent.class);
             
-            log.info("Received Bid Event for Item ID: {}", bidEvent.getItemId());
+            log.info("Received Bid Event for auction ID: {}", bidEvent.getAuctionId());
             
-            webSocketService.sendGlobalUpdate("/topic/auction/" + bidEvent.getItemId(), bidEvent );
+            webSocketService.sendGlobalUpdate("/topic/auction/" + bidEvent.getAuctionId(), bidEvent );
 
-            // webSocketService.sendPrivateMessage(bidEvent.getBidderId(),"/queue/chat",
-            //                                             "hellow we are in thest: " + bidEvent.getAmount(),
-            //                                              bidEvent, "type");
+            webSocketService.sendPrivateMessage(bidEvent.getLastBidderId(),"/queue/chat",
+                                                        "hellow we are in test this is the amount: " + bidEvent.getCurrentHighestBid(),
+                                                         bidEvent, "type");
         } 
         catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);
