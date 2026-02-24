@@ -23,8 +23,26 @@ export interface CategorizedAuctions {
 }
 
 export interface AuctionFilters {
+    // pagination
     page?: number;
     size?: number;
+
+    // main filters
     categoryId?: number;
     status?: string;
+
+    // price filtering (budget)
+    minPrice?: number;
+    maxPrice?: number;
+
+    // closing date filtering
+    endsBefore?: string;   // ISO date string
+    endsAfter?: string;    // ISO date string
+
+    // optional useful filters
+    keyword?: string;
+    sellerId?: number;
+
+    // sorting
+    sort?: string;
 }

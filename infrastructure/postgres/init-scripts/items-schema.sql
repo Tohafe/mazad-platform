@@ -101,7 +101,6 @@ VALUES
 
 
 
-
 INSERT INTO items
 (title, description, starting_price, current_bid,
  starts_at, ends_at, status, specs, shipping_info,
@@ -111,8 +110,24 @@ SELECT
     'High quality collectible item number ' || gs,
     (random() * 900 + 100)::numeric(10,2),
     (random() * 1200 + 150)::numeric(10,2),
+
     NOW() - INTERVAL '1 day',
-    NOW() + (gs % 10 + 3) * INTERVAL '1 day',
+
+    CASE
+        WHEN (gs % 12) = 0 THEN NOW() + ((10 + (gs % 50)) * INTERVAL '1 second')
+        WHEN (gs % 12) = 1 THEN NOW() + ((1 + (gs % 59)) * INTERVAL '1 minute')
+        WHEN (gs % 12) = 2 THEN NOW() + ((10 + (gs % 50)) * INTERVAL '1 minute')
+        WHEN (gs % 12) = 3 THEN NOW() + ((1 + (gs % 23)) * INTERVAL '1 hour')
+        WHEN (gs % 12) = 4 THEN NOW() + ((6 + (gs % 12)) * INTERVAL '1 hour')
+        WHEN (gs % 12) = 5 THEN NOW() + ((1 + (gs % 3)) * INTERVAL '1 day')
+        WHEN (gs % 12) = 6 THEN NOW() + ((4 + (gs % 7)) * INTERVAL '1 day')
+        WHEN (gs % 12) = 7 THEN NOW() + ((11 + (gs % 20)) * INTERVAL '1 day')
+        WHEN (gs % 12) = 8 THEN NOW() + INTERVAL '2 hours 30 minutes'
+        WHEN (gs % 12) = 9 THEN NOW() + INTERVAL '12 hours'
+        WHEN (gs % 12) = 10 THEN NOW() + INTERVAL '1 day 6 hours'
+        ELSE                   NOW() + INTERVAL '7 days'
+        END,
+
     'ACTIVE',
 
     jsonb_build_object(
@@ -131,10 +146,47 @@ SELECT
         ELSE        '55555555-5555-5555-5555-555555555555'::uuid
         END,
 
-    (gs % 12) + 1,
+    (floor(random() * 12)::int + 1),
     NOW(),
     NOW()
 FROM generate_series(1, 500) gs;
+
+-- ... existing code ...
+
+
+-- INSERT INTO items
+-- (title, description, starting_price, current_bid,
+--  starts_at, ends_at, status, specs, shipping_info,
+--  seller_id, category_id, created_at, updated_at)
+-- SELECT
+--     'Auction Item #' || gs,
+--     'High quality collectible item number ' || gs,
+--     (random() * 900 + 100)::numeric(10,2),
+--     (random() * 1200 + 150)::numeric(10,2),
+--     NOW() - INTERVAL '1 day',
+--     NOW() + (gs % 10 + 3) * INTERVAL '1 day',
+--     'ACTIVE',
+--
+--     jsonb_build_object(
+--             'condition', 'Excellent',
+--             'origin', 'Collector Market',
+--             'batch', gs
+--     ),
+--
+--     'Worldwide shipping available.',
+--
+--     CASE (gs % 5)
+--         WHEN 0 THEN '11111111-1111-1111-1111-111111111111'::uuid
+--         WHEN 1 THEN '22222222-2222-2222-2222-222222222222'::uuid
+--         WHEN 2 THEN '33333333-3333-3333-3333-333333333333'::uuid
+--         WHEN 3 THEN '44444444-4444-4444-4444-444444444444'::uuid
+--         ELSE        '55555555-5555-5555-5555-555555555555'::uuid
+--         END,
+--
+--     (gs % 12) + 1,
+--     NOW(),
+--     NOW()
+-- FROM generate_series(1, 500) gs;
 
 
 INSERT INTO item_images (item_id, image_url)
