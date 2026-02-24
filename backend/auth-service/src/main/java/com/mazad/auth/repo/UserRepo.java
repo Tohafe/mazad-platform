@@ -11,6 +11,6 @@ import com.mazad.auth.entity.UserEntity;
 @Repository
 public interface UserRepo extends JpaRepository<UserEntity, UUID> {
     boolean existsByEmail(String email);
-    boolean existsByUserName(String userName);
+    boolean existsByUsername(String username);
     Optional<UserEntity> findByEmail(String email);
 }
