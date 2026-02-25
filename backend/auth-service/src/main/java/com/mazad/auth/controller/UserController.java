@@ -99,7 +99,7 @@ public class UserController {
     }
 
     @PostMapping("refresh")
-    public String  refresh(
+    public LoginResponseDto  refresh(
         @CookieValue(name="refresh_token", required=false) String refreshToken
     ){
         return userService.refresh(refreshToken);
@@ -134,9 +134,7 @@ public class UserController {
         @RequestHeader(name="X-User-Id") UUID userId,
         @RequestBody @Valid EmailResetDto dto
     ){ 
-        //here you should call user service and send to it the secret key and check the response ....
         userService.resetEmail(userId, dto);
-
         return ResponseEntity.ok("Email changed successfully.");
     }
 }
