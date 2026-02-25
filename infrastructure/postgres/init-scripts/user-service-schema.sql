@@ -6,18 +6,18 @@ CREATE TABLE IF NOT EXISTS user_profile (
     user_id UUID PRIMARY KEY NOT NULL,
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
     bio TEXT,
 
     avatar_image_id TEXT,
     avatar_url TEXT,
     avatar_thumbnail_url TEXT,
 
-    phone_number VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    city VARCHAR(255) NOT NULL,
-    country VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(255),
+    address VARCHAR(255),
+    city VARCHAR(255),
+    country VARCHAR(255),
 
     is_complete BOOLEAN DEFAULT FALSE
 

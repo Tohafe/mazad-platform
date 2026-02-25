@@ -58,6 +58,11 @@ public class UserService {
             throw new DuplicateResourceException("Username is already taken", "username");
 
         user = repo.save(user);
+        try{
+            client.updateProfile(syncKey, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).build());
+        }catch(FeignException e){
+            log.error("Sync user data fails on addUser : " + e.getMessage());
+        }
         return mapper.toResponseDTO(user);
     }
 
