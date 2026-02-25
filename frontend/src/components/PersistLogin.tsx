@@ -3,19 +3,27 @@ import { useState, useEffect} from 'react'
 import useRefreshToken from '../hooks/useRefreshToken'
 import { useAuth } from '../context/AuthProvider';
 import { Outlet } from 'react-router-dom';
+import useApiPrivate from '../hooks/useApiPrivate';
+import type User from '../types/user';
 
 export default function PersistLogin(){
     const refresh = useRefreshToken();
     const [isLoading, setIsLoading] = useState(true);
-    const {accessToken} = useAuth();
+    const {accessToken, setUser} = useAuth();
+    const apiPrivate = useApiPrivate();
     
     useEffect(() => {
         let    isMounted = true;
 
         const getAccessToken =async () => {
             try{
-                await refresh();
-                // await new Promise(() => setTimeout(() => {}, 3000));
+                const refreshResponse = await refresh();
+                try{
+                    const user: User = (await apiPrivate.get('/profile'))?.data;
+                    setUser(user);
+                }catch(error: any){
+                    setUser(refreshResponse.user);
+                }
             }catch(error: any){
             }finally{
                 isMounted && setIsLoading(false);

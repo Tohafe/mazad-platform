@@ -14,6 +14,7 @@ import com.mazad.auth.client.UserServiceClient;
 import com.mazad.auth.dto.AuthResponseDto;
 import com.mazad.auth.dto.CurrentUser;
 import com.mazad.auth.dto.EmailResetDto;
+import com.mazad.auth.dto.LoginResponseDto;
 import com.mazad.auth.dto.PasswordResetDto;
 import com.mazad.auth.dto.TokensDto;
 import com.mazad.auth.dto.UserRequestDTO;
@@ -95,7 +96,7 @@ public class UserService {
                 .ifPresent(tokenRepo::delete);
     }
 
-    public String refresh(String refreshToken) {
+    public LoginResponseDto refresh(String refreshToken) {
         RefreshToken token = tokenRepo
                 .findByToken(refreshToken)
                 .orElseThrow(() -> new UnauthorizedException("Invalid Refresh Token"));
@@ -103,7 +104,12 @@ public class UserService {
             tokenRepo.delete(token);
             throw new UnauthorizedException("Expired Refresh Token");
         }
-        return jwtService.generateAccessToken(token.getUser());
+        String accessToken = jwtService.generateAccessToken(token.getUser());
+
+        return LoginResponseDto.builder()
+                .accessToken(accessToken)
+                .user(mapper.toResponseDTO(token.getUser()))
+                .build();
     }
 
     public void delete(UUID userId, String password) {

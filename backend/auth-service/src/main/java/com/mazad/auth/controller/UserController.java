@@ -99,7 +99,7 @@ public class UserController {
     }
 
     @PostMapping("refresh")
-    public String  refresh(
+    public LoginResponseDto  refresh(
         @CookieValue(name="refresh_token", required=false) String refreshToken
     ){
         return userService.refresh(refreshToken);
