@@ -35,6 +35,7 @@ public class ProfileMapper {
         }
         return PrivateResponseDto
                     .builder()
+                    .id(entity.getUserId().toString())
                     .username(entity.getUsername())
                     .email(entity.getEmail())
                     .firstName(entity.getFirstName())
@@ -46,6 +47,7 @@ public class ProfileMapper {
                     .address(entity.getAddress())
                     .city(entity.getCity())
                     .country(entity.getCountry())
+                    .isComplete(entity.isComplete())
                     .build();
     }   
     
