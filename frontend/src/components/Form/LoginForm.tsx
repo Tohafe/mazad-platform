@@ -8,6 +8,8 @@ import Input from "../Input/Input";
 import Button from "../Button/Button";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthProvider";
+import useApiPrivate from "../../hooks/useApiPrivate";
+import type User from "../../types/user";
 
 const schema = z.object({
     email: z.email(),
@@ -28,17 +30,24 @@ export default function Login(){
         resolver: zodResolver(schema)
     });
 
-    const {setAccessToken} = useAuth();
+    const {setAccessToken, setUser} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
+    const apiPrivate = useApiPrivate();
 
     const onSubmit = async (data: LoginData) => {
         let message : string = '';
 
         try{
-            const response = await api.post('/auth/login', data);
-            setAccessToken(response.data?.accessToken);
+            const login = await api.post('/auth/login', data);
+            setAccessToken(login.data?.accessToken);
+            try{
+                const user: User = (await apiPrivate.get('/profile')).data;
+                setUser(user);
+            }catch(errors: any){
+                setUser(login.data?.user);
+            }
             navigate(from);
         }catch(errors: any){
             setAccessToken(null);

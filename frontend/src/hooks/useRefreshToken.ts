@@ -7,7 +7,7 @@ const useRefreshToken = () => {
     const refresh = async () => {
         try{
             const response = await api.post('/auth/refresh');
-            setAccessToken(response.data);
+            setAccessToken(response.data?.accessToken);
             return (response.data);
         }catch(err){
             throw err;
