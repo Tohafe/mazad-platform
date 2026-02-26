@@ -244,6 +244,23 @@ services:
     depends_on:
       minio-setup:
         condition: service_completed_successfully
+  notification-service:
+    build: ./backend/notification-service
+    container_name: notification-service-c
+    image: notification-service:latest
+    environment:
+      - NOTIFICATION_DB_USER=${NOTIFICATION_DB_USER}
+      - NOTIFICATION_DB_PASSWORD=${NOTIFICATION_DB_PASSWORD}
+      - NOTIFICATION_DB_NAME=${NOTIFICATION_DB_NAME}
+      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+      - DB_URL=${DB_URL}
+    ports:
+      - "${NOTIFICATION_PORT}:8080"
+    networks:
+      - mazad-network
+    depends_on:
+      - postgres
+      - kafka
 
 networks:
   mazad-network:
