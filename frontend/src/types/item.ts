@@ -5,7 +5,8 @@ export type AuctionStatus =
     | "ACTIVE"
     | "SOLD"
     | "EXPIRED"
-    | "CANCELLED";
+    | "CANCELLED"
+    | "CLOSED";
 
 export interface AuctionSummary {
     id: number;

@@ -8,6 +8,7 @@ import Login from "./components/Form/LoginForm.tsx";
 import PersistLogin from "./components/PersistLogin.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 import Profile from "./pages/Profile.tsx";
+import {useAuctionsUpdates} from "./hooks/useAuctionsUpdates.ts";
 
 
 const router = createBrowserRouter([
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
+    useAuctionsUpdates();
     return (
         <div className="flex bg-white flex-col px-12 w-full items-center min-h-screen gap-0 overflow-x-hidden">
             <HeaderSection className="w-full max-w-305"/>

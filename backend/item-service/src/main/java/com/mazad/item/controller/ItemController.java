@@ -62,7 +62,7 @@ public class ItemController {
     @GetMapping
     public PagedModel<ItemSummaryDto> listItems(
         @ModelAttribute ItemSearch itemSearch,
-        @PageableDefault(size = 15, sort = "endsAt", direction = Sort.Direction.ASC) Pageable pageable) {
+        @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
             return itemService.listItemsBy(itemSearch, pageable);
     }
 
