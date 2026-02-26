@@ -1,19 +1,16 @@
 import {type HTMLAttributes, useEffect, useState} from "react";
 import {cn} from "../../lib/utils.ts";
 import {FiCheck} from "react-icons/fi";
+import type {Option} from "../Filter/FilterList.tsx";
 
-interface Option {
-    id: string;
-    name: string;
-}
 
 interface CheckboxProps extends HTMLAttributes<HTMLDivElement> {
     className?: string;
     title?: string;
     selectionMode: "single" | "multiple";
     options?: Option[];
-    selectedOptions: string[];
-    onOptionToggle?: (optionId: string[]) => void;
+    selectedOptions: Option[];
+    onOptionToggle?: (option: Option[]) => void;
 }
 
 const Checkbox = ({
@@ -25,31 +22,29 @@ const Checkbox = ({
                       onOptionToggle,
                       ...props
                   }: CheckboxProps) => {
-    const [selected, setSelected] = useState<string[]>([])
+    const [selected, setSelected] = useState<Option[]>([])
     const baseStyles = "flex flex-col gap-3 w-full overflow-y-auto";
 
     useEffect(() => {
         setSelected(selectedOptions);
-        console.log("selected options: " + selectedOptions)
     }, [])
-    const toggleOption = (selectedId: string) => {
-        let sOptions: string[];
+    const toggleOption = (selectedOption: Option) => {
+        let sOptions: Option[];
         if (selectionMode === "single") {
-            sOptions = selected.includes(selectedId) ? [] : [selectedId];
+            sOptions = selected.includes(selectedOption) ? [] : [selectedOption];
         } else
-            sOptions = selected.includes(selectedId)
-                ? selected.filter((id) => id !== selectedId)
-                : [...selected, selectedId];
+            sOptions = selected.includes(selectedOption)
+                ? selected.filter((id) => id !== selectedOption)
+                : [...selected, selectedOption];
         setSelected(sOptions);
-        console.log("Selected: " + sOptions);
         onOptionToggle && onOptionToggle(sOptions);
     }
     return (
         <div className={cn(baseStyles, className)} {...props}>
             <span>{title}</span>
             <div className="flex flex-col gap-3">
-                {options?.map((option) => <CBItem checked={selected.includes(option.id)}
-                                                  onChange={() => toggleOption(option.id)} option={option}/>)}
+                {options?.map((option) => <CBItem key={option.id} checked={selected.includes(option)}
+                                                  onChange={() => toggleOption(option)} option={option}/>)}
             </div>
         </div>
     )

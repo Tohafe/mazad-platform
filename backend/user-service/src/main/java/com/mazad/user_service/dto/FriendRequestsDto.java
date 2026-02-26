@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record FriendRequestsDto(
-        String userName,
+        String username,
         String thumbnail,
         String status
 ) {}

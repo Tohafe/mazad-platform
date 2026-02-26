@@ -8,6 +8,8 @@ import {
     LuFootprints, LuBookOpen, LuCoins, LuGlassWater,
     LuPenTool, LuCamera, LuShoppingBag, LuLayers, LuTrophy, LuSmartphone
 } from "react-icons/lu";
+import {Link} from "react-router-dom";
+import type {Category} from "../../types/category.ts";
 
 
 const icons = {
@@ -20,17 +22,18 @@ export type IconKey = keyof typeof icons
 interface TabProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>, VariantProps<typeof tabVariants> {
     children?: ReactNode,
     iconKey: IconKey,
+    category: Category,
+    link: string
 
 }
 
-const Tab = ({children = "Tab", iconKey, variant, size, ...props}: TabProps) => {
+const Tab = ({children = "Tab", link, category, iconKey, variant, size, ...props}: TabProps) => {
     const Icon = icons[iconKey];
     return (
-        <a className={cn(tabVariants({variant, size}),)} {...props}>
-            {/* <Icon className={cn(iconVariants({size}))}/> */}
-            {Icon ? <Icon className={cn(iconVariants({size}))}/> : <div className="size-7.5" />}
+        <Link to={link} className={cn(tabVariants({variant, size}),)} {...props}>
+            <Icon className={cn(iconVariants({size}))}/>
             <span>{children}</span>
-        </a>
+        </Link>
     )
 }
 

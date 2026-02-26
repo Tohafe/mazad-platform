@@ -37,6 +37,7 @@ services:
       - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
       - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
+      - MAZAD_IP=${MAZAD_IP}
     ports:
       - "8080:8080"
     networks:
@@ -204,6 +205,29 @@ services:
       - ${AVATAR_PATH}:/default-images
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
+
+  chat-service:
+    build: ./backend/chat-service/
+    container_name: chat-service-c
+    image: chat-service
+    depends_on:
+      - postgres
+      - kafka-service
+    environment:
+      # DATABASE ENV VARS ====
+      - "DB_URL=${DB_URL}/${CHAT_SERVICE_DB_NAME}"
+      - "DB_NAME=${CHAT_SERVICE_DB_NAME}"
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+      # KAFKA ENV VARS
+      - "KAFKA_SERVICE_PORT=${KAFKA_SERVICE_PORT}"
+    ports:
+      - "${CHAT_SERVICE_PORT}:8080"
+    networks:
+      - mazad-network
+      
+
+
   upload-service:
     build: ./backend/upload-service
     container_name: upload-service-c
@@ -220,6 +244,23 @@ services:
     depends_on:
       minio-setup:
         condition: service_completed_successfully
+  notification-service:
+    build: ./backend/notification-service
+    container_name: notification-service-c
+    image: notification-service:latest
+    environment:
+      - NOTIFICATION_DB_USER=${NOTIFICATION_DB_USER}
+      - NOTIFICATION_DB_PASSWORD=${NOTIFICATION_DB_PASSWORD}
+      - NOTIFICATION_DB_NAME=${NOTIFICATION_DB_NAME}
+      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+      - DB_URL=${DB_URL}
+    ports:
+      - "${NOTIFICATION_PORT}:8080"
+    networks:
+      - mazad-network
+    depends_on:
+      - postgres
+      - kafka
 
 networks:
   mazad-network:

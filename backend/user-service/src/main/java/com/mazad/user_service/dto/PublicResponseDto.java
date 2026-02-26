@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record  PublicResponseDto(
-    String userName,
+    String username,
     String bio,
     String avatarUrl,
     String thumbnail,

@@ -1,9 +1,12 @@
 package com.mazad.notification.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import lombok.*;
+
+
 
 @Entity
 @Table(name = "notifications") 
@@ -15,6 +18,7 @@ import lombok.*;
 public class NotificationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
 
     @Column(nullable = false)
@@ -23,13 +27,13 @@ public class NotificationEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
 
-    private String type; // e.g., "BID", "SYSTEM"
+    private String type; 
 
     @Builder.Default
     private boolean isRead = false;
 
     // This ensures the timestamp is set automatically by Java before saving
-    private LocalDateTime createdAt;
+private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {

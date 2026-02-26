@@ -19,9 +19,21 @@ interface ItemCardProps {
 import IconButton from "../Button/IconButton.tsx";
 import {LuHeart} from "react-icons/lu";
 import type {AuctionSummary} from "../../types/item.ts";
+import {useEffect, useMemo, useState} from "react";
+import {formatTimeLeft} from "../../lib/timeFormater.ts";
 
 const ItemCard = ({className = "", auction}: ItemCardProps) => {
     const baseStyles = "flex flex-col w-full aspect-4/5 justify-center gap-2 shrink-0 cursor-pointer";
+    const [now, setNow] = useState(() => new Date());
+
+    useEffect(() => {
+        const id = window.setInterval(() => setNow(new Date()), 1000);
+        return () => window.clearInterval(id);
+    }, []);
+
+    const timeLeftLabel = useMemo(() => {
+        return formatTimeLeft(auction.endsAt, now, "long");
+    }, [auction.endsAt, now]);
     return (
         <div className={cn(baseStyles, className)}>
             <div className="relative w-full h-full xl:h-89">
@@ -34,7 +46,7 @@ const ItemCard = ({className = "", auction}: ItemCardProps) => {
                 <label className="text-muted font-mono tracking-widest text-[12px]">CURRENT BID</label>
                 <label className="text-black font-medium text-lg text-start">${auction.currentBid}</label>
             </div>
-            <label className="text-muted font-medium text-base font-noto">{auction.endsAt}</label>
+            <label className="text-muted font-medium text-base font-noto">{timeLeftLabel}</label>
         </div>
     )
 }

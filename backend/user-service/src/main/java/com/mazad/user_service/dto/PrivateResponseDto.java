@@ -4,7 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record PrivateResponseDto(
-    String userName,
+    String id,
+    String username,
     String email,
     String firstName,
     String lastName,
@@ -14,5 +15,6 @@ public record PrivateResponseDto(
     String phoneNumber,
     String address,
     String city,
-    String country
+    String country,
+    boolean isComplete
 ) {}

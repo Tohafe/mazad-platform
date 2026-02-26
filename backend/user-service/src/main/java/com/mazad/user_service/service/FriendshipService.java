@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,13 +28,13 @@ public class FriendshipService {
     private final StringRedisTemplate redisTemplate;
 
     @Transactional
-    public void addOrUnFriendUser(UUID requesterId, String userName) {
+    public void addOrUnFriendUser(UUID requesterId, String username) {
 
         ProfileEntity requester = profileRepo
                 .findByUserId(requesterId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requester doesn't exist or doesn't have a profile!"));
         ProfileEntity receiver = profileRepo
-                .findByUserName(userName)
+                .findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("The receiver doesn't exist or doesn't have a profile!"));
         if (requesterId.equals(receiver.getUserId()))
             return;
