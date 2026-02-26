@@ -27,7 +27,8 @@ const Tab = ({children = "Tab", iconKey, variant, size, ...props}: TabProps) => 
     const Icon = icons[iconKey];
     return (
         <a className={cn(tabVariants({variant, size}),)} {...props}>
-            <Icon className={cn(iconVariants({size}))}/>
+            {/* <Icon className={cn(iconVariants({size}))}/> */}
+            {Icon ? <Icon className={cn(iconVariants({size}))}/> : <div className="size-7.5" />}
             <span>{children}</span>
         </a>
     )

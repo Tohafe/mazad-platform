@@ -5,9 +5,7 @@ import IconButton from "../Button/IconButton";
 import { FiBell } from "react-icons/fi";
 import type { Notification } from '../../types/notification';
 
-// ==========================================
-// 0. OS EVENT DAEMON (Unchanged)
-// ==========================================
+
 function useOnClickOutside(ref: RefObject<HTMLElement | null>, handler: () => void) {
     useEffect(() => {
         const listener = (event: MouseEvent) => {
@@ -19,9 +17,7 @@ function useOnClickOutside(ref: RefObject<HTMLElement | null>, handler: () => vo
     }, [ref, handler]);
 }
 
-// ==========================================
-// 1. THE API LAYER (Network Engine)
-// ==========================================
+
 // When you move to multiple files, this goes to `src/services/notificationApi.ts`
 const notificationApi = {
     getPage: async (pageNumber: number) => {
@@ -43,9 +39,7 @@ const notificationApi = {
     }
 };
 
-// ==========================================
-// 2. THE DATA LAYER (Memory Controller Hook)
-// ==========================================
+
 // When you move to multiple files, this goes to `src/hooks/useNotifications.ts`
 function useNotifications(isOpen: boolean) {
     // A. Memory Allocations
@@ -132,9 +126,7 @@ function useNotifications(isOpen: boolean) {
     };
 }
 
-// ==========================================
-// 3. THE PRESENTATION LAYER (Dumb UI Component)
-// ==========================================
+
 export function NotificationBell() {
     // 1. UI Memory (Only things related to the screen)
     const [isOpen, setIsOpen] = useState<boolean>(false);
