@@ -9,7 +9,7 @@ interface TableGridProps {
 
 const TableGrid = ({className = "", tables}: TableGridProps) => {
     return <div className={cn("grid grid-cols-4 gap-12 max-w-305", className)}>
-        {tables.map((table) => <Table table={table}/>)}
+        {tables.map((table) => <Table key={table.title} table={table}/>)}
     </div>
 }
 

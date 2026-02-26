@@ -32,11 +32,11 @@ public class OnlineStatusFilter implements GlobalFilter, Ordered {
 
             return redisTemplate.opsForValue()
                     .set(key, "1", Duration.ofMinutes(2))
-                    .flatMap(result -> chain.filter(exchange))
-                    .onErrorResume(e -> {
-                        log.error("Redis is down, skipping online status update: {}", e.getMessage());
-                        return chain.filter(exchange);
-                    });
+                    .flatMap(result -> chain.filter(exchange));
+                    // .onErrorResume(e -> {
+                    //     log.error("Redis is down, skipping online status update: {}", e.getMessage());
+                    //     return chain.filter(exchange);
+                    // });
         }
         return chain.filter(exchange);
     }

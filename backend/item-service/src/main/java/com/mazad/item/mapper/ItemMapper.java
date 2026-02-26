@@ -29,21 +29,6 @@ public class ItemMapper {
         return builder.build();
     }
 
-    public ItemEntity toEntity(ItemSearch itemSearch) {
-        if (itemSearch == null)
-            return null;
-        return ItemEntity.builder()
-                .sellerId(itemSearch.sellerId())
-                .categoryId(itemSearch.categoryId())
-                .title(itemSearch.title())
-                .description(itemSearch.description())
-                .status(itemSearch.status())
-                .startingPrice(itemSearch.startingPrice())
-                .currentBid(itemSearch.currentBid())
-                .startsAt(itemSearch.startsAt())
-                .endsAt(itemSearch.endsAt())
-                .build();
-    }
 
     public ItemDetailsDto toItemDetailsDto(ItemEntity entity) {
         if (entity == null)

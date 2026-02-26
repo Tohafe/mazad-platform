@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/friends")
@@ -29,12 +28,12 @@ public class FriendshipController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/request/{userName}")
+    @PostMapping("/request/{username}")
     public ResponseEntity<Void> addFriend(
             @RequestHeader("X-User-Id") UUID requesterId,
-            @PathVariable("userName") String userName
+            @PathVariable("username") String username
     ) {
-        service.addOrUnFriendUser(requesterId, userName);
+        service.addOrUnFriendUser(requesterId, username);
         return ResponseEntity.ok().build();
     }
 
@@ -48,7 +47,7 @@ public class FriendshipController {
                 .stream()
                 .map(res -> FriendRequestsDto
                         .builder()
-                        .userName(res.userName())
+                        .username(res.username())
                         .thumbnail(res.thumbnail())
                         .status(FriendshipStatus.PENDING.toString())
                         .build())

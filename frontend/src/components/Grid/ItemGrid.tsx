@@ -1,7 +1,6 @@
-import {type Item} from "../Card/ItemCard.tsx";
+import ItemCard, {type Item} from "../Card/ItemCard.tsx";
 import {type HTMLAttributes} from "react";
 import {cn} from "../../lib/utils.ts";
-import ItemCardCompact from "../Card/ItemCardCompact.tsx";
 import type { AuctionSummary } from "../../types/item.ts";
 
 
@@ -144,7 +143,7 @@ const ItemGrid = ({items, noTitle = false, className = "", ...props}: ItemGridPr
     const baseStyles = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 xl:gap-6";
     return (
         <div className={cn(baseStyles, className)} {...props}>
-            {items.map((item) => <ItemCardCompact className="pt-2" imgClassName="xl:h-88" item={item}/>)}
+            {items.map((item) => <ItemCard key={item.id} className="pt-2"  auction={item}/>)}
         </div>
     );
 };

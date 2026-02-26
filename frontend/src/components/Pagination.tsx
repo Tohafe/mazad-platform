@@ -3,54 +3,6 @@ import Button from "./Button/Button.tsx";
 import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
 import {useState, useMemo} from "react";
 
-// const maxGap = 3
-// if (totalPages <= 10)
-//     return Array.from({length: totalPages}, (_, i) => i + 1);
-// const pages: (number | string)[] = [1]; // 1, 2, 3
-// if (selectedPage - 1 <= maxGap) {
-//     for (let i: number = 2; i <= selectedPage; i++)
-//         pages.push(i);
-// } else {
-//     pages.push("...");
-//     pages.push(selectedPage - 1)
-//     pages.push(selectedPage);
-// }
-//
-// if (totalPages - selectedPage > maxGap) {
-//     pages.push(selectedPage + 1);
-//     pages.push("...");
-//     pages.push(totalPages);
-// } else {
-//     for (let i: number = selectedPage + 1; i <= totalPages; i++)
-//         pages.push(i);
-// }
-// return pages;
-
-
-// const maxGap = 3
-// if (totalPages <= 10)
-//     return Array.from({length: totalPages}, (_, i) => i + 1);
-// const pages: (number | string)[] = []; // 1, 2, 3
-// const min: number = 3;
-// const max: number = 5;
-// const ntd = selectedPage <= 2 ? min : selectedPage + 1
-// if (selectedPage - 1 <= maxGap) {
-//     for (let i = 1; i <= ntd; i++) pages.push(i)
-// } else {
-//     pages.push(1);
-// }
-//
-// if (selectedPage - 1 > maxGap) {
-//     pages.push("...");
-// } else {
-//
-// }
-//
-//
-//
-//
-// return pages;
-
 interface PaginationProps {
     page: number
     totalPages: number
@@ -61,20 +13,19 @@ interface PaginationProps {
 
 const Pagination = ({page, totalPages, onPageChange, className = ""}: PaginationProps) => {
     const [selectedPage, setSelectedPage] = useState(page);
-    console.log(page)
 
     const pageNumbers: (string | number)[] = useMemo(() => getPagesNums(totalPages, selectedPage), [selectedPage]);
 
-    const setPageChanged = (page: number) => {
+    const handlePageChange = (page: number) => {
         setSelectedPage(page);
         onPageChange(page);
     }
 
     const moveTo = (direction: 'next' | 'previous') => {
         if (direction === "next")
-            setPageChanged(selectedPage < totalPages ? selectedPage + 1 : selectedPage)
+            handlePageChange(selectedPage < totalPages ? selectedPage + 1 : selectedPage)
         else
-            setPageChanged(selectedPage === 1 ? selectedPage : selectedPage - 1);
+            handlePageChange(selectedPage === 1 ? selectedPage : selectedPage - 1);
     }
 
 
@@ -88,7 +39,7 @@ const Pagination = ({page, totalPages, onPageChange, className = ""}: Pagination
         <div className="flex flex-row gap-8">
             {pageNumbers.map((num) => {
                 if (typeof num === 'string') return <span className="text-muted">{num}</span>;
-                return <PageNumber isSelected={num === selectedPage} page={num} onClick={() => setPageChanged(num)}/>
+                return <PageNumber key={num} isSelected={num === selectedPage} page={num} onClick={() => handlePageChange(num)}/>
             })}
         </div>
     </div>
