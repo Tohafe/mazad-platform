@@ -10,7 +10,7 @@ import {useAuctionsUpdates} from "./hooks/useAuctionsUpdates.ts";
 import SearchAuctions from "./pages/SearchAuctions.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Settings from "./pages/Settings.tsx";
-
+import Inbox from "./pages/Inbox.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -50,6 +50,10 @@ export const router = createBrowserRouter([
             {
                 path: '/login',
                 element: <Login/>
+    },
+    {
+        path:'/Inbox',
+        element: <Inbox />
             },
         ]
     },
