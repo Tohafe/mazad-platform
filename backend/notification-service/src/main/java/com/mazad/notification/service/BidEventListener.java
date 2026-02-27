@@ -30,9 +30,9 @@ public class BidEventListener {
             
             webSocketService.sendGlobalUpdate("/topic/auction/" + bidEvent.getAuctionId(), bidEvent );
 
-            // webSocketService.sendPrivateMessage(bidEvent.getLastBidderId(),"/queue/chat",
-            //                                             "the highest bid: " + bidEvent.getCurrentHighestBid(),
-            //                                              bidEvent, "bid");
+            webSocketService.sendPrivateMessage(bidEvent.getLastBidderId(),"/queue/notification",
+                                                        "the highest bid: " + bidEvent.getCurrentHighestBid(),
+                                                         bidEvent, "bid");
         } 
         catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);

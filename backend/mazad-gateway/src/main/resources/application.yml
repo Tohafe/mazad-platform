@@ -77,4 +77,4 @@ spring:
                   - X-API-KEY
                 exposed-headers:
                   - X-API-KEY
-                allowCredentials: true
+                allowCredentials: true 

@@ -28,7 +28,7 @@ public class WebSocketService {
 
         NotificationEntity savedEntity = repository.save(entity);
         log.info("Saved Notification ID: {} for User: {} message {}", savedEntity.getId(), userId, message);
-        messagingTemplate.convertAndSendToUser(userId, destination, payload);
+        messagingTemplate.convertAndSendToUser(userId, destination, savedEntity);
     }
     
     public void sendGlobalUpdate(String destination, Object payload) {
