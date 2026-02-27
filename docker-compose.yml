@@ -263,7 +263,7 @@ services:
       - mazad-network
     depends_on:
       - postgres
-      - kafka
+      - kafka-service
 
 networks:
   mazad-network:
