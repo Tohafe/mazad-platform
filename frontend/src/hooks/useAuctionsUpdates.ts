@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
-import {Client} from "@stomp/stompjs";
 import type {AuctionUpdateEvent} from "../types/auctionUpdateEvent.ts";
 import {type QueryClient, useQueryClient} from "@tanstack/react-query";
 import type {AuctionSummary, CategorizedAuctions} from "../types/item.ts";
 import type {Page} from "../types/pagination.ts";
+import { useWebSocket } from "../context/WebSocketContext.tsx";
 
 function updateAuctionPage(
     oldPage: Page<AuctionSummary> | undefined,
@@ -55,47 +55,27 @@ export function updateCache(queryClient: QueryClient, event: AuctionUpdateEvent)
     )
 }
 
+
 export function useAuctionsUpdates() {
-    const [connected, setConnected] = useState(false);
-    const [lastEvent, setLastEvent] = useState<AuctionUpdateEvent | null>(null);
+    const { stompClient, isConnected } = useWebSocket();
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        const client = new Client({
-            brokerURL: "ws://localhost:8000/ws",
-            reconnectDelay: 2000,
-            debug: (s) => console.log("[stomp]", s),
-        });
-
-        client.onConnect = () => {
-            setConnected(true);
-            console.log("WS connected. Subscribing to /topic/items");
-            client.subscribe("/topic/items", (message) => {
-                console.log("WS /topic/items:", message.body);
+        if (!stompClient || !isConnected) return;
+            console.log("WS connected. Subscribing to /topic/auctions");
+            const subscription = stompClient.subscribe("/topic/auctions", (message) => {
+                console.log("Subscribed! to /topic/auctions");
+                console.log("WS /topic/auctions:", message.body);
                 try {
                     const event = JSON.parse(message.body) as AuctionUpdateEvent;
-                    setLastEvent(event);
                     updateCache(queryClient, event);
                     console.log("WS parsed:", event);
                 } catch (e) {
                     console.error("WS parse error:", e);
                 }
             })
-        };
-        client.onWebSocketClose = () => setConnected(false);
-        client.onStompError = (frame) => {
-            console.error("STOMP error:", frame.headers["message"]);
-            console.error("Details:", frame.body);
-        };
-
-        client.onWebSocketError = (e) => {
-            console.error("WebSocket error:", e);
-        };
-
-        client.activate();
-        return () => {
-            client.deactivate();
-        }
-    }, []);
-    return {connected, lastEvent};
+            return () => {
+                subscription.unsubscribe();
+            };
+    }, [stompClient, isConnected]);
 }
