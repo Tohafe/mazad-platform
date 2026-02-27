@@ -15,8 +15,8 @@ public class GatewayHandshakeHandler extends DefaultHandshakeHandler{
 
         String userId = request.getHeaders().getFirst("X-User-Id");
 
-        if (userId == null) 
-             return null; 
+        if (userId == null)
+            userId = "01";
 
         return new StompPrincipal(userId);
     }
