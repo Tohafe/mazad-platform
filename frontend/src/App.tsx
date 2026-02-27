@@ -8,7 +8,7 @@ import Login from "./components/Form/LoginForm.tsx";
 import PersistLogin from "./components/PersistLogin.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 import Profile from "./pages/Profile.tsx";
-
+import Inbox from "./pages/Inbox.tsx";
 
 const router = createBrowserRouter([
     {
@@ -41,6 +41,10 @@ const router = createBrowserRouter([
     {
         path: '/login',
         element: <Login/>
+    },
+    {
+        path:'/Inbox',
+        element: <Inbox />
     }
 ]);
 
