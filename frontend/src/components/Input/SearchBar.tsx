@@ -16,27 +16,25 @@ const HISTORY_LIMIT = 10;
 
 const SearchBar = ({className = ""}: SearchBarProps) => {
     const [query, setQuery] = useState("");
-    const [history, setHistory] = useState<string[]>([]);
     const [isFocused, setIsFocused] = useState(false);
-
-    const open = isFocused && history.length > 0;
-
-    useEffect(() => {
+    const [history, setHistory] = useState<string[]>(() => {
         try {
             const raw = localStorage.getItem(HISTORY_KEY);
-            if (!raw) return;
+            if (!raw) return [];
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
-                setHistory(parsed);
+                return parsed;
             }
         } catch (e) {
             console.error("Failed to load search history:", e);
         }
-    }, []);
+        return [];
+    });
+
+    const open = isFocused && history.length > 0;
 
     useEffect(() => {
-        if (history.length > 0)
-            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
     }, [history]);
 
     const addToHistory = (value: string) => {
@@ -56,6 +54,11 @@ const SearchBar = ({className = ""}: SearchBarProps) => {
 
     }
 
+    const handleClear = () => {
+        setHistory([]);
+        localStorage.removeItem(HISTORY_KEY);
+    }
+
     return (
         <form onSubmit={handleSubmit} className={cn("flex flex-row w-full max-w-150 grow items-center", className)}>
             <div className="relative w-full">
@@ -72,9 +75,11 @@ const SearchBar = ({className = ""}: SearchBarProps) => {
                 <Dropdown open={open}>
                     {open && <div className="flex justify-between items-center p-5">
                         <span className="font-mono font-thin text-base text-muted">RECENT SEARCHES</span>
-                        <TextButton className="text-secondary">Clear</TextButton>
+                        <TextButton onMouseDown={handleClear} className="text-secondary">Clear</TextButton>
                     </div>}
-                    {history.map((item) => <HistoryItem key={item}>{item}</HistoryItem>)}
+                    {history.map((item) =>
+                        <HistoryItem key={item} onMouseDown={() => setQuery(item)} >{item}</HistoryItem>
+                    )}
                 </Dropdown>
             </div>
         </form>
