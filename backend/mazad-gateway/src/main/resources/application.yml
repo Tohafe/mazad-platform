@@ -58,10 +58,11 @@ spring:
               uri: http://chat-service:8080
               predicates:
                 - Path=/api/chat/**
+
             - id: notification-service-route
               uri: http://notification-service:8080
               predicates:
-                - Path=/api/notifications,/ws
+                - Path=/api/notifications/**,/ws/**
                 
           globalcors:
             cors-configurations:
