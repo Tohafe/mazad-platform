@@ -8,5 +8,5 @@ import lombok.Builder;
 public record UserResponseDTO(
     UUID id,
     String email,
-    String userName
+    String username
 ) {}

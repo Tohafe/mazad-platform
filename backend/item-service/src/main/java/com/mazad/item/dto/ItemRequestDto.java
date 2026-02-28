@@ -22,7 +22,7 @@ public record ItemRequestDto(
         String shippingInfo,
         @NotNull(message = "Price is required")
         @Positive(message = "Price must be positive")
-        BigDecimal startingPrice,
+        Long startingPrice,
         @NotNull(message = "Start time is required")
         @FutureOrPresent(message = "Start time must be in the future")
         Instant startsAt,

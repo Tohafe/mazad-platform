@@ -35,7 +35,8 @@ public class ProfileMapper {
         }
         return PrivateResponseDto
                     .builder()
-                    .userName(entity.getUserName())
+                    .id(entity.getUserId().toString())
+                    .username(entity.getUsername())
                     .email(entity.getEmail())
                     .firstName(entity.getFirstName())
                     .lastName(entity.getLastName())
@@ -46,6 +47,7 @@ public class ProfileMapper {
                     .address(entity.getAddress())
                     .city(entity.getCity())
                     .country(entity.getCountry())
+                    .isComplete(entity.isComplete())
                     .build();
     }   
     
@@ -56,7 +58,7 @@ public class ProfileMapper {
         }
         return PublicResponseDto
                 .builder()
-                .userName(entity.getUserName())
+                .username(entity.getUsername())
                 .bio(entity.getBio())
                 .avatarUrl(entity.getAvatarUrl())
                 .thumbnail(entity.getAvatarThumbnailUrl())

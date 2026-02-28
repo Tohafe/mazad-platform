@@ -42,7 +42,7 @@ public class UserEntity implements UserDetails{
     private String password;
 
     @Column(name="username", unique=true, nullable=false, length=15)
-    private String userName;
+    private String username;
 
     @Column(name="is_2fa_enabled")
     @Builder.Default
@@ -71,7 +71,7 @@ public class UserEntity implements UserDetails{
     }
     
     public String getUserName() {
-       return this.userName;
+       return this.username;
     }
 
     @Override

@@ -9,6 +9,7 @@ import {BiSearch} from "react-icons/bi";
 import {useEffect, useRef, useState} from "react";
 import {cn} from "../lib/utils.ts";
 import CategoryDialog from "../components/Dialog/CategoryDialog.tsx";
+import { NotificationBell } from '../components/Notification/NotificationBell.tsx';
 
 
 interface HeaderSectionProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -48,6 +49,7 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
                             size="md" className="flex md:hidden"/>
                 <TextButton className="hidden md:flex" size="sm">How it works?</TextButton>
                 <TextButton className="hidden md:flex" size="sm">Help</TextButton>
+                <NotificationBell></NotificationBell>
                 <IconButton size="md" icon={LuHeart} iconClassName="text-brand"></IconButton>
                 <IconButton className="hidden sm:flex" size="md" icon={MdLanguage}
                             iconClassName="text-brand">EN</IconButton>

@@ -37,3 +37,8 @@ build/
 
 ### env ###
 .env
+
+
+
+### AJBARI ###
+backend/chat-service/src/main/java/com/mazad/chat_service/TO_DO.TXT

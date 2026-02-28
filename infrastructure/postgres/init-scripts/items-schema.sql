@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS items
     title          VARCHAR(255)                      NOT NULL,
     description    TEXT,
 
-    starting_price DECIMAL(19, 2)                    NOT NULL,
-    current_bid    DECIMAL(19, 2)                    NOT NULL DEFAULT 0,
+    starting_price BIGINT                            NOT NULL,
+    current_bid    BIGINT                            NOT NULL DEFAULT 0,
 
     starts_at      TIMESTAMP                         NOT NULL,
     ends_at        TIMESTAMP                         NOT NULL,
@@ -49,56 +49,53 @@ CREATE TABLE IF NOT EXISTS item_images
 -- Generating random data
 
 INSERT INTO categories (name, slug, description, image_url, hex_color, icon, active)
-VALUES
-    ('Watches', 'watches', 'Luxury and collectible watches',
-     'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600&auto=format&fit=crop&q=80',
-     '#7DA7D9', 'LuWatch', true),
+VALUES ('Watches', 'watches', 'Luxury and collectible watches',
+        'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600&auto=format&fit=crop&q=80',
+        '#7DA7D9', 'LuWatch', true),
 
-    ('Sneakers', 'sneakers', 'Limited edition and collectible sneakers',
-     'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&auto=format&fit=crop&q=80',
-     '#F28B82', 'LuFootprints', true),
+       ('Sneakers', 'sneakers', 'Limited edition and collectible sneakers',
+        'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&auto=format&fit=crop&q=80',
+        '#F28B82', 'LuFootprints', true),
 
-    ('Trading Cards', 'trading-cards', 'Sports and gaming trading cards',
-     'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&auto=format&fit=crop&q=80',
-     '#A4D4AE', 'LuLayers', true),
+       ('Trading Cards', 'trading-cards', 'Sports and gaming trading cards',
+        'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&auto=format&fit=crop&q=80',
+        '#A4D4AE', 'LuLayers', true),
 
-    ('Art', 'art', 'Paintings and digital artworks',
-     'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&auto=format&fit=crop&q=80',
-     '#CBA5F7', 'LuPalette', true),
+       ('Art', 'art', 'Paintings and digital artworks',
+        'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&auto=format&fit=crop&q=80',
+        '#CBA5F7', 'LuPalette', true),
 
-    ('Electronics', 'electronics', 'Rare and collectible electronics',
-     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80',
-     '#FFD580', 'LuSmartphone', true),
+       ('Electronics', 'electronics', 'Rare and collectible electronics',
+        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80',
+        '#FFD580', 'LuSmartphone', true),
 
-    ('Cars', 'cars', 'Classic, luxury, and collectible cars',
-     'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format&fit=crop&q=80',
-     '#FFB3B3', 'LuCar', true),
+       ('Cars', 'cars', 'Classic, luxury, and collectible cars',
+        'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format&fit=crop&q=80',
+        '#FFB3B3', 'LuCar', true),
 
-    ('Jewelry', 'jewelry', 'Fine jewelry and luxury accessories',
-     'https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=600&auto=format&fit=crop&q=80',
-     '#F5C3D1', 'LuGem', true),
+       ('Jewelry', 'jewelry', 'Fine jewelry and luxury accessories',
+        'https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=600&auto=format&fit=crop&q=80',
+        '#F5C3D1', 'LuGem', true),
 
-    ('Fashion', 'fashion', 'Designer fashion and apparel',
-     'https://plus.unsplash.com/premium_photo-1675186049563-000f7ac02c44?w=600&auto=format&fit=crop&q=80',
-     '#B8E0D2', 'LuShirt', true),
+       ('Fashion', 'fashion', 'Designer fashion and apparel',
+        'https://plus.unsplash.com/premium_photo-1675186049563-000f7ac02c44?w=600&auto=format&fit=crop&q=80',
+        '#B8E0D2', 'LuShirt', true),
 
-    ('Comics', 'comics', 'Vintage and modern comic books',
-     'https://images.unsplash.com/photo-1571624630223-cc7d6e6ab730?w=600&auto=format&fit=crop&q=80',
-     '#FFE5A5', 'LuBookOpen', true),
+       ('Comics', 'comics', 'Vintage and modern comic books',
+        'https://images.unsplash.com/photo-1571624630223-cc7d6e6ab730?w=600&auto=format&fit=crop&q=80',
+        '#FFE5A5', 'LuBookOpen', true),
 
-    ('Coins', 'coins', 'Rare and collectible coins',
-     'https://images.unsplash.com/photo-1570857301950-637c03f72a6d?w=600&auto=format&fit=crop&q=80',
-     '#FEE2B3', 'LuCoins', true),
+       ('Coins', 'coins', 'Rare and collectible coins',
+        'https://images.unsplash.com/photo-1570857301950-637c03f72a6d?w=600&auto=format&fit=crop&q=80',
+        '#FEE2B3', 'LuCoins', true),
 
-    ('Photography', 'photography', 'Cameras and photographic art',
-     'https://images.unsplash.com/photo-1519183071298-a2962fca9b33?w=600&auto=format&fit=crop&q=80',
-     '#AEDFF7', 'LuCamera', true),
+       ('Photography', 'photography', 'Cameras and photographic art',
+        'https://images.unsplash.com/photo-1519183071298-a2962fca9b33?w=600&auto=format&fit=crop&q=80',
+        '#AEDFF7', 'LuCamera', true),
 
-    ('Luxury Bags', 'luxury-bags', 'Designer handbags and wallets',
-     'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
-     '#D6B8F5', 'LuShoppingBag', true);
-
-
+       ('Luxury Bags', 'luxury-bags', 'Designer handbags and wallets',
+        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
+        '#D6B8F5', 'LuShoppingBag', true);
 
 
 
@@ -106,41 +103,92 @@ INSERT INTO items
 (title, description, starting_price, current_bid,
  starts_at, ends_at, status, specs, shipping_info,
  seller_id, category_id, created_at, updated_at)
-SELECT
-    'Auction Item #' || gs,
-    'High quality collectible item number ' || gs,
-    (random() * 900 + 100)::numeric(10,2),
-    (random() * 1200 + 150)::numeric(10,2),
-    NOW() - INTERVAL '1 day',
-    NOW() + (gs % 10 + 3) * INTERVAL '1 day',
-    'ACTIVE',
+SELECT 'Auction Item #' || gs,
+       'High quality collectible item number ' || gs,
+       (random() * 900 + 100)::numeric(10, 2),
+       (random() * 1200 + 150)::numeric(10, 2),
 
-    jsonb_build_object(
-            'condition', 'Excellent',
-            'origin', 'Collector Market',
-            'batch', gs
-    ),
+       date_trunc('minute', NOW()) - INTERVAL '1 day',
 
-    'Worldwide shipping available.',
 
-    CASE (gs % 5)
-        WHEN 0 THEN '11111111-1111-1111-1111-111111111111'::uuid
-        WHEN 1 THEN '22222222-2222-2222-2222-222222222222'::uuid
-        WHEN 2 THEN '33333333-3333-3333-3333-333333333333'::uuid
-        WHEN 3 THEN '44444444-4444-4444-4444-444444444444'::uuid
-        ELSE        '55555555-5555-5555-5555-555555555555'::uuid
-        END,
+       CASE
+           WHEN (gs % 12) = 0 THEN date_trunc('minute', NOW()) + ((2 + (gs % 59)) * INTERVAL '1 minute')
+           WHEN (gs % 12) = 1 THEN date_trunc('minute', NOW()) + ((10 + (gs % 50)) * INTERVAL '1 minute')
+           WHEN (gs % 12) = 2 THEN date_trunc('minute', NOW()) + ((1 + (gs % 23)) * INTERVAL '1 hour')
+           WHEN (gs % 12) = 3 THEN date_trunc('minute', NOW()) + ((6 + (gs % 12)) * INTERVAL '1 hour')
+           WHEN (gs % 12) = 4 THEN date_trunc('minute', NOW()) + ((1 + (gs % 3)) * INTERVAL '1 day')
+           WHEN (gs % 12) = 5 THEN date_trunc('minute', NOW()) + ((4 + (gs % 7)) * INTERVAL '1 day')
+           WHEN (gs % 12) = 6 THEN date_trunc('minute', NOW()) + ((11 + (gs % 20)) * INTERVAL '1 day')
+           WHEN (gs % 12) = 7 THEN date_trunc('minute', NOW()) + INTERVAL '2 hours 30 minutes'
+           WHEN (gs % 12) = 8 THEN date_trunc('minute', NOW()) + INTERVAL '12 hours'
+           WHEN (gs % 12) = 9 THEN date_trunc('minute', NOW()) + INTERVAL '1 day 6 hours'
+           ELSE date_trunc('minute', NOW()) + INTERVAL '7 days'
+           END,
 
-    (gs % 12) + 1,
-    NOW(),
-    NOW()
+       'ACTIVE',
+
+       jsonb_build_object(
+               'condition', 'Excellent',
+               'origin', 'Collector Market',
+               'batch', gs
+       ),
+
+       'Worldwide shipping available.',
+
+       CASE (gs % 5)
+           WHEN 0 THEN '11111111-1111-1111-1111-111111111111'::uuid
+           WHEN 1 THEN '22222222-2222-2222-2222-222222222222'::uuid
+           WHEN 2 THEN '33333333-3333-3333-3333-333333333333'::uuid
+           WHEN 3 THEN '44444444-4444-4444-4444-444444444444'::uuid
+           ELSE '55555555-5555-5555-5555-555555555555'::uuid
+           END,
+
+       (floor(random() * 12)::int + 1),
+       NOW(),
+       NOW()
 FROM generate_series(1, 500) gs;
+
+-- ... existing code ...
+
+
+-- INSERT INTO items
+-- (title, description, starting_price, current_bid,
+--  starts_at, ends_at, status, specs, shipping_info,
+--  seller_id, category_id, created_at, updated_at)
+-- SELECT
+--     'Auction Item #' || gs,
+--     'High quality collectible item number ' || gs,
+--     (random() * 900 + 100)::numeric(10,2),
+--     (random() * 1200 + 150)::numeric(10,2),
+--     NOW() - INTERVAL '1 day',
+--     NOW() + (gs % 10 + 3) * INTERVAL '1 day',
+--     'ACTIVE',
+--
+--     jsonb_build_object(
+--             'condition', 'Excellent',
+--             'origin', 'Collector Market',
+--             'batch', gs
+--     ),
+--
+--     'Worldwide shipping available.',
+--
+--     CASE (gs % 5)
+--         WHEN 0 THEN '11111111-1111-1111-1111-111111111111'::uuid
+--         WHEN 1 THEN '22222222-2222-2222-2222-222222222222'::uuid
+--         WHEN 2 THEN '33333333-3333-3333-3333-333333333333'::uuid
+--         WHEN 3 THEN '44444444-4444-4444-4444-444444444444'::uuid
+--         ELSE        '55555555-5555-5555-5555-555555555555'::uuid
+--         END,
+--
+--     (gs % 12) + 1,
+--     NOW(),
+--     NOW()
+-- FROM generate_series(1, 500) gs;
 
 
 INSERT INTO item_images (item_id, image_url)
-SELECT
-    id,
-    'https://picsum.photos/seed/item' || id || '/600/450'
+SELECT id,
+       'https://picsum.photos/seed/item' || id || '/600/450'
 FROM items
 WHERE id > (SELECT COALESCE(MAX(item_id), 0) FROM item_images);
 

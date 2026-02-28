@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 import TextButton from "../Button/TextButton.tsx";
 import Button from "../Button/Button.tsx";
 import Checkbox from "../CheckBox/Checkbox.tsx";
-import {type AppliedFilter, type Filter} from "../FilterList.tsx";
+import {type AppliedFilter, type Filter, type Option} from "./FilterList.tsx";
 
 
 interface FilterDialogProps {
@@ -31,31 +31,31 @@ const FilterDialog = ({
                           appliedFilters
                       }: FilterDialogProps) => {
     const baseStyles = "ml-auto h-screen w-105 px-2 py-4 bg-white flex flex-col items-end outline-none max-h-none";
-    const [draftFilters, setDraftFilters] = useState<AppliedFilter[]>([]);
+    const [draftFilters, setDraftFilters] = useState<AppliedFilter[]>(appliedFilters);
 
-    const toggleDraftFilter = (filterId: string, optionIds: string[]) => {
+    const toggleDraftFilter = (filterId: string, options: Option[]) => {
         setDraftFilters(oldFilters => {
-            if (optionIds.length === 0) return oldFilters.filter(filter => filter.filterId !== filterId);
+            if (options.length === 0) return oldFilters.filter(filter => filter.filterId !== filterId);
 
             const filterExist = oldFilters.some(filter => filter.filterId === filterId);
 
             if (filterExist) {
                 return oldFilters.map(filter => {
-                    if (filter.filterId === filterId) return {filterId: filter.filterId, optionIds}
+                    if (filter.filterId === filterId) return {filterId: filter.filterId, options}
                     return filter;
                 })
             }
-            return [...oldFilters, {filterId, optionIds}]
+            return [...oldFilters, {filterId, options}]
         })
     }
 
     const getSelectedOptions = (filterId: string) => {
-        return draftFilters.find(filter => filter.filterId === filterId)?.optionIds || []
+        return draftFilters.find(filter => filter.filterId === filterId)?.options || []
     }
 
     useEffect(() => {
-        setDraftFilters(appliedFilters)
-    }, [])
+        setDraftFilters(appliedFilters);
+    }, [appliedFilters])
     return (
         <dialog ref={dialogRef} className={cn(baseStyles)}>
             <div className="flex flex-row gap-4 w-full items-center justify-between">
@@ -74,19 +74,19 @@ const FilterDialog = ({
             </div>
 
             {selectedFilter && <Checkbox
-                onOptionToggle={(optionIds) => toggleDraftFilter(selectedFilter.id, optionIds)}
+                onOptionToggle={(options) => toggleDraftFilter(selectedFilter.id, options)}
                 options={selectedFilter.options}
                 selectionMode={selectedFilter.selectionMode}
                 selectedOptions={getSelectedOptions(selectedFilter.id)}
                 className="flex-1 py-4"/>}
             {!selectedFilter && <ul className="flex flex-col gap-4 w-full overflow-y-auto py-4 flex-1">
                 {filterData.map((filter) =>
-                    <FilterItem onClick={() => setSelectedFilter(filter)} name={filter.name}/>
+                    <FilterItem key={filter.id} onClick={() => setSelectedFilter(filter)} name={filter.name}/>
                 )}
             </ul>}
             <Button onClick={() => {
                 onApply(draftFilters);
-                onClose();
+                onClose()
             }} className="p-4 w-full">Apply</Button>
         </dialog>
     )

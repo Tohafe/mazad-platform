@@ -1,7 +1,7 @@
 package com.mazad.item.mapper;
 
 import com.mazad.item.dto.*;
-import com.mazad.item.entity.AuctionStatus;
+import com.mazad.item.dto.event.ItemCreatedEventDto;
 import com.mazad.item.entity.ItemEntity;
 import org.springframework.stereotype.Component;
 
@@ -29,21 +29,6 @@ public class ItemMapper {
         return builder.build();
     }
 
-    public ItemEntity toEntity(ItemSearch itemSearch) {
-        if (itemSearch == null)
-            return null;
-        return ItemEntity.builder()
-                .sellerId(itemSearch.sellerId())
-                .categoryId(itemSearch.categoryId())
-                .title(itemSearch.title())
-                .description(itemSearch.description())
-                .status(itemSearch.status())
-                .startingPrice(itemSearch.startingPrice())
-                .currentBid(itemSearch.currentBid())
-                .startsAt(itemSearch.startsAt())
-                .endsAt(itemSearch.endsAt())
-                .build();
-    }
 
     public ItemDetailsDto toItemDetailsDto(ItemEntity entity) {
         if (entity == null)
@@ -94,9 +79,9 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemEventDto toItemEventDto(ItemEntity entity) {
+    public ItemCreatedEventDto toItemEventDto(ItemEntity entity) {
         if (entity == null) return null;
-        return ItemEventDto.builder()
+        return ItemCreatedEventDto.builder()
                 .id(entity.getId())
                 .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())

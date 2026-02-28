@@ -1,6 +1,7 @@
 package com.mazad.item.service.impl;
 
 import com.mazad.item.dto.*;
+import com.mazad.item.dto.event.ItemUpdatedEventDto;
 import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.exceptions.ResourceNotFoundException;
 import com.mazad.item.entity.AuctionStatus;
@@ -9,11 +10,13 @@ import com.mazad.item.mapper.ItemMapper;
 import com.mazad.item.repository.ItemRepository;
 import com.mazad.item.service.kafka.ItemProducer;
 import com.mazad.item.service.ItemService;
+import com.mazad.item.specification.ItemSpec;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -39,16 +42,21 @@ public class ItemServiceImpl implements ItemService {
     public ItemDetailsDto createItem(ItemRequestDto itemRequestDto, UUID sellerId) {
         ItemEntity entity = mapper.toEntity(itemRequestDto);
         entity.setSellerId(sellerId);
-        entity.setCurrentBid(BigDecimal.ZERO);
+        entity.setCurrentBid(0L);
         AuctionStatus status = itemRequestDto.status() == null ? AuctionStatus.ACTIVE : itemRequestDto.status();
         if (status != AuctionStatus.ACTIVE && status != AuctionStatus.DRAFT)
             throw new ValidationException("Can't create an item with status of " + status);
         entity.setStatus(status);
+
+        entity.setStartsAt(entity.getStartsAt().truncatedTo(ChronoUnit.MINUTES));
+        entity.setEndsAt(entity.getEndsAt().truncatedTo(ChronoUnit.MINUTES));
+
         ItemEntity createdItem = itemRepo.save(entity);
         // Sending an item creation event to kafka broker
         producer.sendItemCreatedEvent(mapper.toItemEventDto(entity));
         return mapper.toItemDetailsDto(createdItem);
     }
+
 
     @Override
     public ItemDetailsDto getItem(Long id) {
@@ -59,21 +67,11 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    @SuppressWarnings("Convert2MethodRef")
     public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable) {
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withIgnoreCase()
-                .withIgnorePaths("specs", "images")
-                .withMatcher("sellerId", match -> match.exact())
-                .withMatcher("status", match -> match.exact())
-                .withMatcher("startingPrice", match -> match.exact())
-                .withMatcher("currentBid", match -> match.exact())
-                .withMatcher("startsAt", match -> match.exact())
-                .withMatcher("endsAt", match -> match.exact())
-                .withMatcher("title", match -> match.contains().ignoreCase());
-        Example<ItemEntity> example = Example.of(mapper.toEntity(itemSearch), matcher);
-        Page<ItemSummaryDto> itemPage = itemRepo.findAll(example, pageable).map(mapper::toItemSummaryDto);
+        Specification<ItemEntity> spec = ItemSpec.withSearch(itemSearch);
+        Page<ItemSummaryDto> itemPage = itemRepo.findAll(spec, pageable).map(mapper::toItemSummaryDto);
         return new PagedModel<>(itemPage);
+
     }
 
     @Override
@@ -102,7 +100,6 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemNotEditableException("Item (" + id + ") can't be edited: status = " + entity.getStatus());
         jsonMapper.readerForUpdating(entity).readValue(patchNode);
         ItemEntity savedEntity = itemRepo.save(entity);
-        producer.sendItemUpdatedEvent(mapper.toItemEventDto(savedEntity));
         return mapper.toItemDetailsDto(savedEntity);
     }
 
@@ -126,8 +123,19 @@ public class ItemServiceImpl implements ItemService {
                 .toList();
     }
 
+    @Override
+    public void applyUpdateEvent(ItemUpdatedEventDto itemEvent) {
+        ItemEntity entity = itemRepo.findById(itemEvent.auctionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Item (" + itemEvent.auctionId() + ") can't be found"));
+        entity.setCurrentBid(itemEvent.currentHighestBid());
+        entity.setEndsAt(itemEvent.endsAt());
+        if (itemEvent.status() == AuctionStatus.CLOSED) {
+            entity.setStatus(itemEvent.lastBidderId() != null ? AuctionStatus.SOLD: AuctionStatus.EXPIRED);
+        } else entity.setStatus(itemEvent.status());
+        itemRepo.save(entity);
+    }
 
     private boolean isEditable(ItemEntity entity) {
-        return !(entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid().compareTo(BigDecimal.ZERO) != 0);
+        return !(entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid() == 0);
     }
 }
