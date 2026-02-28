@@ -5,6 +5,7 @@ import TextField from "./TextField.tsx";
 import Dropdown from "../Dropdown.tsx";
 import HistoryItem from "../HistoryItem.tsx";
 import TextButton from "../Button/TextButton.tsx";
+import {useNavigate} from "react-router-dom";
 
 
 interface SearchBarProps extends FormHTMLAttributes<HTMLFormElement> {
@@ -15,6 +16,7 @@ const HISTORY_KEY = "search_history";
 const HISTORY_LIMIT = 10;
 
 const SearchBar = ({className = ""}: SearchBarProps) => {
+    const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const [isFocused, setIsFocused] = useState(false);
     const [history, setHistory] = useState<string[]>(() => {
@@ -43,15 +45,20 @@ const SearchBar = ({className = ""}: SearchBarProps) => {
             return next.slice(0, HISTORY_LIMIT);
         })
     }
-    const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
-        e.preventDefault();
+
+    const submitSearch = (query: string) => {
         setIsFocused(false);
         const trimmed = query.trim();
         if (!trimmed) return;
 
         console.log("Searching for:", trimmed);
         addToHistory(trimmed)
+        navigate(`/search?q=${trimmed}`)
+    }
 
+    const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        submitSearch(query);
     }
 
     const handleClear = () => {
@@ -78,7 +85,7 @@ const SearchBar = ({className = ""}: SearchBarProps) => {
                         <TextButton onMouseDown={handleClear} className="text-secondary">Clear</TextButton>
                     </div>}
                     {history.map((item) =>
-                        <HistoryItem key={item} onMouseDown={() => setQuery(item)} >{item}</HistoryItem>
+                        <HistoryItem key={item} onMouseDown={() => submitSearch(item)} >{item}</HistoryItem>
                     )}
                 </Dropdown>
             </div>
