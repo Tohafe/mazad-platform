@@ -10,7 +10,7 @@ import RequireAuth from "./components/RequireAuth.tsx";
 import Profile from "./pages/Profile.tsx";
 
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
         element: <PersistLogin/>,
         children: [

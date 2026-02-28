@@ -1,15 +1,16 @@
-import logo from "../assets/logo.png"
-import TextButton from "../components/Button/TextButton.tsx";
-import {MdKeyboardArrowDown, MdKeyboardArrowLeft, MdLanguage} from "react-icons/md";
-import SearchBar from "../components/Input/SearchBar.tsx";
-import IconButton from "../components/Button/IconButton.tsx";
-import {LuHeart} from "react-icons/lu";
-import Button from "../components/Button/Button.tsx";
-import {BiSearch} from "react-icons/bi";
-import {useEffect, useRef, useState} from "react";
-import {cn} from "../lib/utils.ts";
-import CategoryDialog from "../components/Dialog/CategoryDialog.tsx";
 import { NotificationBell } from '../components/Notification/NotificationBell.tsx';
+import {MdKeyboardArrowDown, MdKeyboardArrowLeft, MdLanguage} from "react-icons/md";
+import CategoryDialog from "../components/Dialog/CategoryDialog.tsx";
+import TextButton from "../components/Button/TextButton.tsx";
+import IconButton from "../components/Button/IconButton.tsx";
+import SearchBar from "../components/Input/SearchBar.tsx";
+import Button from "../components/Button/Button.tsx";
+import {useEffect, useRef, useState} from "react";
+import { useAuth } from '../context/AuthProvider';
+import {BiSearch} from "react-icons/bi";
+import {LuHeart} from "react-icons/lu";
+import logo from "../assets/logo.png"
+import {cn} from "../lib/utils.ts";
 
 
 interface HeaderSectionProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -21,6 +22,7 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const dialogRef = useRef<HTMLDialogElement | null>(null);
+    const { isAuthenticated } = useAuth();
 
     useEffect(() =>{
         const ref = dialogRef.current;
@@ -49,7 +51,7 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
                             size="md" className="flex md:hidden"/>
                 <TextButton className="hidden md:flex" size="sm">How it works?</TextButton>
                 <TextButton className="hidden md:flex" size="sm">Help</TextButton>
-                <NotificationBell></NotificationBell>
+                {isAuthenticated && <NotificationBell />}
                 <IconButton size="md" icon={LuHeart} iconClassName="text-brand"></IconButton>
                 <IconButton className="hidden sm:flex" size="md" icon={MdLanguage}
                             iconClassName="text-brand">EN</IconButton>

@@ -17,5 +17,13 @@ export const notificationApi = {
         await axios.put(`http://localhost:8082/api/notifications/${id}/read`, {}, {
             headers: { "X-User-Id": "01" }
         });
+    },
+
+
+    markAllAsRead: async () => {
+        const response = await axios.put(`http://localhost:8082/api/notifications/read-all`, {}, {
+            headers: { "X-User-Id": "01" }
+        });
+        return response.data;
     }
 };
