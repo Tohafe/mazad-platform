@@ -13,8 +13,8 @@ public record ItemSearch(
     Long categoryId,
     String keyword,
     AuctionStatus status,
-    BigDecimal minPrice,
-    BigDecimal maxPrice,
+    Long minPrice,
+    Long maxPrice,
     Instant endsBefore,
     Instant endsAfter
 ) {

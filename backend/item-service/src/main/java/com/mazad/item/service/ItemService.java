@@ -5,6 +5,7 @@ import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemSearch;
 
 import com.mazad.item.dto.ItemSummaryDto;
+import com.mazad.item.dto.event.ItemUpdatedEventDto;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Pageable;
@@ -29,4 +30,6 @@ public interface ItemService {
     public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
 
     List<ItemSummaryDto> endingSoonItems(int hours, int limit);
+
+    public void applyUpdateEvent(ItemUpdatedEventDto itemEvent);
 }

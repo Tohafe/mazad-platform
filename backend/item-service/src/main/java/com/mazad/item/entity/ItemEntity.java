@@ -39,11 +39,11 @@ public class ItemEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal startingPrice;
+    @Column(nullable = false)
+    private Long startingPrice;
 
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal currentBid;
+    @Column(nullable = false)
+    private Long currentBid;
 
     @Builder.Default
     @Column(name = "image_url")
