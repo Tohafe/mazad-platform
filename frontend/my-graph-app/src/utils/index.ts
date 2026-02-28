@@ -1,0 +1,1 @@
+export { generatePseudonym } from './pseudonym';

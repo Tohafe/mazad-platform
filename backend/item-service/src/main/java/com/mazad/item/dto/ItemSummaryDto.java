@@ -10,7 +10,7 @@ public record ItemSummaryDto(
         Long id,
         String title,
         String thumbnail,
-        BigDecimal currentBid,
+        Long currentBid,
         AuctionStatus status,
         Instant startsAt,
         Instant endsAt

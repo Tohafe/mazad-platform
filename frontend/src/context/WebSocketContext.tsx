@@ -6,7 +6,7 @@ import { Client } from '@stomp/stompjs';
 
 
 
-
+const WS_IP = import.meta.env.VITE_WS_IP;
 
 interface WebSocketContextType {
     stompClient: Client | null;
@@ -28,8 +28,8 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
     useEffect(() => {
         const endpoint = accessToken 
-            ? `ws://localhost:8082/ws?token=${accessToken}` 
-            : `ws://localhost:8082/ws`;
+            ? `${WS_IP}/ws?token=${accessToken}` 
+            : `${WS_IP}/ws`;
 
         const client = new Client({
             brokerURL: endpoint,

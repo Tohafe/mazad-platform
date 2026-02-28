@@ -21,7 +21,9 @@ public class RouterValidator {
             "/api/v1/auth/refresh", List.of(HttpMethod.POST),
             "/api/v1/items", List.of(HttpMethod.GET),
             "/api/v1/categories", List.of(HttpMethod.GET),
-            "/api/v1/catalog", List.of(HttpMethod.GET)
+            "/api/v1/catalog", List.of(HttpMethod.GET),
+            "/api/notifications", List.of(HttpMethod.GET, HttpMethod.POST),
+            "/ws", List.of(HttpMethod.GET)
     );
 
     private static final List<String> openPaths = List.of(

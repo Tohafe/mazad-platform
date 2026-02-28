@@ -31,9 +31,8 @@ public class Bid {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "auction_id", nullable = false)
-    private Auction auction;
+    private Long auctionId;
 
     @Column(name  = "bidder_id", nullable = false)
     private UUID bidderId;
