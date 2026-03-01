@@ -11,7 +11,7 @@ import SearchAuctions from "./pages/SearchAuctions.tsx";
 import AppLayout from "./AppLayout.tsx";
 
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
         element: <AppLayout/>,
         children: [

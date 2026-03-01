@@ -2,8 +2,8 @@ package com.mazad.notification.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.*;
 
 
@@ -32,12 +32,12 @@ public class NotificationEntity {
     @Builder.Default
     private boolean isRead = false;
 
-    // This ensures the timestamp is set automatically by Java before saving
-private LocalDateTime createdAt;
+
+private Instant createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = Instant.now();
     }
     
 }

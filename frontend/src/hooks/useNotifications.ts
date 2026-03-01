@@ -2,6 +2,7 @@ import { notificationApi } from "../services/notificationApi";
 import { useWebSocket } from "../context/WebSocketContext";
 import type { Notification } from "../types/notification";
 import { useEffect, useRef, useState } from "react";
+import { router } from '../App.tsx';
 
 export function useNotifications(isOpen: boolean) {
 
@@ -76,12 +77,22 @@ export function useNotifications(isOpen: boolean) {
         }
     };
 
+    const markAllAsRead = async () => {
+        if (unreadCount === 0) return;
+
+        setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
+
+        try {
+            await notificationApi.markAllAsRead(); 
+        } catch (error) {
+            console.error("Failed to batch sync:", error);
+        }
+    };
+
     useEffect(() => {
         if (!stompClient || !isConnected) return;
 
- 
-
-        
+        console.log("subscirbe to notification topic");
         const subscription = stompClient.subscribe('/user/queue/notification', (message) => {
 
             const newNotification: Notification = JSON.parse(message.body);
@@ -90,11 +101,21 @@ export function useNotifications(isOpen: boolean) {
             setNotifications((prevArray) => [newNotification, ...prevArray]);
         });
 
+        
         return () => {
+            console.log("Unsubscribe to notification");
             subscription.unsubscribe();
         };
+
     }, [stompClient, isConnected]);
 
+    const handleNotificationClick = async (notif: Notification) => {
+        if (!notif.read) {
+            markAsRead(notif.id, false); 
+        }
+        if (notif.targetUrl) 
+            router.navigate(notif.targetUrl); 
+    };
 
     return { 
         notifications, 
@@ -102,6 +123,8 @@ export function useNotifications(isOpen: boolean) {
         hasMore, 
         isLoading, 
         observerTarget, 
-        markAsRead 
+        markAsRead,
+        markAllAsRead,
+        handleNotificationClick
     };
 }

@@ -5,4 +5,5 @@ export interface Notification {
     type: string;
     read: boolean;
     createdAt: string;
+    targetUrl?: string;
 }
