@@ -1,31 +1,29 @@
-import axios from "axios";
+import useApiPrivate from "../hooks/useApiPrivate";
 
 const IP = import.meta.env.VITE_MAZAD_IP;
 
-export const notificationApi = {
-    getPage: async (pageNumber: number) => {
+export const useNotificationApi = () => {
+    const apiPrivate = useApiPrivate(); 
 
-        await new Promise<void>((resolve) => {
-            window.setTimeout(() => resolve(), 2000); 
-        })
+    return {
+        getPage: async (pageNumber: number) => {
+            const response = await apiPrivate.get(`${IP}/api/notifications?pageNumber=${pageNumber}`, {
+                headers: { "X-User-Id": "01" } 
+            });
+            return response.data;
+        },
+        
+        markAsRead: async (id: string) => {
+            await apiPrivate.put(`${IP}/api/notifications/${id}/read`, {}, {
+                headers: { "X-User-Id": "01" }
+            });
+        },
 
-        const response = await axios.get(`${IP}/api/notifications?pageNumber=${pageNumber}`, {
-            headers: { "X-User-Id": "01" }
-        });
-        return response.data;
-    },
-    
-    markAsRead: async (id: string) => {
-        await axios.put(`${IP}/api/notifications/${id}/read`, {}, {
-            headers: { "X-User-Id": "01" }
-        });
-    },
-
-
-    markAllAsRead: async () => {
-        const response = await axios.put(`${IP}/api/notifications/read-all`, {}, {
-            headers: { "X-User-Id": "01" }
-        });
-        return response.data;
-    }
+        markAllAsRead: async () => {
+            const response = await apiPrivate.put(`${IP}/api/notifications/read-all`, {}, {
+                headers: { "X-User-Id": "01" }
+            });
+            return response.data;
+        }
+    };
 };
