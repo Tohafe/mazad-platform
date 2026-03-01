@@ -130,11 +130,17 @@ const FilterList = ({className = "", appliedFilters, onApplyFilters}: FilterList
             </ol>
 
             <div className="w-full h-[0.5px] bg-border"/>
-            <ol className="flex flex-row gap-2 overflow-x-auto">
+            <ol className="flex flex-row gap-2 overflow-y-auto">
                 {appliedFilters.map((filter) =>
-                    <IconButton key={filter.filterId} onClick={() => removeAppliedFilter(filter.filterId)}
+                    <IconButton key={filter.filterId}
+                                onClick={() => removeAppliedFilter(filter.filterId)}
                                 className="bg-muted" variant="outlined" icon={MdClose}
-                                iconPos="right">{getFilterById(filter.filterId)?.name}: {filter.options.map(option => option.name)}</IconButton>
+                                iconPos="right"
+
+
+                    >
+                        {getFilterById(filter.filterId)?.name}: {filter.options.map(option => option.name)}
+                    </IconButton>
                 )}
             </ol>
         </div>

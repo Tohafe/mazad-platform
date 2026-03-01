@@ -24,7 +24,7 @@ const IconButton = ({children, className = "", variant, icon: Icon, iconPos = "l
     )
 }
 
-const buttonBaseStyles = "flex justify-center items-center gap-2 hover:opacity-80 cursor-pointer"
+const buttonBaseStyles = "flex justify-center items-center gap-2 hover:opacity-80 cursor-pointer whitespace-nowrap"
 const buttonVariants = cva(buttonBaseStyles, {
     variants: {
         variant: {

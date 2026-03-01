@@ -12,18 +12,9 @@ const useApiPrivate = () =>{
 
     useEffect(() => {
         const requestIntercept = apiPrivate.interceptors.request.use(
-            async (config) => {
-                if (accessToken)
+            (config) => {
+                if (!config.headers.Authorization)
                     config.headers.Authorization = `Bearer ${accessToken}`;
-                else {
-                    try {
-                        const response = await refresh();
-                        config.headers.Authorization = `Bearer ${response.accessToken}`;
-                    }catch(err){
-                        navigate('/login');
-                        return Promise.reject(err);
-                    }
-                }
                 return config;
             },
             (error) => Promise.reject(error)
