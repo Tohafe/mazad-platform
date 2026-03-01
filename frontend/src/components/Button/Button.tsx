@@ -2,6 +2,7 @@ import type {ButtonHTMLAttributes, ReactNode} from "react";
 import {cn} from "../../lib/utils.ts";
 import {cva, type VariantProps} from "class-variance-authority";
 import type {IconType} from "react-icons";
+import {useNavigate} from "react-router-dom";
 
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
@@ -9,7 +10,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantPr
     className?: string,
     icon?: IconType,
     iconPos?: "left" | "right",
-    iconClassName?: string
+    iconClassName?: string,
+    link?: string,
 }
 
 const Button = ({
@@ -19,11 +21,15 @@ const Button = ({
                     icon: Icon,
                     iconPos = "left",
                     iconClassName = "",
+                    link,
                     ...props
                 }: ButtonProps) => {
 
+    const navigate = useNavigate();
+
     return (
-        <button type="button" className={cn(buttonVariants({variant, size}), className)} {...props}>
+        <button onClick={() => navigate(link ?? "")} type="button"
+                className={cn(buttonVariants({variant, size}), className)} {...props}>
             <div className={cn(`flex items-center gap-2 ${iconPos === "right" ? "flex-row-reverse" : "flex-row"}`)}>
                 {Icon && <Icon className={cn("shrink-0", iconClassName)}/>}
                 {children}

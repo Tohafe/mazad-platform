@@ -4,6 +4,7 @@ import {cn} from "../lib/utils.ts";
 import Button from "./Button/Button.tsx";
 import logo from "../assets/logo.png"
 import {FaFacebook, FaInstagram} from "react-icons/fa";
+import {useAuth} from "../context/AuthProvider.tsx";
 const tables: TableData[] = [
     {
         title: "Company",
@@ -55,14 +56,15 @@ interface FooterProps {
 }
 
 const Footer = ({className = ""}: FooterProps) => {
+    const {isAuthenticated} = useAuth();
     return <div className={cn("flex flex-col gap-4 py-12", className)}>
-        <Divider/>
-        <AccountSection/>
+        {!isAuthenticated && <Divider/>}
+        {!isAuthenticated && <AccountSection/>}
         <Divider/>
         <TableGrid className="my-6 grid-cols-2 md:grid-cols-4" tables={tables}/>
         <Divider/>
         <div className="flex gap-4 items-center justify-between w-full">
-            <div className="flex gap-4">
+            <div className="grid grid-cols-2 md:flex gap-4">
                 {LegalItemData.map((item, index) =>
                     <a className="text-[15px] text-secondary font-medium hover:underline" href={item.url}
                        key={index}>{item.title}</a>
@@ -82,8 +84,8 @@ const Footer = ({className = ""}: FooterProps) => {
 const AccountSection = ({className = ""}) => {
     return <div className={cn("flex justify-between items-center gap-4", className)}>
         <div className="flex gap-4">
-            <Button>Sign In</Button>
-            <Button>Register</Button>
+            <Button link={"/login"}>Sign In</Button>
+            <Button link={"/register"}>Register</Button>
         </div>
 
         <p className="line-clamp-1 text-[15px] font-medium invisible lg:visible">Bid on over 65,000 special objects
