@@ -1,7 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import type { IMessage } from '@stomp/stompjs';
 import { bidApi } from '../api';
-import type { ApiBid, BidEntry } from '../types';
+import type { ApiBid, BidEntry, ApiProduct } from '../types';
 import { generatePseudonym } from '../utils';
+import { useWebSocket } from '../../context/WebSocketContext';
+
+/** WebSocket bid event message structure */
+interface BidEventMessage extends ApiBid {
+  endsAt?: string;
+}
 
 /** Format "€ 123.00" */
 function formatCurrency(amount: number): string {
@@ -30,6 +38,42 @@ function transformBid(bid: ApiBid): BidEntry {
 }
 
 export function useBids(auctionId: number) {
+  const { stompClient, isConnected } = useWebSocket();
+  const queryClient = useQueryClient();
+
+  // Subscribe to real-time bid updates via WebSocket
+  useEffect(() => {
+    if (!stompClient || !isConnected || !auctionId) return;
+
+    const subscription = stompClient.subscribe(`/topic/auction/${auctionId}`, (message: IMessage) => {
+      const bidEvent: BidEventMessage = JSON.parse(message.body);
+      console.log('New bid received:', bidEvent);
+
+      // Update the bids cache with the new bid
+      queryClient.setQueryData<ApiBid[]>(['bids', auctionId], (oldBids) => {
+        if (!oldBids) return [bidEvent];
+        // Add new bid if it doesn't already exist
+        const exists = oldBids.some((bid) => bid.id === bidEvent.id);
+        if (exists) return oldBids;
+        return [bidEvent, ...oldBids];
+      });
+
+      // Always update the product cache with the new bid amount and endsAt if provided
+      queryClient.setQueryData<ApiProduct>(['product', auctionId], (oldProduct) => {
+        if (!oldProduct) return oldProduct;
+        return {
+          ...oldProduct,
+          currentBid: bidEvent.amount,
+          ...(bidEvent.endsAt && { endsAt: bidEvent.endsAt }),
+        };
+      });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [stompClient, isConnected, auctionId, queryClient]);
+
   return useQuery({
     queryKey: ['bids', auctionId],
     queryFn: () => bidApi.getBids(auctionId),
@@ -42,7 +86,5 @@ export function useBids(auctionId: number) {
         total: sorted.length,
       };
     },
-    // Re-fetch every 10 s so new bids appear without full page reload
-    refetchInterval: 10_000,
   });
 }
