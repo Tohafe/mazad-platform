@@ -1,4 +1,4 @@
-import { notificationApi } from "../services/notificationApi";
+import { useNotificationApi } from "../services/notificationApi.ts";
 import { useWebSocket } from "../context/WebSocketContext";
 import type { Notification } from "../types/notification";
 import { useEffect, useRef, useState } from "react";
@@ -17,6 +17,7 @@ export function useNotifications(isOpen: boolean) {
 
     const unreadCount = notifications.filter(n => !n.read).length;
 
+    const api = useNotificationApi();
 
     useEffect(() => {
         if (isLoading || !hasMore) return;
@@ -24,7 +25,7 @@ export function useNotifications(isOpen: boolean) {
         const fetchNotifications = async () => {
             setIsLoading(true);
             try {
-                const data = await notificationApi.getPage(page);
+                const data = await api.getPage(page);
                 
                 if (data && data.content) {
                     setHasMore(!data.last);
@@ -70,7 +71,7 @@ export function useNotifications(isOpen: boolean) {
         setNotifications(prev => prev.map(notif => notif.id === id ? { ...notif, read: true } : notif));
 
         try {
-            await notificationApi.markAsRead(id);
+            await api.markAsRead(id);
         } catch (error) {
             console.error("Failed to sync:", error);
             setNotifications(prev => prev.map(notif => notif.id === id ? { ...notif, read: false } : notif));
@@ -83,7 +84,7 @@ export function useNotifications(isOpen: boolean) {
         setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
 
         try {
-            await notificationApi.markAllAsRead(); 
+            await api.markAllAsRead(); 
         } catch (error) {
             console.error("Failed to batch sync:", error);
         }
@@ -97,7 +98,6 @@ export function useNotifications(isOpen: boolean) {
 
             const newNotification: Notification = JSON.parse(message.body);
 
-            console.log(message);
             setNotifications((prevArray) => [newNotification, ...prevArray]);
         });
 
@@ -113,8 +113,11 @@ export function useNotifications(isOpen: boolean) {
         if (!notif.read) {
             markAsRead(notif.id, false); 
         }
-        if (notif.targetUrl) 
+        if (notif.targetUrl && notif.targetUrl.startsWith('/')) {
             router.navigate(notif.targetUrl); 
+        } else if (notif.targetUrl) {
+            console.error("invalid redirect URL:", notif.targetUrl);
+        }
     };
 
     return { 
