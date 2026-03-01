@@ -37,7 +37,7 @@ public class Bid {
     @Column(name  = "bidder_id", nullable = false)
     private UUID bidderId;
 
-    @Column(nullable = false, precision = 19, scale = 2)
+    @Column(nullable = false)
     private Long amount;
 
     @Column(name = "created_at", nullable = false)

@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { ApiBid } from '../types';
 
 // TODO: Replace with dynamic auth token from auth context
-const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiJkOGExNTQxNC0yYTMxLTQyY2EtOTY4NC1mMWFiZWQ0YzYxNmMiLCJ1c2VyTmFtZSI6ImpqamoiLCJlbWFpbCI6ImhtemphYWFAZ21haWwuY29tIiwiaWF0IjoxNzcyMjgzMDQyLCJleHAiOjE3NzIyODM5NDJ9.CycftDc7a8C32RymhOG8ZvhENb1zW_5bSxx61ZMun1VX6UNFQh89G-qPDvHdQh5Vn74py0tK8Kqeg_8pviAUZQ';
+const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiI3MzM3OWFiNy0xM2VlLTQxOGQtYmQ5MC1hNjdhNjA1NmI0MGEiLCJ1c2VybmFtZSI6Im5vb25vbyIsImVtYWlsIjoibm9ub29vQGdtYWlsLmNvbSIsImlhdCI6MTc3MjMyODE3MCwiZXhwIjoxNzcyMzI5MDcwfQ.WmAiPT3Lkhb46lOfqBRfShdN2QIu8aMWwYMuBKZ_wfIZr4KYyewDYvv1Ca-kpnR_ahX_QDSNdMicnV6SLWKuhw';
 
 const api = axios.create({
   baseURL: 'http://localhost:8080',

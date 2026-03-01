@@ -2,7 +2,7 @@ import { Header, TwoColumnLayout, MainContent, BidSidebar } from './components';
 import { useProduct } from './hooks';
 
 // Product ID to fetch - can be made dynamic via URL params
-const PRODUCT_ID = 501;
+const PRODUCT_ID = 505;
 
 function App() {
   const { data, isLoading, isError, error } = useProduct(PRODUCT_ID);
