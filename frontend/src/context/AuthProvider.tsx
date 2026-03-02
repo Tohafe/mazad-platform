@@ -30,7 +30,7 @@ const AuthProvider = ({ children }:  {children: ReactNode}) => {
     )
 }
 
-export const useAuth = () =>{4
+export const useAuth = () =>{
     const context = useContext(AuthContext);
 
     if (!context)

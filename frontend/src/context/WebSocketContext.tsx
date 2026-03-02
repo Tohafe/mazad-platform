@@ -3,9 +3,6 @@ import { useAuth } from './AuthProvider.tsx';
 import { Client } from '@stomp/stompjs'; 
 
 
-
-
-
 const WS_IP = import.meta.env.VITE_WS_IP;
 
 interface WebSocketContextType {
@@ -28,7 +25,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
     useEffect(() => {
         const endpoint = accessToken 
-            ? `${WS_IP}/ws?token=${accessToken}` 
+            ? `${WS_IP}/ws?token=Bearer ${accessToken}` 
             : `${WS_IP}/ws`;
 
         const client = new Client({
@@ -71,3 +68,4 @@ export const useWebSocket = () => {
     }
     return context;
 };
+//a57268f2-a275-4e0a-9a35-f61fa7d8e307
