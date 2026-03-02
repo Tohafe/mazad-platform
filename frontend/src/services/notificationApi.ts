@@ -8,20 +8,17 @@ export const useNotificationApi = () => {
     return {
         getPage: async (pageNumber: number) => {
             const response = await apiPrivate.get(`${IP}/api/notifications?pageNumber=${pageNumber}`, {
-                headers: { "X-User-Id": "01" } 
             });
             return response.data;
         },
         
         markAsRead: async (id: string) => {
             await apiPrivate.put(`${IP}/api/notifications/${id}/read`, {}, {
-                headers: { "X-User-Id": "01" }
             });
         },
 
         markAllAsRead: async () => {
             const response = await apiPrivate.put(`${IP}/api/notifications/read-all`, {}, {
-                headers: { "X-User-Id": "01" }
             });
             return response.data;
         }
