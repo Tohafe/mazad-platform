@@ -29,13 +29,14 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemRepository itemRepository;
     private final ItemProducer itemProducer;
-    private final static UUID CURRENT_USER_ID = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11");
 
     @PostMapping
-    public ResponseEntity<ItemDetailsDto> create(@RequestBody @Valid ItemRequestDto itemRequestDto) {
+    public ResponseEntity<ItemDetailsDto> create(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody @Valid ItemRequestDto itemRequestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(itemService.createItem(itemRequestDto, CURRENT_USER_ID));
+                .body(itemService.createItem(itemRequestDto, userId));
     }
 
     @PutMapping("{id}")
@@ -61,9 +62,9 @@ public class ItemController {
 
     @GetMapping
     public PagedModel<ItemSummaryDto> listItems(
-        @ModelAttribute ItemSearch itemSearch,
-        @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-            return itemService.listItemsBy(itemSearch, pageable);
+            @ModelAttribute ItemSearch itemSearch,
+            @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return itemService.listItemsBy(itemSearch, pageable);
     }
 
     @GetMapping("/ending-soon")
@@ -104,6 +105,7 @@ public class ItemController {
         return ResponseEntity.ok(new BackfillResponse(sent, safeLimit, onlyActive));
     }
 
-    public record BackfillResponse(int sent, int scanned, boolean onlyActive) {}
+    public record BackfillResponse(int sent, int scanned, boolean onlyActive) {
+    }
 
 }
