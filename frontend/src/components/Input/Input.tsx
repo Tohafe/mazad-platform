@@ -10,7 +10,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement>{
 
 export default function Input({label, error, ...props}: InputProps){
     return(
-        <div className= "relative mt-3">
+        <div className= "relative">
             <input placeholder= " " 
                 className={`peer bg-muted w-full
                     h-14 px-4 pt-2 text-sm
@@ -19,7 +19,7 @@ export default function Input({label, error, ...props}: InputProps){
                 {...props}
             />
             {label && (<label
-                className={`absolute  text-gray-500 left-4 top-4 text-sm duration-200 origin-left pointer-events-none
+                className={`absolute  text-secondary left-4 top-4 text-sm duration-200 origin-left pointer-events-none
                     -translate-y-3 scale-80
                     peer-focus:-translate-y-3
                     peer-focus:scale-80

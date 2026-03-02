@@ -23,7 +23,7 @@ const Home = () => {
     return <div className="flex flex-col items-center gap-2 w-full">
         <div className="w-screen h-10 bg-gray-50"></div>
         <CategorySection className="h-21 max-w-305"/>
-        {/*/!*Home Page Content*!/*/}
+        {/* /!*Home Page Content*!/ */}
         {<HomePageContent/>}
 
     </div>

@@ -68,7 +68,7 @@ spring:
             cors-configurations:
               '[/**]':
                 allowed-origins:
-                  - ${MAZAD_IP}
+                  - ${FRONT_URL}
                 allowed-methods:
                   - GET
                   - POST
