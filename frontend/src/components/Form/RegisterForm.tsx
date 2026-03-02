@@ -55,12 +55,12 @@ export default function RegisterForm(){
     }
     
     return (
-        <div className="border border-b-gray-800 p-3 w-95">
+        <div className="bg-white z-20 shadow-2xl border border-gray-200 p-3 w-87  sm:w-110 sm:p-5">
             <div className='flex items-center justify-between mb-10'>
                 <h1 className='font-medium text-xl'>Create account</h1>
                 <Link to = '/login' className='text-brand mt-6'>Sign in</Link>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} >
+            <form onSubmit={handleSubmit(onSubmit)} className='space-y-3'>
                 <Input error={errors.username?.message} { ...register("username")} label="Userame"></Input>
                 <Input error={errors.email?.message} {...register("email")} label="Email"></Input>
                 <Input type="password" error={errors.password?.message} {...register("password")} label="Password"></Input>
@@ -70,7 +70,7 @@ export default function RegisterForm(){
                         {errors.root.message}
                     </span>
                 )}
-                <p className='text-xs mt-5 text-gray-600'>By creating an account, you agree to our <Link to='/term-of-use' className='text-brand'> Terms of Use</Link> and acknowledge our
+                <p className='text-xs mt-4 text-gray-600'>By creating an account, you agree to our <Link to='/term-of-use' className='text-brand'> Terms of Use</Link> and acknowledge our
                 <Link to='/privacy-policy' className='text-brand'> Privacy Policy</Link>.
                 Depending on how you use Mazad, we may send you promotional emails.</p>
                 <Button type="submit" className="w-full mt-5" disabled={isSubmitting} >

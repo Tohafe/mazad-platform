@@ -18,7 +18,7 @@ public class ProfilePatchValidator {
     private static final Map<String, LengthRule> allowedFields = Map.of(
             "firstName", new LengthRule(3, 15),
             "lastName", new LengthRule(3, 15),
-            "bio", new LengthRule(10, 500),
+            "bio", new LengthRule(0, 500),
             "phoneNumber", new LengthRule(10, 20),
             "address", new LengthRule(10, 200),
             "city", new LengthRule(4, 20),
@@ -31,10 +31,10 @@ public class ProfilePatchValidator {
     );
 
     private static void validateField(Entry<String, LengthRule> field, String value) {
-        if (value == null || value.isBlank())
+        if ((value == null || value.isBlank()) && !field.getKey().equals("bio"))
             throw new BadRequestException("Field '" + field.getKey() + "' can't be Empty or Null");
         LengthRule rule = field.getValue();
-        if (value.length() < rule.min() || value.length() > rule.max())
+        if (value != null && (value.length() < rule.min() || value.length() > rule.max()))
             throw new BadRequestException(
                     String.format("Field '%s' must be between %d and %d", field.getKey(), rule.min(), rule.max())
             );
