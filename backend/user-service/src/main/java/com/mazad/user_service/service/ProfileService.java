@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mazad.user_service.dto.CurrentUser;
+import com.mazad.user_service.dto.PatchDto;
 import com.mazad.user_service.dto.PrivateResponseDto;
 import com.mazad.user_service.dto.PublicResponseDto;
 import com.mazad.user_service.dto.RequestDto;
@@ -30,6 +31,7 @@ public class ProfileService {
     private final ProfileRepo repo;
     private final ProfileMapper mapper;
     private final JsonMapper jsonMapper;
+    private final ProfilePatchValidator patchValidator;
 
 
     public PrivateResponseDto getPrivateProfile(UUID userId) {
@@ -74,7 +76,11 @@ public class ProfileService {
         ProfileEntity profile = null;
 
         if (!isInternal){
-            ProfilePatchValidator.validate(jsonNode);
+            PatchDto dto = new PatchDto();
+            jsonMapper.readerForUpdating(dto).readValue(jsonNode);
+            patchValidator.validate(jsonNode, dto);
+
+            log.info("Dto = "  + dto);
             profile = repo
                     .findByUserId(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));

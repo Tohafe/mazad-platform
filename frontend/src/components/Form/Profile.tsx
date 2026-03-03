@@ -12,7 +12,7 @@ import { CgSpinner } from "react-icons/cg";
 import { AiOutlineEdit } from "react-icons/ai";
 import IconButton from "../Button/IconButton";
 
-const countries = ["Morocco", "USA" , "KSA"];
+const countries = ["Morocco"];
 
 const schema = z.object({
     firstName : z.string()

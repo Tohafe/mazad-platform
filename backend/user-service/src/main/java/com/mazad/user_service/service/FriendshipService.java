@@ -41,7 +41,6 @@ public class FriendshipService {
         FriendshipEntity entity;
         if (friendRepo.friendshipExists(requesterId, receiver.getUserId())){
             entity = friendRepo.findFriendship(requesterId, receiver.getUserId()).get();
-            log.info("\nEntity Found Id = {}\n", entity.getId());
             if (entity.getStatus().equals(FriendshipStatus.ACCEPTED) || entity.getRequester().getUserId().equals(requesterId))
                 friendRepo.delete(entity);
             else

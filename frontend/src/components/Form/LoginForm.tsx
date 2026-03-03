@@ -52,9 +52,7 @@ export default function Login(){
             }catch(errors: any){
                 const user : User = login.data?.user;
                 user.avatarUrl = DEFAULT_AVATAR;
-                user.avatarThambnailUrl = DEFAULT_THUMB;
-                console.log("in login : using the default avatar = ", DEFAULT_AVATAR);
-                console.log("using the default avatar thumb = ", DEFAULT_THUMB);
+                user.avatarThumbnailUrl = DEFAULT_THUMB;
                 setUser(login.data?.user);
             }
             navigate(from);

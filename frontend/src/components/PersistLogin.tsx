@@ -26,9 +26,7 @@ export default function PersistLogin(){
                 }catch(error: any){
                     const user : User = refreshResponse.user;
                     user.avatarUrl = DEFAULT_AVATAR;
-                    user.avatarThambnailUrl = DEFAULT_THUMB;
-                    console.log("in Persist : using the default avatar = ", DEFAULT_AVATAR);
-                    console.log("using the default avatar thumb = ", DEFAULT_THUMB);
+                    user.avatarThumbnailUrl = DEFAULT_THUMB;
                     setUser(refreshResponse.user);
                 }
             }catch(error: any){

@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -20,6 +19,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -36,20 +36,33 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        String token;
 
         if (RouterValidator.isPublicEndpoint.test(request)) {
+            if (request.getPath().toString().equals("/ws")){
+                token = request.getQueryParams().getFirst("token");
+                return processAuthenticatedRequest(token, exchange, chain, true);
+            }
             return chain.filter(exchange);
         }
-        if (RouterValidator.isPublicPath.test(request)) {
+        if (RouterValidator.isPublicPath.test(request))
             return onError(exchange, "Method Not Allowed For This Path", HttpStatus.METHOD_NOT_ALLOWED);
-        }
 
         if (isAuthMissing(request))
             return onError(exchange, "Authorization header is missing", HttpStatus.UNAUTHORIZED);
-        String token = getAccessToken(request);
+        token = getAccessToken(request);
 
-        if (token == null || !token.startsWith("Bearer "))
+        return (processAuthenticatedRequest(token, exchange, chain, false));
+    }
+
+   private Mono<Void> processAuthenticatedRequest(String token, ServerWebExchange exchange, GatewayFilterChain chain, boolean isFromParam){
+        ServerHttpRequest request = exchange.getRequest();
+
+        if (token == null || !token.startsWith("Bearer ")){
+            if (isFromParam)
+                    return (chain.filter(exchange));
             return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
+        }
         token = token.substring(7);
 
         try {
@@ -62,12 +75,15 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange.mutate().request(modifiedRequest).build());
 
         } catch (ExpiredJwtException e) {
+            if (isFromParam)
+                return (chain.filter(exchange));
             return onError(exchange, "Token has expired", HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
+            if (isFromParam)
+                return (chain.filter(exchange));
             return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
         }
-    }
-
+   }
 
     private boolean isAuthMissing(ServerHttpRequest request) {
         return !request.getHeaders().containsHeader(HttpHeaders.AUTHORIZATION);
