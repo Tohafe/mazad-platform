@@ -64,6 +64,18 @@ spring:
               predicates:
                 - Path=/api/notifications/**,/ws/**
                 
+            - id: upload-service-route
+              uri: http://upload-service:8080
+              predicates:
+                - Path=/api/media/**
+
+            - id: minio-route
+              uri: http://mazad-minio:9000
+              predicates:
+                - Path=/api/upload/minio/**
+              filters:
+                - StripPrefix=3
+                
           globalcors:
             cors-configurations:
               '[/**]':
@@ -81,6 +93,7 @@ spring:
                   - Content-Type
                   - Accept
                   - X-API-KEY
+                  - X-User-Id
                 exposed-headers:
                   - X-API-KEY
                 allowCredentials: true 

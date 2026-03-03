@@ -22,7 +22,7 @@ public class RouterValidator {
             "/api/v1/items", List.of(HttpMethod.GET),
             "/api/v1/categories", List.of(HttpMethod.GET),
             "/api/v1/catalog", List.of(HttpMethod.GET),
-            "/api/notifications", List.of(HttpMethod.GET, HttpMethod.POST),
+            "/api/upload/minio", List.of(HttpMethod.GET),
             "/ws", List.of(HttpMethod.GET)
     );
 
