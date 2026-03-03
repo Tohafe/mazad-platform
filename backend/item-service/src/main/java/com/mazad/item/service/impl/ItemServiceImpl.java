@@ -11,6 +11,7 @@ import com.mazad.item.repository.ItemRepository;
 import com.mazad.item.service.kafka.ItemProducer;
 import com.mazad.item.service.ItemService;
 import com.mazad.item.specification.ItemSpec;
+import com.mazad.item.validators.ItemBusinessValidator;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepo;
     private final JsonMapper jsonMapper;
     private final ItemProducer producer;
+    private final ItemBusinessValidator validator;
 
 
     @Override
@@ -43,13 +45,11 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity entity = mapper.toEntity(itemRequestDto);
         entity.setSellerId(sellerId);
         entity.setCurrentBid(0L);
-        AuctionStatus status = itemRequestDto.status() == null ? AuctionStatus.ACTIVE : itemRequestDto.status();
-        if (status != AuctionStatus.ACTIVE && status != AuctionStatus.DRAFT)
-            throw new ValidationException("Can't create an item with status of " + status);
-        entity.setStatus(status);
-
-        entity.setStartsAt(entity.getStartsAt().truncatedTo(ChronoUnit.MINUTES));
+        entity.setStatus(AuctionStatus.ACTIVE);
+        entity.setStartsAt(Instant.now().truncatedTo(ChronoUnit.MINUTES));
         entity.setEndsAt(entity.getEndsAt().truncatedTo(ChronoUnit.MINUTES));
+
+        validator.validateCreate(entity);
 
         ItemEntity createdItem = itemRepo.save(entity);
         // Sending an item creation event to kafka broker
@@ -75,40 +75,36 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDetailsDto updateItem(Long id, ItemRequestDto itemRequestDto) {
+    public ItemDetailsDto updateItem(Long id, ItemRequestDto itemRequestDto, UUID userId) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
-        // An exception will be thrown if the status is not draft and the current bid is greater than 0.
-        if (!isEditable(entity))
-            throw new ItemNotEditableException("Item (" + id + ") can't be updated: status = " + entity.getStatus());
+        validator.validateUpdate(id, entity, userId);
         entity.setCategoryId(itemRequestDto.categoryId());
         entity.setTitle(itemRequestDto.title());
         entity.setDescription(itemRequestDto.description());
         entity.setStartingPrice(itemRequestDto.startingPrice());
-        entity.setStartsAt(itemRequestDto.startsAt());
         entity.setEndsAt(itemRequestDto.endsAt());
+        entity.setShippingInfo(itemRequestDto.shippingInfo());
+        entity.setImages(itemRequestDto.images());
+        entity.setSpecs(itemRequestDto.specs());
         ItemEntity updatedEntity = itemRepo.save(entity);
         return mapper.toItemDetailsDto(updatedEntity);
     }
 
     @Override
-    public ItemDetailsDto patchItem(Long id, JsonNode patchNode) {
+    public ItemDetailsDto patchItem(Long id, JsonNode patchNode, UUID userId) {
         ItemEntity entity = itemRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
-        // An exception will be thrown if the status is not draft and the current bid is greater than 0.
-        if (!isEditable(entity))
-            throw new ItemNotEditableException("Item (" + id + ") can't be edited: status = " + entity.getStatus());
+        validator.validatePatch(entity, patchNode, userId);
         jsonMapper.readerForUpdating(entity).readValue(patchNode);
         ItemEntity savedEntity = itemRepo.save(entity);
         return mapper.toItemDetailsDto(savedEntity);
     }
 
     @Override
-    public void deleteItem(Long id) {
+    public void deleteItem(Long id, UUID userId) {
         itemRepo.findById(id).ifPresent(entity -> {
-            // An exception will be thrown if the status is not draft and the current bid is greater than 0.
-            if (!isEditable(entity))
-                throw new ItemNotEditableException("Item (" + id + ") can't be deleted: status = " + entity.getStatus());
+            validator.validateDelete(entity, userId);
             itemRepo.deleteById(id);
         });
     }
@@ -133,9 +129,5 @@ public class ItemServiceImpl implements ItemService {
             entity.setStatus(itemEvent.lastBidderId() != null ? AuctionStatus.SOLD: AuctionStatus.EXPIRED);
         } else entity.setStatus(itemEvent.status());
         itemRepo.save(entity);
-    }
-
-    private boolean isEditable(ItemEntity entity) {
-        return !(entity.getStatus() != AuctionStatus.DRAFT && entity.getCurrentBid() == 0);
     }
 }

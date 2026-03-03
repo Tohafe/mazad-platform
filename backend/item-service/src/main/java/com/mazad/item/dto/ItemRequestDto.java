@@ -14,18 +14,15 @@ public record ItemRequestDto(
         @NotNull(message = "Category id is required")
         Long categoryId,
         @NotBlank(message = "Title is required")
+        @Size(min = 5, max = 100, message = "Title must be between 5 and 100 characters")
         String title,
         String description,
-        AuctionStatus status,
         List<String> images,
         Map<String, String> specs,
         String shippingInfo,
         @NotNull(message = "Price is required")
         @Positive(message = "Price must be positive")
         Long startingPrice,
-        @NotNull(message = "Start time is required")
-        @FutureOrPresent(message = "Start time must be in the future")
-        Instant startsAt,
         @NotNull(message = "End time is required")
         @Future(message = "End time must be in the future")
         Instant endsAt

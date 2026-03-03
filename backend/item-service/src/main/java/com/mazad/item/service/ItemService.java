@@ -21,11 +21,11 @@ public interface ItemService {
 
     public ItemDetailsDto getItem(Long id);
 
-    ItemDetailsDto updateItem(Long id, @Valid ItemRequestDto itemRequestDto);
+    ItemDetailsDto updateItem(Long id, @Valid ItemRequestDto itemRequestDto, UUID userId);
 
-    void deleteItem(Long id);
+    void deleteItem(Long id, UUID userId);
 
-    ItemDetailsDto patchItem(Long id, JsonNode jsonPatch);
+    ItemDetailsDto patchItem(Long id, JsonNode jsonPatch, UUID userId);
 
     public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
 

@@ -40,18 +40,21 @@ public class ItemController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<ItemDetailsDto> update(@PathVariable Long id, @RequestBody @Valid ItemRequestDto itemRequestDto) {
-        return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto));
+    public ResponseEntity<ItemDetailsDto> update(
+            @PathVariable Long id,
+            @RequestBody @Valid ItemRequestDto itemRequestDto,
+            @RequestHeader("X-User-Id") UUID userId) {
+        return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto, userId));
     }
 
     @PatchMapping(path = "{id}")
-    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch) {
-        return ResponseEntity.ok(itemService.patchItem(id, patch));
+    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch, @RequestHeader("X-User-Id") UUID userId) {
+        return ResponseEntity.ok(itemService.patchItem(id, patch, userId));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        itemService.deleteItem(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader("X-User-Id") UUID userId) {
+        itemService.deleteItem(id, userId);
         return ResponseEntity.noContent().build();
     }
 
