@@ -115,4 +115,11 @@ public final class ItemBusinessValidator {
         if (!categoryRepo.existsById(categoryId))
             throw new ValidationException("Category with id " + categoryId + " does not exist");
     }
+
+    public void validateCancel(ItemEntity entity, UUID userId) {
+        if (!entity.getSellerId().equals(userId))
+            throw new ValidationException("Item can only be cancelled by its seller");
+        if (entity.getStatus() != AuctionStatus.ACTIVE)
+            throw new ValidationException("Item already closed");
+    }
 }

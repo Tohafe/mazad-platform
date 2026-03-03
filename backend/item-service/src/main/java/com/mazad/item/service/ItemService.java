@@ -32,4 +32,6 @@ public interface ItemService {
     List<ItemSummaryDto> endingSoonItems(int hours, int limit);
 
     public void applyUpdateEvent(ItemUpdatedEventDto itemEvent);
+
+    ItemDetailsDto cancelItem(Long id, UUID userId);
 }

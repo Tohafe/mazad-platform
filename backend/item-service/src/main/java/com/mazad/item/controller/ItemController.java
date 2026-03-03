@@ -78,6 +78,11 @@ public class ItemController {
         return ResponseEntity.ok(itemService.endingSoonItems(hours, limit));
     }
 
+    @PostMapping("{id}/cancel")
+    public ResponseEntity<ItemDetailsDto> cancel(@PathVariable Long id, @RequestHeader("X-User-Id") UUID userId) {
+        return ResponseEntity.ok(itemService.cancelItem(id, userId));
+    }
+
     @PostMapping("/backfill-kafka")
     public ResponseEntity<BackfillResponse> backfillKafka(
             @RequestParam(defaultValue = "500") int limit,

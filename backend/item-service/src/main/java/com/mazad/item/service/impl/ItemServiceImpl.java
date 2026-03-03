@@ -130,4 +130,14 @@ public class ItemServiceImpl implements ItemService {
         } else entity.setStatus(itemEvent.status());
         itemRepo.save(entity);
     }
+
+    @Override
+    public ItemDetailsDto cancelItem(Long id, UUID userId) {
+        ItemEntity entity = itemRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
+        validator.validateCancel(entity, userId);
+        entity.setStatus(AuctionStatus.CANCELLED);
+        itemRepo.save(entity);
+        return mapper.toItemDetailsDto(entity);
+    }
 }
