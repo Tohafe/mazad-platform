@@ -29,7 +29,8 @@ public class RouterValidator {
     private static final List<String> openPaths = List.of(
             "api/v1/auth/login",
             "/api/v1/auth/register",
-            "/api/v1/auth/refresh"
+            "/api/v1/auth/refresh",
+            "/ws"
     );
 
     public static final Predicate<ServerHttpRequest> isPublicEndpoint =

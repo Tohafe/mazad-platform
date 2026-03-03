@@ -10,6 +10,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import tools.jackson.databind.exc.JsonNodeException;
@@ -63,6 +64,27 @@ public class GlobalExceptionHandler {
         e.getBindingResult()
                     .getFieldErrors()
                     .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        problem.setProperty("Errors", errors);
+        return problem;
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolationException(ConstraintViolationException e) {
+        Map<String, Object> errors = new HashMap<>();
+        
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Validation Failed");
+
+        e.getConstraintViolations().forEach(violation -> {
+            String fieldName = violation.getPropertyPath().toString();
+            
+            if (fieldName.contains(".")) {
+                fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
+            }
+            
+            errors.put(fieldName, violation.getMessage());
+        });
+
         problem.setProperty("Errors", errors);
         return problem;
     }

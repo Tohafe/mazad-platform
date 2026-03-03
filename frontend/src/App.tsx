@@ -7,7 +7,7 @@ import SearchAuctions from "./pages/SearchAuctions.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 import CreateAuction from "./pages/CreateAuction.tsx";
 import Login from "./components/Form/LoginForm.tsx";
-import Profile from "./pages/Profile.tsx";
+import Settings from "./pages/Settings.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Home from "./pages/Home.tsx";
 
@@ -36,8 +36,8 @@ export const router = createBrowserRouter([
                         element: <RequireAuth/>,
                         children: [
                             {
-                                path: '/profile',
-                                element: <Profile/>
+                                path: '/settings',
+                                element: <Settings/>,
                             },
                             {
                                 path: '/create',

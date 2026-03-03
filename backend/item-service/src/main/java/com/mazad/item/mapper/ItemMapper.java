@@ -16,10 +16,8 @@ public class ItemMapper {
                 .categoryId(itemRequestDto.categoryId())
                 .title(itemRequestDto.title())
                 .description(itemRequestDto.description())
-                .status(itemRequestDto.status())
                 .shippingInfo(itemRequestDto.shippingInfo())
                 .startingPrice(itemRequestDto.startingPrice())
-                .startsAt(itemRequestDto.startsAt())
                 .endsAt(itemRequestDto.endsAt());
 
         if (itemRequestDto.images() != null)
@@ -59,9 +57,7 @@ public class ItemMapper {
                 .categoryId(entity.getCategoryId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
-                .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())
-                .startsAt(entity.getStartsAt())
                 .endsAt(entity.getEndsAt())
                 .build();
     }

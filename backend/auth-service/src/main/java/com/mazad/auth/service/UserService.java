@@ -136,7 +136,7 @@ public class UserService {
                 .findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found."));
 
-        if (!encoder.matches(data.oldPassword(), user.getPassword()))
+        if (!encoder.matches(data.password(), user.getPassword()))
             throw new UnauthorizedException("The old password you provided is incorrect.");
         user.setPassword(encoder.encode(data.newPassword()));
         repo.save(user);
@@ -148,7 +148,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found."));
 
         if (repo.existsByEmail(dto.email()) || !encoder.matches(dto.password(), user.getPassword()))
-            throw new BadRequestException("Invalid Email or Password");
+            throw new UnauthorizedException("Invalid Password");
         try {
             log.info("Sync auth service with User service to update email...");
             client.updateProfile(syncKey, CurrentUser.builder().id(userId).email(dto.email()).build());

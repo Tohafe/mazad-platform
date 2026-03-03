@@ -21,15 +21,17 @@ public interface ItemService {
 
     public ItemDetailsDto getItem(Long id);
 
-    ItemDetailsDto updateItem(Long id, @Valid ItemRequestDto itemRequestDto);
+    ItemDetailsDto updateItem(Long id, @Valid ItemRequestDto itemRequestDto, UUID userId);
 
-    void deleteItem(Long id);
+    void deleteItem(Long id, UUID userId);
 
-    ItemDetailsDto patchItem(Long id, JsonNode jsonPatch);
+    ItemDetailsDto patchItem(Long id, JsonNode jsonPatch, UUID userId);
 
     public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
 
     List<ItemSummaryDto> endingSoonItems(int hours, int limit);
 
     public void applyUpdateEvent(ItemUpdatedEventDto itemEvent);
+
+    ItemDetailsDto cancelItem(Long id, UUID userId);
 }
