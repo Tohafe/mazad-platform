@@ -33,6 +33,10 @@ export const router = createBrowserRouter([
                         element: <SearchAuctions/>
                     },
                     {
+                        path: '/itemDetails',
+                        element: <ItemPage />
+                    },
+                    {
                         element: <RequireAuth/>,
                         children: [
                             {
