@@ -4,7 +4,6 @@ import IconButton from "../Button/IconButton.tsx";
 import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from "react-icons/md";
 import {useRef, useState} from "react";
 import {cn} from "../../lib/utils.ts";
-
 import { Swiper as SwiperClass } from 'swiper';
 import type {AuctionSummary} from "../../types/item.ts";
 

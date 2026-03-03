@@ -1,39 +1,67 @@
 import Home from "./pages/Home.tsx";
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
-import HeaderSection from "./sections/HeaderSection.tsx";
-import Footer from "./components/Footer.tsx";
 import CategoryAuctions from "./pages/CategoryAuctions.tsx";
 import Register from "./components/Form/RegisterForm.tsx";
 import Login from "./components/Form/LoginForm.tsx";
 import PersistLogin from "./components/PersistLogin.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
-import Profile from "./pages/Profile.tsx";
+import Account from "./pages/Settings.tsx";
+import {useAuctionsUpdates} from "./hooks/useAuctionsUpdates.ts";
+import SearchAuctions from "./pages/SearchAuctions.tsx";
+import AppLayout from "./AppLayout.tsx";
+import Settings from "./pages/Settings.tsx";
 import Inbox from "./pages/Inbox.tsx";
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
-        element: <PersistLogin/>,
+        element: <AppLayout/>,
         children: [
             {
-                path: '/',
-                element: <Home/>,
-                errorElement: <span className="text-lg font-semibold p-6">404 NOT FOUND</span>
-            },
-            {
-                path: '/c/:idSlug',
-                element: <CategoryAuctions/>
-            },
-            {
-                element: <RequireAuth/>,
+                element: <PersistLogin/>,
                 children: [
                     {
-                        path: '/profile',
-                        element: <Profile/>
+                        path: '/',
+                        element: <Home/>,
+                        errorElement: <span className="text-lg font-semibold p-6">404 NOT FOUND</span>
+                    },
+                    {
+                        path: '/c/:idSlug',
+                        element: <CategoryAuctions/>
+                    },
+                    {
+                        path: '/search',
+                        element: <SearchAuctions/>
+                    },
+                    {
+                        path: '/itemDetails',
+                        element: <ItemPage />
+                    },
+                    {
+                        element: <RequireAuth/>,
+                        children: [
+                            {
+                                path: '/settings',
+                                element: <Settings/>,
+                            }
+                        ]
                     }
                 ]
-            }
+            },
+            {
+                path:'/register',
+                element: <Register/>
+            },
+            {
+                path: '/login',
+                element: <Login/>
+    },
+    {
+        path:'/Inbox',
+        element: <Inbox />
+            },
         ]
     },
+<<<<<<< HEAD
     {
         path:'/register',
         element: <Register/>
@@ -46,15 +74,14 @@ const router = createBrowserRouter([
         path:'/Inbox',
         element: <Inbox />
     }
+=======
+>>>>>>> da91bfffdd0de7581191903c095e665c64b3b69e
 ]);
 
 const App = () => {
+    useAuctionsUpdates();
     return (
-        <div className="flex bg-white flex-col px-12 w-full items-center min-h-screen gap-0 overflow-x-hidden">
-            <HeaderSection className="w-full max-w-305"/>
-            <RouterProvider router={router}/>
-            <Footer className="w-full max-w-305"/>
-        </div>
+        <RouterProvider router={router}/>
     )
 };
 

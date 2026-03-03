@@ -21,13 +21,15 @@ public class RouterValidator {
             "/api/v1/auth/refresh", List.of(HttpMethod.POST),
             "/api/v1/items", List.of(HttpMethod.GET),
             "/api/v1/categories", List.of(HttpMethod.GET),
-            "/api/v1/catalog", List.of(HttpMethod.GET)
+            "/api/v1/catalog", List.of(HttpMethod.GET),
+            "/ws", List.of(HttpMethod.GET)
     );
 
     private static final List<String> openPaths = List.of(
             "api/v1/auth/login",
             "/api/v1/auth/register",
-            "/api/v1/auth/refresh"
+            "/api/v1/auth/refresh",
+            "/ws"
     );
 
     public static final Predicate<ServerHttpRequest> isPublicEndpoint =

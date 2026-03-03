@@ -37,7 +37,7 @@ services:
       - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
       - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
-      - MAZAD_IP=${MAZAD_IP}
+      - FRONT_URL=${FRONT_URL}
     ports:
       - "8080:8080"
     networks:
@@ -53,9 +53,11 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
+      - ITEM_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
     depends_on:
       - postgres
       - mazad-gateway
+      - kafka-service
     ports:
     - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
     networks:
@@ -74,10 +76,11 @@ services:
      - DB_PASSWORD=${BID_DB_PASSWORD}
      - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
-     - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC} 
+     - ITEM_UPDATED_TOPIC=${ITEM_CREATED_TOPIC} 
     depends_on:
       - postgres
       - mazad-gateway
+      - kafka-service
     ports:
       - "${BIDDING_SERVICE_PORT}:${BIDDING_SERVICE_PORT}"
     networks:
@@ -120,8 +123,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - USER_SERVER_PORT=${USER_SERVER_PORT}
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
-      - USER_AVATAR_URL=${USER_AVATAR_URL}
-      - USER_AVATAR_THUMBNAIL_URL=${USER_AVATAR_THUMBNAIL_URL}
+      - AVATAR_URL=${AVATAR_URL}
+      - AVATAR_THUMBNAIL_URL=${AVATAR_THUMBNAIL_URL}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
     networks:
@@ -213,6 +216,8 @@ services:
     depends_on:
       - postgres
       - kafka-service
+      - mazad-gateway
+      - auth-service
     environment:
       # DATABASE ENV VARS ====
       - "DB_URL=${DB_URL}/${CHAT_SERVICE_DB_NAME}"
@@ -244,6 +249,23 @@ services:
     depends_on:
       minio-setup:
         condition: service_completed_successfully
+  notification-service:
+    build: ./backend/notification-service
+    container_name: notification-service-c
+    image: notification-service:latest
+    environment:
+      - NOTIFICATION_DB_USER=${NOTIFICATION_DB_USER}
+      - NOTIFICATION_DB_PASSWORD=${NOTIFICATION_DB_PASSWORD}
+      - NOTIFICATION_DB_NAME=${NOTIFICATION_DB_NAME}
+      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+      - DB_URL=${DB_URL}
+    ports:
+      - "${NOTIFICATION_PORT}:8080"
+    networks:
+      - mazad-network
+    depends_on:
+      - postgres
+      - kafka-service
 
 networks:
   mazad-network:

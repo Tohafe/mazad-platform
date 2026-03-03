@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import  com.mazad.chat_service.model.Message;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -28,15 +30,15 @@ public class MessageService {
 
 
 
-    public Message sendMessage(Message message, long myId)
+    public Message sendMessage(Message message, UUID myId)
     {
         message.setSenderId(myId);
-        if (message.getSenderId() == message.getReceiverId())
+        if (message.getSenderId().equals(message.getReceiverId()))
             throw new IllegalArgumentException("you can not send a message to yourself."); 
-        long minId = Math.min(message.getSenderId(), message.getReceiverId());
-        long maxId = Math.max(message.getSenderId(), message.getReceiverId());
-        String roomId = minId + "_" + maxId;
-        
+
+        String roomId = getRoomId(message.getSenderId(), message.getReceiverId());   
+        log.info("get roomid {}", roomId);
+
         message.setRoomId(roomId);
 
         Message savedMessage = repository.save(message);
@@ -60,18 +62,25 @@ public class MessageService {
         return savedMessage;
     }
 
-    public Slice<Message> fetchChatHistory(long userId1, long userId2, Pageable pageable){
+    public Slice<Message> fetchChatHistory(UUID userId1, UUID userId2, Pageable pageable){
         
-        long minId = Math.min(userId1, userId2);
-        long maxId = Math.max(userId1, userId2);
 
-        String roomId   = minId + "_" + maxId;
+        String roomId   = getRoomId(userId1, userId2);
         return repository.findByRoomIdOrderByTimestampDesc(roomId, pageable);
     }   
 
-    public Slice<Message> fetchInbox(long myId, Pageable pageable){
+    public Slice<Message> fetchInbox(UUID myId, Pageable pageable){
 
         return repository.findInbox(myId, pageable);
 
+    }
+
+    private String getRoomId(UUID id1, UUID id2){
+        if (id1.compareTo(id2) > 0){
+            return id1.toString() + "_" + id2.toString();
+        }
+        else{
+            return id2.toString() + "_" + id1.toString();
+        }
     }
 }

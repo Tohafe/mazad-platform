@@ -31,14 +31,13 @@ public class Bid {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "auction_id", nullable = false)
-    private Auction auction;
+    private Long auctionId;
 
     @Column(name  = "bidder_id", nullable = false)
     private UUID bidderId;
 
-    @Column(nullable = false, precision = 19, scale = 2)
+    @Column(nullable = false)
     private Long amount;
 
     @Column(name = "created_at", nullable = false)

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 public class MessageResponseDTO {
     private UUID    id;
-    private long    senderId;
+    private UUID    senderId;
     private String    content;
     private ZonedDateTime timestamp;    
 }

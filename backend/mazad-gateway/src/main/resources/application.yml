@@ -57,12 +57,18 @@ spring:
             - id: chat-service-route
               uri: http://chat-service:8080
               predicates:
-                - Path=/api/chat/**
+                - Path=/api/v1/chat/**
+
+            - id: notification-service-route
+              uri: http://notification-service:8080
+              predicates:
+                - Path=/api/notifications/**,/ws/**
+                
           globalcors:
             cors-configurations:
               '[/**]':
                 allowed-origins:
-                  - ${MAZAD_IP}
+                  - ${FRONT_URL}
                 allowed-methods:
                   - GET
                   - POST
@@ -77,4 +83,4 @@ spring:
                   - X-API-KEY
                 exposed-headers:
                   - X-API-KEY
-                allowCredentials: true
+                allowCredentials: true 

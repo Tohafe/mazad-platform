@@ -28,6 +28,9 @@ const CategoryAuctions = () => {
         window.scrollTo({top: 0, behavior: 'smooth'})
     }, [id])
 
+    useEffect(() => {
+        window.scrollTo({top: 0, behavior: 'smooth'})
+    }, [page]);
 
     const onCategoryChange = (category: Category) => {
         setId(category.id);
@@ -49,7 +52,7 @@ const CategoryAuctions = () => {
         <div className="relative left-1/2 -mb-4 -ml-[50vw] w-screen h-10 bg-gray-50 "></div>
         <CategorySection onCategoryChange={onCategoryChange} className="h-21 max-w-305"/>
         <FilterList appliedFilters={appliedFilters} onApplyFilters={handleApplyFilters} />
-        <ItemGrid items={data.content} noTitle={true} className="h-full w-full"/>
+        <ItemGrid auctions={data.content} noTitle={true} className="h-full w-full"/>
         <Pagination page={data.page.number + 1} totalPages={data.page.totalPages} onPageChange={onPageChange}
                     className="pt-10"/>
     </div>

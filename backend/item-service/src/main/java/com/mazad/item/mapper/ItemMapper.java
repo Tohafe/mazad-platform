@@ -1,7 +1,7 @@
 package com.mazad.item.mapper;
 
 import com.mazad.item.dto.*;
-import com.mazad.item.entity.AuctionStatus;
+import com.mazad.item.dto.event.ItemCreatedEventDto;
 import com.mazad.item.entity.ItemEntity;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +16,8 @@ public class ItemMapper {
                 .categoryId(itemRequestDto.categoryId())
                 .title(itemRequestDto.title())
                 .description(itemRequestDto.description())
-                .status(itemRequestDto.status())
                 .shippingInfo(itemRequestDto.shippingInfo())
                 .startingPrice(itemRequestDto.startingPrice())
-                .startsAt(itemRequestDto.startsAt())
                 .endsAt(itemRequestDto.endsAt());
 
         if (itemRequestDto.images() != null)
@@ -59,9 +57,7 @@ public class ItemMapper {
                 .categoryId(entity.getCategoryId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
-                .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())
-                .startsAt(entity.getStartsAt())
                 .endsAt(entity.getEndsAt())
                 .build();
     }
@@ -79,9 +75,9 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemEventDto toItemEventDto(ItemEntity entity) {
+    public ItemCreatedEventDto toItemEventDto(ItemEntity entity) {
         if (entity == null) return null;
-        return ItemEventDto.builder()
+        return ItemCreatedEventDto.builder()
                 .id(entity.getId())
                 .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())

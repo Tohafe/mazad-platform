@@ -10,9 +10,9 @@ function Inbox(){
 
     const fakeChats : Chat[]=
     [
-        {id: 1, name: "Hamzam", lastMessage: ""},
-        {id: 3, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        {id: 4, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
+        {id: '014604f7-1668-4b45-8f44-a42096d7da26', name: "Hamzam", lastMessage: ""},
+        {id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
+        {id: "014604f7-1668-4b45-8f44-a42096d7da29", name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
         // {id: 5, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
         // {id: 6, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
         // {id: 7, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
@@ -26,9 +26,9 @@ function Inbox(){
 
     return (
         // PAGE WRAPPER 
-        <div className="flex justify-center items-start pt-6 h-[calc(100vh-180px)] w-full bg-gray-50 font-sans px-4">
+        <div className="flex justify-center items-start pt-6 h-[calc(100vh-180px)] w-full  font-sans px-4">
             {/* MAIN INBOX CONTAINER */}
-            <div className="flex w-full max-w-7xl h-[calc(100vh-220px)] min-h-150 bg-white border border-gray-300 rounded-lg shadow-sm overflow-y-hidden">
+            <div className="flex w-full max-w-7xl h-[calc(100vh-220px)] min-h-150 bg-white border  border-gray-300  overflow-y-hidden ">
                 {/* Left panel */}
                 <div className="w-96  flex flex-col border-r border-gray-300">
                     {/* header area for the left panel */}

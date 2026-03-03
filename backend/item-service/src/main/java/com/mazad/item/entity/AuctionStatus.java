@@ -5,5 +5,6 @@ public enum AuctionStatus {
     ACTIVE, // bidding is open.
     SOLD, // auction ended with a winner
     EXPIRED, // auction ended with no bids.
-    CANCELLED // auction canceled by the seller.
+    CANCELLED, // auction canceled by the seller.
+    CLOSED // Temporary
 }
