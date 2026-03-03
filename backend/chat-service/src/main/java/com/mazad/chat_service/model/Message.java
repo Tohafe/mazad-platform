@@ -31,10 +31,10 @@ public class Message {
     private String    roomId;
     
     @Column( nullable = false)
-    private long    senderId;
+    private UUID    senderId;
    
     @Column(nullable = false)
-    private long    receiverId;
+    private UUID    receiverId;
     
 
     @Size(max = 500, message = "message content is too long!")
