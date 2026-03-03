@@ -11,6 +11,8 @@ import com.mazad.chat_service.dto.InboxResponseDTO;
 import com.mazad.chat_service.dto.MessageResponseDTO;
 import com.mazad.chat_service.model.Message;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("api/chat")
+@RequestMapping("api/v1/chat")
 public class MessageController {
     
     @Autowired
@@ -32,7 +34,7 @@ public class MessageController {
 
     @PostMapping("/send")
     public MessageResponseDTO sendMessage(
-            @RequestHeader("X-User-Id") long myId,
+            @RequestHeader("X-User-Id") UUID myId,
             @Valid @RequestBody Message message) {
             // save this in repo by the save function ig 
         Message sentMessageEntity = service.sendMessage(message, myId);
@@ -48,8 +50,8 @@ public class MessageController {
     
     @GetMapping("/history/{otherUserId}")
     public Slice<MessageResponseDTO> fetchChatHistory(
-        @RequestHeader("X-User-Id") long myId,
-        @PathVariable long otherUserId,
+        @RequestHeader("X-User-Id") UUID myId,
+        @PathVariable UUID otherUserId,
         @PageableDefault(
             size = 20,
             sort = "timestamp",
@@ -77,7 +79,7 @@ public class MessageController {
         ;
     }
     @GetMapping("/inbox")
-    public Slice<InboxResponseDTO> fetchInbox(@RequestHeader("X-User-Id") long myId,
+    public Slice<InboxResponseDTO> fetchInbox(@RequestHeader("X-User-Id") UUID myId,
             @PageableDefault(
                 size = 20
             )                                
@@ -95,8 +97,8 @@ public class MessageController {
             dto.setLastMessage(message.getContent());
             dto.setTimestamp(message.getTimestamp());
 
-            long otherUserId;
-            if (myId == message.getSenderId())
+            UUID otherUserId;
+            if (myId.equals(message.getSenderId()))
                 otherUserId = message.getReceiverId();
             else 
                 otherUserId = message.getSenderId();
