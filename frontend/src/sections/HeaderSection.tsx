@@ -3,7 +3,6 @@ import TextButton from "../components/Button/TextButton.tsx";
 import {MdKeyboardArrowDown, MdKeyboardArrowLeft, MdLanguage} from "react-icons/md";
 import SearchBar from "../components/Input/SearchBar.tsx";
 import IconButton from "../components/Button/IconButton.tsx";
-import {LuHeart} from "react-icons/lu";
 import Button from "../components/Button/Button.tsx";
 import {BiSearch} from "react-icons/bi";
 import {useEffect, useRef, useState} from "react";
@@ -12,6 +11,7 @@ import CategoryDialog from "../components/Dialog/CategoryDialog.tsx";
 import {NotificationBell} from '../components/Notification/NotificationBell.tsx';
 import {useAuth} from "../context/AuthProvider.tsx";
 import UserMenu from "../components/UserMenu.tsx";
+import {Link} from "react-router-dom";
 
 
 interface HeaderSectionProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -28,7 +28,8 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
     useEffect(() => {
         const ref = dialogRef.current;
         if (!ref) return;
-        ref.showModal();
+        if (dialogOpen) ref.showModal();
+        else ref.close();
     }, [dialogOpen])
 
     const baseStyles = "flex flex-row items-center justify-between bg-white gap-6 py-3";
@@ -39,8 +40,10 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
 
         <div className={cn(baseStyles, className,)} {...props}>
             <div className={`flex gap-1 items-center shrink-0 ${showFullWidthSearch ? "hidden" : "flex"}`}>
-                <img src={logo} className="h-14" alt="logo"/>
-                <h1 className="hidden lg:block text-2xl font-bold text-brand">Mazad</h1>
+                <Link to={"/"} className="flex gap-1 items-center">
+                    <img src={logo} className="h-14" alt="logo"/>
+                    <h1 className="hidden lg:block text-2xl font-bold text-brand">Mazad</h1>
+                </Link>
                 <IconButton onClick={() => setDialogOpen(true)} size="sm" icon={MdKeyboardArrowDown}
                             iconClassName="text-brand">Categories</IconButton>
             </div>
@@ -51,9 +54,8 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
             <div className={`flex-row items-center gap-1 ${showFullWidthSearch ? "hidden" : "flex"}`}>
                 <IconButton onClick={() => setShowFullWidthSearch(true)} icon={BiSearch} iconClassName="text-brand"
                             size="md" className="flex md:hidden"/>
-                <TextButton className="hidden md:flex" size="sm">How it works?</TextButton>
                 <TextButton className="hidden md:flex" size="sm">Help</TextButton>
-                {isAuthenticated && <NotificationBell></NotificationBell>}
+                {isAuthenticated && <NotificationBell/>}
                 <IconButton className="hidden sm:flex" size="md" icon={MdLanguage}
                             iconClassName="text-brand">EN</IconButton>
                 {isAuthenticated ?

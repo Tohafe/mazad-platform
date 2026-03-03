@@ -6,7 +6,7 @@ export default interface User{
     lastName: string | null;
     bio: string | null;
     avatarUrl: string | null;
-    avatarThambnailUrl: string | null;
+    avatarThumbnailUrl: string | null;
     phoneNumber: string | null;
     address: string | null;
     city: string | null;

@@ -11,7 +11,7 @@ public record PrivateResponseDto(
     String lastName,
     String bio,
     String avatarUrl,
-    String avatarThambnailUrl,
+    String avatarThumbnailUrl,
     String phoneNumber,
     String address,
     String city,

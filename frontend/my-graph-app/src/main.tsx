@@ -7,8 +7,8 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { WebSocketProvider } from '../context/WebSocketContext.tsx'
-import AuthProvider from '../context/AuthProvider.tsx'
+import { WebSocketProvider } from './context/WebSocketContext.tsx'
+import AuthProvider from './context/AuthProvider.tsx'
 
 
 const queryClient = new QueryClient()

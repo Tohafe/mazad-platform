@@ -4,6 +4,7 @@ import {cn} from "../lib/utils.ts";
 import Button from "./Button/Button.tsx";
 import logo from "../assets/logo.png"
 import {FaFacebook, FaInstagram} from "react-icons/fa";
+import Divider from "./Divider.tsx";
 import {useAuth} from "../context/AuthProvider.tsx";
 const tables: TableData[] = [
     {
@@ -93,8 +94,5 @@ const AccountSection = ({className = ""}) => {
     </div>
 }
 
-const Divider = () => {
-    return <div className="relative left-1/2 -ml-[50vw] w-screen h-[0.5px] bg-border"></div>
-}
 
 export default Footer

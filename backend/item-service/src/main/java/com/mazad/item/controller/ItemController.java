@@ -29,28 +29,32 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemRepository itemRepository;
     private final ItemProducer itemProducer;
-    private final static UUID CURRENT_USER_ID = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11");
 
     @PostMapping
-    public ResponseEntity<ItemDetailsDto> create(@RequestBody @Valid ItemRequestDto itemRequestDto) {
+    public ResponseEntity<ItemDetailsDto> create(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody @Valid ItemRequestDto itemRequestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(itemService.createItem(itemRequestDto, CURRENT_USER_ID));
+                .body(itemService.createItem(itemRequestDto, userId));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<ItemDetailsDto> update(@PathVariable Long id, @RequestBody @Valid ItemRequestDto itemRequestDto) {
-        return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto));
+    public ResponseEntity<ItemDetailsDto> update(
+            @PathVariable Long id,
+            @RequestBody @Valid ItemRequestDto itemRequestDto,
+            @RequestHeader("X-User-Id") UUID userId) {
+        return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto, userId));
     }
 
     @PatchMapping(path = "{id}")
-    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch) {
-        return ResponseEntity.ok(itemService.patchItem(id, patch));
+    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch, @RequestHeader("X-User-Id") UUID userId) {
+        return ResponseEntity.ok(itemService.patchItem(id, patch, userId));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        itemService.deleteItem(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader("X-User-Id") UUID userId) {
+        itemService.deleteItem(id, userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -61,9 +65,9 @@ public class ItemController {
 
     @GetMapping
     public PagedModel<ItemSummaryDto> listItems(
-        @ModelAttribute ItemSearch itemSearch,
-        @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-            return itemService.listItemsBy(itemSearch, pageable);
+            @ModelAttribute ItemSearch itemSearch,
+            @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return itemService.listItemsBy(itemSearch, pageable);
     }
 
     @GetMapping("/ending-soon")
@@ -72,6 +76,11 @@ public class ItemController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         return ResponseEntity.ok(itemService.endingSoonItems(hours, limit));
+    }
+
+    @PostMapping("{id}/cancel")
+    public ResponseEntity<ItemDetailsDto> cancel(@PathVariable Long id, @RequestHeader("X-User-Id") UUID userId) {
+        return ResponseEntity.ok(itemService.cancelItem(id, userId));
     }
 
     @PostMapping("/backfill-kafka")
@@ -104,6 +113,7 @@ public class ItemController {
         return ResponseEntity.ok(new BackfillResponse(sent, safeLimit, onlyActive));
     }
 
-    public record BackfillResponse(int sent, int scanned, boolean onlyActive) {}
+    public record BackfillResponse(int sent, int scanned, boolean onlyActive) {
+    }
 
 }

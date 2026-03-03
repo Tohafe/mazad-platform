@@ -7,7 +7,7 @@ import type { RefObject } from 'react';
 
 
 
-function useOnClickOutside(ref: RefObject<HTMLElement | null>, handler: () => void) {
+export function useOnClickOutside(ref: RefObject<HTMLElement | null>, handler: () => void) {
     useEffect(() => {
         const listener = (event: MouseEvent) => {
             if (!ref.current || ref.current.contains(event.target as Node)) return;

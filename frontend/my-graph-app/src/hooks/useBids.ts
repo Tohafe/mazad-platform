@@ -4,7 +4,7 @@ import type { IMessage } from '@stomp/stompjs';
 import { bidApi } from '../api';
 import type { ApiBid, BidEntry, ApiProduct } from '../types';
 import { generatePseudonym } from '../utils';
-import { useWebSocket } from '../../context/WebSocketContext';
+import { useWebSocket } from '../context/WebSocketContext';
 
 /** WebSocket bid event message structure */
 interface BidEventMessage extends ApiBid {
