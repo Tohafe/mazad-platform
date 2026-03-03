@@ -6,11 +6,12 @@ import type {Category} from "../../types/category.ts";
 
 interface ItemGridProps extends HTMLAttributes<HTMLDivElement> {
     className?: string;
-    categories: Category[]
+    categories: Category[];
+    onCategoryClick?: (category: Category) => void;
 
 }
 
-const ItemGrid = ({className = "", categories, ...props}: ItemGridProps) => {
+const ItemGrid = ({className = "", categories, onCategoryClick, ...props}: ItemGridProps) => {
 
     const baseStyles = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
 
@@ -18,7 +19,8 @@ const ItemGrid = ({className = "", categories, ...props}: ItemGridProps) => {
         <div className="flex flex-col gap-4">
             <h2 className="text-base text-black font-semibold"></h2>
             <div className={cn(baseStyles, className)} {...props}>
-                {categories.map((category) => <CategoryCard category={category}/>)}
+                {categories.map((category) => <CategoryCard onClick={() => onCategoryClick && onCategoryClick(category)}
+                                                            category={category}/>)}
             </div>
         </div>
     );
