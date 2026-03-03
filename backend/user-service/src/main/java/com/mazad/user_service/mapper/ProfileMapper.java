@@ -42,7 +42,7 @@ public class ProfileMapper {
                     .lastName(entity.getLastName())
                     .bio(entity.getBio())
                     .avatarUrl(entity.getAvatarUrl())
-                    .avatarThambnailUrl(entity.getAvatarThumbnailUrl())
+                    .avatarThumbnailUrl(entity.getAvatarThumbnailUrl())
                     .phoneNumber(entity.getPhoneNumber())
                     .address(entity.getAddress())
                     .city(entity.getCity())
