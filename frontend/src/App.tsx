@@ -9,6 +9,7 @@ import Profile from "./pages/Profile.tsx";
 import {useAuctionsUpdates} from "./hooks/useAuctionsUpdates.ts";
 import SearchAuctions from "./pages/SearchAuctions.tsx";
 import AppLayout from "./AppLayout.tsx";
+import ItemPage from "./pages/ItemPage.tsx";
 
 
 export const router = createBrowserRouter([
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
                     {
                         path: '/search',
                         element: <SearchAuctions/>
+                    },
+                    {
+                        path: '/itemDetails',
+                        element: <ItemPage />
                     },
                     {
                         element: <RequireAuth/>,

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+import ItemPage from './ItemPage.tsx'
 import {
   QueryClient,
   QueryClientProvider,
@@ -19,7 +19,7 @@ createRoot(document.getElementById('root')!).render(
       <ReactQueryDevtools />
         <AuthProvider>
           <WebSocketProvider>
-            <App />
+            <ItemPage />
           </WebSocketProvider>
         </AuthProvider>
     </QueryClientProvider>
