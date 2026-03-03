@@ -1,13 +1,13 @@
 export interface Chat {
-    id: number;
+    id: string;
     name: string;
     lastMessage: string;
 }
 
 interface ConversationListProps {
     chats: Chat[] ;
-    activeChatId: number | null;
-    onSelectChat: (id: number) => void;
+    activeChatId: string | null;
+    onSelectChat: (id: string) => void;
 }
 
 function ConversationList( {chats, activeChatId, onSelectChat}: ConversationListProps ) {
