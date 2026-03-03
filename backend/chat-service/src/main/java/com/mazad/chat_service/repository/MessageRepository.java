@@ -25,6 +25,6 @@ public interface MessageRepository extends JpaRepository<Message, UUID>
             ) sub
             ORDER BY timestamp DESC
             """, nativeQuery = true)
-    Slice<Message> findInbox(@Param("userId") long userId, Pageable pageable);
+    Slice<Message> findInbox(@Param("userId") UUID userId, Pageable pageable);
     
 }
