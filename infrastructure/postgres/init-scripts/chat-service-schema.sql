@@ -4,9 +4,9 @@ CREATE DATABASE "chat-service-db";
 
 CREATE TABLE IF NOT EXISTS  messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    room_id VARCHAR(50) NOT NULL,
-    sender_id BIGINT NOT NULL,
-    receiver_id BIGINT NOT NULL,
+    room_id VARCHAR(255) NOT NULL,
+    sender_id UUID NOT NULL,
+    receiver_id UUID NOT NULL,
     content TEXT NOT NULL,
     timestamp  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP  NOT NULL
 );
