@@ -1,6 +1,6 @@
 import useApiPrivate from "../hooks/useApiPrivate";
 
-const IP = import.meta.env.VITE_MAZAD_IP;
+const IP = import.meta.env.VITE_GATEWAY_URL;
 
 export const useNotificationApi = () => {
     const apiPrivate = useApiPrivate(); 

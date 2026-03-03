@@ -51,7 +51,6 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
             <div className={`flex-row items-center gap-1 ${showFullWidthSearch ? "hidden" : "flex"}`}>
                 <IconButton onClick={() => setShowFullWidthSearch(true)} icon={BiSearch} iconClassName="text-brand"
                             size="md" className="flex md:hidden"/>
-                <TextButton className="hidden md:flex" size="sm">How it works?</TextButton>
                 <TextButton className="hidden md:flex" size="sm">Help</TextButton>
                 {isAuthenticated && <NotificationBell></NotificationBell>}
                 <IconButton className="hidden sm:flex" size="md" icon={MdLanguage}

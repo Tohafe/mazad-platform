@@ -25,7 +25,7 @@ public record RequestDto(
     @Size(min=2, max=20, message="Country Should Be Between 4 And 20 Char")
     String country,
 
-    @Size(min=10, max=500, message="Bio Should Be Between 10 And 500 Char")
+    @Size(max=500, message="must be less than 500 characters")
     String bio,
 
     String avatarImageId,

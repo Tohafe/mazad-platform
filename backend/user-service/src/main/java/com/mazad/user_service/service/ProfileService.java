@@ -71,7 +71,7 @@ public class ProfileService {
     }
 
     public PrivateResponseDto patch(UUID userId, ObjectNode jsonNode, boolean isInternal) {
-        ProfileEntity profile = new ProfileEntity();
+        ProfileEntity profile = null;
 
         if (!isInternal){
             ProfilePatchValidator.validate(jsonNode);
@@ -80,6 +80,11 @@ public class ProfileService {
                     .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
             if (!profile.isComplete())
                 throw new BadRequestException("The profile should be completed first with Post request");
+        }
+        if (profile == null){
+            profile = repo
+                .findByUserId(userId)
+                .orElse(new ProfileEntity());
         }
         jsonMapper.readerForUpdating(profile).readValue(jsonNode);
         profile = repo.save(profile);

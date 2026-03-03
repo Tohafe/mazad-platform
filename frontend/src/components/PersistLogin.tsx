@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthProvider';
 import { Outlet } from 'react-router-dom';
 import useApiPrivate from '../hooks/useApiPrivate';
 import type User from '../types/user';
+import DEFAULT_AVATAR from '../../../resources/images/avatar.jpg'
+import DEFAULT_THUMB from '../../../resources/images/avatar_thumb.jpg'
 
 export default function PersistLogin(){
     const refresh = useRefreshToken();
@@ -22,6 +24,11 @@ export default function PersistLogin(){
                     const user: User = (await apiPrivate.get('/profile'))?.data;
                     setUser(user);
                 }catch(error: any){
+                    const user : User = refreshResponse.user;
+                    user.avatarUrl = DEFAULT_AVATAR;
+                    user.avatarThambnailUrl = DEFAULT_THUMB;
+                    console.log("in Persist : using the default avatar = ", DEFAULT_AVATAR);
+                    console.log("using the default avatar thumb = ", DEFAULT_THUMB);
                     setUser(refreshResponse.user);
                 }
             }catch(error: any){
@@ -38,7 +45,7 @@ export default function PersistLogin(){
     return (
         <>
             {isLoading
-            ? <p>Cheking Authentication ...</p> // put here what the user should see on loading 
+            ? <p className='text-secondary text-xl'>loading ...</p> // put here what the user should see on loading 
             : <Outlet/> 
             }
         </>
