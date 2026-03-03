@@ -1,16 +1,16 @@
-import { Header, TwoColumnLayout, MainContent, BidSidebar } from './components';
-import { useProduct } from './hooks';
+import { Header, TwoColumnLayout, MainContent, BidSidebar } from '../components';
+import { useProduct } from '../hooks/';
 
 // Product ID to fetch - can be made dynamic via URL params
-const PRODUCT_ID = 505;
+const PRODUCT_ID = 504;
 
-function App() {
+function ItemPage() {
   const { data, isLoading, isError, error } = useProduct(PRODUCT_ID);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
-        <Header />
+        {/* <Header /> */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
           <div className="flex items-center justify-center h-96">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
@@ -24,7 +24,7 @@ function App() {
     console.error('Product fetch error:', error);
     return (
       <div className="min-h-screen bg-white">
-        <Header />
+        {/* <Header /> */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
           <div className="flex flex-col items-center justify-center h-96 text-center">
             <p className="text-red-600 text-lg font-medium mb-2">Failed to load product</p>
@@ -41,7 +41,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      {/* <Header /> */}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
@@ -63,4 +63,4 @@ function App() {
   );
 }
 
-export default App;
+export default ItemPage;

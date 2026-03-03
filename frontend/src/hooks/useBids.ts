@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import type { IMessage } from '@stomp/stompjs';
-import { bidApi } from '../api';
+import { bidApi } from '../api/bidApi';
 import type { ApiBid, BidEntry, ApiProduct } from '../types';
 import { generatePseudonym } from '../utils';
 import { useWebSocket } from '../context/WebSocketContext';
