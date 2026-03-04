@@ -39,8 +39,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         String token;
 
         if (RouterValidator.isPublicEndpoint.test(request)) {
-            if (request.getPath().toString().equals("/ws")){
-                token = request.getQueryParams().getFirst("token");
+            if (request.getPath().toString().equals("/ws") || request.getPath().toString().equals("/api/v1/items/self")){
+                if (request.getPath().toString().equals("/ws"))
+                    token = request.getQueryParams().getFirst("token");
+                else
+                    token = getAccessToken(request);
+
                 return processAuthenticatedRequest(token, exchange, chain, true);
             }
             return chain.filter(exchange);

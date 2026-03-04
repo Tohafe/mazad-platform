@@ -54,6 +54,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - ITEM_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+      - ITEM_CANCELLED_TOPIC=${ITEM_CANCELLED_TOPIC}
     depends_on:
       - postgres
       - mazad-gateway

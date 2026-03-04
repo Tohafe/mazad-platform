@@ -71,7 +71,21 @@ public class ItemServiceImpl implements ItemService {
         Specification<ItemEntity> spec = ItemSpec.withSearch(itemSearch);
         Page<ItemSummaryDto> itemPage = itemRepo.findAll(spec, pageable).map(mapper::toItemSummaryDto);
         return new PagedModel<>(itemPage);
+    }
 
+    @Override
+    public PagedModel<ItemSummaryDto> listItemsBy(UUID sellerId, ItemSearch itemSearch, Pageable pageable) {
+        ItemSearch search = ItemSearch.builder()
+                .sellerId(sellerId)
+                .categoryId(itemSearch.categoryId())
+                .keyword(itemSearch.keyword())
+                .status(itemSearch.status())
+                .minPrice(itemSearch.minPrice())
+                .maxPrice(itemSearch.maxPrice())
+                .endsBefore(itemSearch.endsBefore())
+                .endsAfter(itemSearch.endsAfter())
+                .build();
+        return listItemsBy(search, pageable);
     }
 
     @Override
@@ -137,7 +151,8 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
         validator.validateCancel(entity, userId);
         entity.setStatus(AuctionStatus.CANCELLED);
-        itemRepo.save(entity);
-        return mapper.toItemDetailsDto(entity);
+        ItemEntity cancelledEntity = itemRepo.save(entity);
+        producer.sendItemCancelledEvent(mapper.toItemEventDto(cancelledEntity));
+        return mapper.toItemDetailsDto(cancelledEntity);
     }
 }

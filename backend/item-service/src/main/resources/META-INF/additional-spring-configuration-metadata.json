@@ -4,5 +4,10 @@
       "name": "item.updated.topic",
       "type": "java.lang.String",
       "description": "Description for item.updated.topic."
-  }
-] }
+    },
+    {
+      "name": "item.cancelled.topic",
+      "type": "java.lang.String",
+      "description": "Description for item.cancelled.topic."
+    }
+  ] }

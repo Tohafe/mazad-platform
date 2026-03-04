@@ -28,6 +28,7 @@ public interface ItemService {
     ItemDetailsDto patchItem(Long id, JsonNode jsonPatch, UUID userId);
 
     public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
+    public PagedModel<ItemSummaryDto> listItemsBy(UUID sellerId, ItemSearch itemSearch, Pageable pageable);
 
     List<ItemSummaryDto> endingSoonItems(int hours, int limit);
 
