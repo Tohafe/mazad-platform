@@ -5,7 +5,7 @@ import type {IconType} from "react-icons";
 
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
-    icon: IconType
+    icon?: IconType
     iconPos?: "left" | "right",
     iconClassName?: string,
     className?: string,
@@ -17,7 +17,7 @@ const IconButton = ({children, className = "", variant, icon: Icon, iconPos = "l
     return (
         <button type="button"  className={cn(buttonVariants({variant, size}), className)} {...props}>
             <div className={cn(buttonBaseStyles, `flex items-center gap-2 ${iconPos === "right" ? "flex-row-reverse" : "flex-row"}`)}>
-                <Icon className={cn(iconVariants({size}), iconClassName, "shrink-0")}/>
+                {Icon && <Icon className={cn(iconVariants({size}), iconClassName, "shrink-0")}/>}
                 {children}
             </div>
         </button>

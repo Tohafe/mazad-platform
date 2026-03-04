@@ -99,7 +99,6 @@ const CategorySection = ({className = "", onCategoryChange, ...props}: CategoryS
                 {categories.map((catTab) => (
                     <Tab link={getLink(catTab)} variant={`${selectedCat?.id === catTab.id ? "selected" : "unselected"}`}
                          key={catTab.id}
-                         category={catTab}
                          onClick={() => {
                          }} iconKey={catTab.icon}>{catTab.name}</Tab>
                 ))}
