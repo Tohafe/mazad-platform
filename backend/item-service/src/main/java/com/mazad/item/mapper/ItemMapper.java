@@ -1,7 +1,7 @@
 package com.mazad.item.mapper;
 
 import com.mazad.item.dto.*;
-import com.mazad.item.dto.event.ItemCreatedEventDto;
+import com.mazad.item.dto.event.ItemEventDto;
 import com.mazad.item.entity.ItemEntity;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +16,7 @@ public class ItemMapper {
                 .categoryId(itemRequestDto.categoryId())
                 .title(itemRequestDto.title())
                 .description(itemRequestDto.description())
+                .thumbnail(itemRequestDto.thumbnail())
                 .shippingInfo(itemRequestDto.shippingInfo())
                 .startingPrice(itemRequestDto.startingPrice())
                 .endsAt(itemRequestDto.endsAt());
@@ -37,6 +38,7 @@ public class ItemMapper {
                 .sellerId(entity.getSellerId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
+                .thumbnail(entity.getThumbnail())
                 .status(entity.getStatus())
                 .images(entity.getImages())
                 .specs(entity.getSpecs())
@@ -57,6 +59,7 @@ public class ItemMapper {
                 .categoryId(entity.getCategoryId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
+                .thumbnail(entity.getThumbnail())
                 .startingPrice(entity.getStartingPrice())
                 .endsAt(entity.getEndsAt())
                 .build();
@@ -67,7 +70,7 @@ public class ItemMapper {
         return ItemSummaryDto.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
-                .thumbnail(entity.getImages().isEmpty() ? null : entity.getImages().get(0))
+                .thumbnail(entity.getThumbnail())
                 .currentBid(entity.getCurrentBid())
                 .status(entity.getStatus())
                 .startsAt(entity.getStartsAt())
@@ -75,13 +78,15 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemCreatedEventDto toItemEventDto(ItemEntity entity) {
+    public ItemEventDto toItemEventDto(ItemEntity entity) {
         if (entity == null) return null;
-        return ItemCreatedEventDto.builder()
+        return ItemEventDto.builder()
                 .id(entity.getId())
+                .sellerId(entity.getSellerId())
                 .status(entity.getStatus())
                 .startingPrice(entity.getStartingPrice())
                 .endsAt(entity.getEndsAt())
                 .build();
     }
+
 }

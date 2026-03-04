@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS items
     id             BIGSERIAL PRIMARY KEY,
     title          VARCHAR(255)                      NOT NULL,
     description    TEXT,
+    thumbnail      TEXT                              NOT NULL,
 
     starting_price BIGINT                            NOT NULL,
     current_bid    BIGINT                            NOT NULL DEFAULT 0,
@@ -100,14 +101,14 @@ VALUES ('Watches', 'watches', 'Luxury and collectible watches',
 
 
 INSERT INTO items
-(title, description, starting_price, current_bid,
+(title, description, thumbnail, starting_price, current_bid,
  starts_at, ends_at, status, specs, shipping_info,
  seller_id, category_id, created_at, updated_at)
 SELECT 'Auction Item #' || gs,
        'High quality collectible item number ' || gs,
+       'https://picsum.photos/seed/thumb' || gs || '/600/450',
        (random() * 900 + 100)::numeric(10, 2),
-       (random() * 1200 + 150)::numeric(10, 2),
-
+       0,
        date_trunc('minute', NOW()) - INTERVAL '1 day',
 
 
@@ -188,7 +189,7 @@ FROM generate_series(1, 500) gs;
 
 INSERT INTO item_images (item_id, image_url)
 SELECT id,
-       'https://picsum.photos/seed/item' || id || '/600/450'
+       'https://picsum.photos/seed/item' || id || '/1200/900'
 FROM items
 WHERE id > (SELECT COALESCE(MAX(item_id), 0) FROM item_images);
 

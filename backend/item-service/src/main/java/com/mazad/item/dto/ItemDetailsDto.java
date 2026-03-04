@@ -16,6 +16,7 @@ public record ItemDetailsDto(
         UUID sellerId,
         String title,
         String description,
+        String thumbnail,
         AuctionStatus status,
         List<String> images,
         Map<String, String> specs,
