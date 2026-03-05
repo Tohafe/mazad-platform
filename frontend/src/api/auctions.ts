@@ -13,6 +13,17 @@ export async function fetchAuctions(api: AxiosInstance, auctionFilters: AuctionF
     return response.data as Page<AuctionSummary>;
 }
 
+export async function fetchMyAuctions(api: AxiosInstance, auctionFilters: AuctionFilters = {}): Promise<Page<AuctionSummary>> {
+    // const api = useApiPrivate();
+    const {page = 0, size = 12, ...filters} = auctionFilters;
+    const response = await api.get<Page<AuctionSummary>>("/items/self", {
+        params: {page, size, status: "ACTIVE", ...filters}
+    })
+
+    console.log("Fetching auctions with filters:", response);
+    return response.data as Page<AuctionSummary>;
+}
+
 
 export async function fetchCategorizedAuctions(api: AxiosInstance, categories_limit: number, items_limit: number): Promise<CategorizedAuctions[]> {
     const response = await api.get<CategorizedAuctions[]>("/catalog", {
@@ -26,6 +37,12 @@ export async function fetchEndingSoonAuctions(api: AxiosInstance, hours: number,
     const response = await api.get<AuctionSummary[]>("/items/ending-soon", {
         params: {hours, limit}
     });
+    return response.data;
+}
+
+export async function cancelAuction(api: AxiosInstance, id: number){
+    const response = await api.post(`/items/${id}/cancel`)
+    console.log("Canceling Auction", response)
     return response.data;
 }
 

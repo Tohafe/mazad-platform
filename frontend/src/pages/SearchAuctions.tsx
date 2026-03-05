@@ -52,7 +52,7 @@ const SearchAuctions = () => {
         </div>
 
         <FilterList appliedFilters={appliedFilters} onApplyFilters={handleApplyFilters} />
-        <ItemGrid auctions={data.content} noTitle={true} className="h-full w-full"/>
+        <ItemGrid auctions={data.content} compact={false} className="h-full w-full"/>
         <Pagination page={data.page.number + 1} totalPages={data.page.totalPages} onPageChange={onPageChange}
                     className="pt-10"/>
     </div>

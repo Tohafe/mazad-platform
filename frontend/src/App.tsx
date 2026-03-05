@@ -5,11 +5,11 @@ import Register from "./components/Form/RegisterForm.tsx";
 import Login from "./components/Form/LoginForm.tsx";
 import PersistLogin from "./components/PersistLogin.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
-import Account from "./pages/Settings.tsx";
 import {useAuctionsUpdates} from "./hooks/useAuctionsUpdates.ts";
 import SearchAuctions from "./pages/SearchAuctions.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Settings from "./pages/Settings.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
 import ItemPage from "./pages/ItemPage.tsx";
 
 
@@ -40,6 +40,10 @@ export const router = createBrowserRouter([
                     {
                         element: <RequireAuth/>,
                         children: [
+                            {
+                                path: '/dashboard',
+                                element: <Dashboard/>,
+                            },
                             {
                                 path: '/settings',
                                 element: <Settings/>,

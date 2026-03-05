@@ -1,5 +1,12 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
-import {fetchAuctions, fetchCategorizedAuctions, fetchEndingSoonAuctions, signOut} from "../api/auctions";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {
+    cancelAuction,
+    fetchAuctions,
+    fetchCategorizedAuctions,
+    fetchEndingSoonAuctions,
+    fetchMyAuctions,
+    signOut
+} from "../api/auctions";
 import type {AuctionFilters} from "../types/item.ts";
 import useApiPrivate from "./useApiPrivate.ts";
 import {useAuth} from "../context/AuthProvider.tsx";
@@ -10,6 +17,14 @@ export const useAuctions = (filters: AuctionFilters) => {
     return useQuery({
         queryKey: ["auctions","list", filters],
         queryFn: () => fetchAuctions(api, filters)
+    })
+}
+
+export const useMyAuctions = (filters: AuctionFilters) => {
+    const api = useApiPrivate();
+    return useQuery({
+        queryKey: ["my-auctions","list", filters],
+        queryFn: () => fetchMyAuctions(api, filters)
     })
 }
 
@@ -29,6 +44,14 @@ export const useEndingSoonAuctions = (hours: number, limit: number) => {
     })
 }
 
+export const useCancelAuction = () => {
+    const api = useApiPrivate();
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: number) => cancelAuction(api, id),
+        onSuccess: async () => await queryClient.invalidateQueries({queryKey: ["my-auctions"]})
+    })
+}
 
 export const useSignOut = () => {
     const api = useApiPrivate();

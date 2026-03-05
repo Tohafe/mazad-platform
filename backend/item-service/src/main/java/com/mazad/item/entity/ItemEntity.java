@@ -45,6 +45,9 @@ public class ItemEntity {
     @Column(nullable = false)
     private Long currentBid;
 
+    @Column(nullable = false)
+    private String thumbnail;
+
     @Builder.Default
     @Column(name = "image_url")
     @ElementCollection(fetch = FetchType.EAGER)
