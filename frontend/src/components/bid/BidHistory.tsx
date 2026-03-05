@@ -32,10 +32,11 @@ export function BidHistory({ bids, totalBids, isLoading }: BidHistoryProps) {
 
   const visibleBids = expanded ? bids : bids.slice(0, VISIBLE_COUNT);
   const hasMore = totalBids > VISIBLE_COUNT;
+  const shouldScroll = expanded && bids.length > 20;
 
   return (
     <>
-      <div className="space-y-2 mb-3">
+      <div className={`space-y-2 mb-3 ${shouldScroll ? 'max-h-96 overflow-y-auto pr-2' : ''}`}>
         {visibleBids.map((bid, index) => (
           <div key={index} className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">

@@ -11,7 +11,7 @@ export function QuickBidButtons({ amounts, onBidClick }: QuickBidButtonsProps) {
           key={index}
           type="button"
           onClick={() => onBidClick?.(amount)}
-          className="flex-1 min-w-[80px] py-2 px-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:border-gray-400 transition-colors"
+          className="flex-1 min-w-[80px] py-2 px-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:border-gray-400 transition-colors cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis"
         >
           {amount}
         </button>

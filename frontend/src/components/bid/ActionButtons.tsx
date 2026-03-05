@@ -11,7 +11,7 @@ export function ActionButtons({ onPlaceBid, onSetMaxBid, isLoading }: ActionButt
         type="button"
         onClick={onPlaceBid}
         disabled={isLoading}
-        className="flex-1 py-3 px-4 text-sm font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-1 py-3 px-4 text-sm font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? 'Placing…' : 'Place bid'}
       </button>
@@ -19,7 +19,7 @@ export function ActionButtons({ onPlaceBid, onSetMaxBid, isLoading }: ActionButt
         type="button"
         onClick={onSetMaxBid}
         disabled={isLoading}
-        className="flex-1 py-3 px-4 text-sm font-semibold text-white bg-blue-700 hover:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-1 py-3 px-4 text-sm font-semibold text-white bg-blue-700 hover:bg-blue-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Set max bid
       </button>

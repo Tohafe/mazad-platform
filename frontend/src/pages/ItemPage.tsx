@@ -1,12 +1,11 @@
+import { useParams } from 'react-router-dom';
 import { Header, TwoColumnLayout, MainContent, BidSidebar } from '../components';
 import { useProduct } from '../hooks/';
 
-// Product ID to fetch - can be made dynamic via URL params
-const PRODUCT_ID = 504;
-
 function ItemPage() {
-  const { data, isLoading, isError, error } = useProduct(PRODUCT_ID);
-
+  const { productId } = useParams<{ productId: string }>();
+  const numericProductId = Number(productId);
+  const { data, isLoading, isError, error } = useProduct(numericProductId);
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
@@ -56,7 +55,7 @@ function ItemPage() {
               shippingInfo={data.product.shippingInfo}
             />
           }
-          sidebar={<BidSidebar data={data.bidData} auctionId={PRODUCT_ID} />}
+          sidebar={<BidSidebar data={data.bidData} auctionId={numericProductId} />}
         />
       </main>
     </div>

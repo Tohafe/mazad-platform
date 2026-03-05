@@ -1,11 +1,14 @@
 import axios from 'axios';
 import type { ApiProduct, ApiResponse } from '../types';
 
+const API_KEY = import.meta.env.VITE_API_KEY;
+const BASE_URL = import.meta.env.VITE_GATEWAY_URL + '/api/v1'
 // Base API configuration - UPDATE THIS URL
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'X-API-Key': API_KEY
   },
 });
 
@@ -13,10 +16,8 @@ const api = axios.create({
 export const productApi = {
   // Get a single product by ID
   getProduct: async (productId: number): Promise<ApiProduct> => {
-    const response = await api.get<ApiResponse<ApiProduct>>(`/api/v1/items/${productId}`, {
-        headers: {
-          'X-Api-Key': 'c0221589-ca50-4518-9182-615460a3b241'
-        }});
+    const response = await api.get<ApiResponse<ApiProduct>>(`/items/${productId}`, {
+    });
     
     console.log('API Response:', response.data);
     
@@ -31,10 +32,10 @@ export const productApi = {
   },
 
   // Get all products (optional, for listing)
-  getProducts: async (): Promise<ApiProduct[]> => {
-    const response = await api.get<ApiResponse<ApiProduct[]>>('/products');
-    return response.data.data;
-  },
+  // getProducts: async (): Promise<ApiProduct[]> => {
+  //   const response = await api.get<ApiResponse<ApiProduct[]>>('/products');
+  //   return response.data.data;
+  // },
 };
 
 export default api;

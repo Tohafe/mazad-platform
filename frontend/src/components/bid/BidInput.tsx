@@ -14,6 +14,12 @@ function parseBidValue(raw: string): number {
   return parseInt(cleaned, 10) || 0;
 }
 
+function formatWithCommas(value: string): string {
+  const digits = value.replace(/[^0-9]/g, '');
+  if (!digits) return '';
+  return Number(digits).toLocaleString('en-US');
+}
+
 export function BidInput({ minBid, currentBidNumeric, value, onChange, error }: BidInputProps) {
   const [touched, setTouched] = useState(false);
 
@@ -26,7 +32,7 @@ export function BidInput({ minBid, currentBidNumeric, value, onChange, error }: 
     ? !isWholeNumber
       ? 'Please enter a whole number (no decimals)'
       : !isValid
-        ? `Minimum bid is ${minRequired}`
+        ? `Minimum bid is ${minRequired.toLocaleString('en-US')}`
         : null
     : null;
 
@@ -40,10 +46,11 @@ export function BidInput({ minBid, currentBidNumeric, value, onChange, error }: 
         <input
           type="text"
           inputMode="numeric"
-          value={value}
+          maxLength={11}
+          value={formatWithCommas(value)}
           onChange={(e) => {
-            // Only allow digits
-            const filtered = e.target.value.replace(/[^0-9]/g, '');
+            // Only allow digits, max 9 digits
+            const filtered = e.target.value.replace(/[^0-9]/g, '').slice(0, 9);
             onChange(filtered);
             if (!touched) setTouched(true);
           }}
