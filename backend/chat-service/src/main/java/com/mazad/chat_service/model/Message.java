@@ -14,7 +14,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
@@ -31,10 +30,10 @@ public class Message {
     private String    roomId;
     
     @Column( nullable = false)
-    private long    senderId;
+    private UUID    senderId;
    
     @Column(nullable = false)
-    private long    receiverId;
+    private UUID    receiverId;
     
 
     @Size(max = 500, message = "message content is too long!")
@@ -46,6 +45,9 @@ public class Message {
     @CreationTimestamp
     private ZonedDateTime timestamp;
 
+
+    @Column(nullable = false)
+    private boolean isRead = false;
 
 
 }

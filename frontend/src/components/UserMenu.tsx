@@ -39,7 +39,7 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
             <MenuSection>ACCOUNT</MenuSection>
             <MenuItem onClick={() => setOpen(false)} link={"/profile"}>Profile</MenuItem>
             <MenuItem onClick={() => setOpen(false)} link={"/settings"}>Settings</MenuItem>
-            <MenuItem onClick={() => setOpen(false)} link={"/conversations"}>Messages</MenuItem>
+            <MenuItem onClick={() => setOpen(false)} link={"/Inpox"}>Messages</MenuItem>
             <MenuSection>SELLING</MenuSection>
             <MenuItem  onClick={() => setOpen(false)} link={"/dashboard"}>My auctions</MenuItem>
             <MenuItem  onClick={() => setOpen(false)} link={"/listing"}>List an item</MenuItem>
