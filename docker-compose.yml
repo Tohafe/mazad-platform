@@ -60,7 +60,7 @@ services:
       - mazad-gateway
       - kafka-service
     ports:
-    - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
+    - "${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
     networks:
       mazad-network:
     restart: on-failure

@@ -23,8 +23,11 @@ public final class ItemSpec {
                 predicates.add(cb.equal(root.get("categoryId"), search.categoryId()));
             if (search.status() != null)
                 predicates.add(cb.equal(root.get("status"), search.status()));
-            if (search.keyword() != null)
-                predicates.add(cb.like(root.get("title"), "%" + search.keyword() + "%"));
+            if (search.keyword() != null && !search.keyword().isBlank()) {
+                Expression<String> titleLower = cb.lower(root.get("title"));
+                String keywordLower = search.keyword().trim().toLowerCase();
+                predicates.add(cb.like(titleLower, "%" + keywordLower + "%"));
+            }
             if (search.minPrice() != null)
                 predicates.add(cb.greaterThanOrEqualTo(root.get("currentBid"), search.minPrice()));
             if (search.maxPrice() != null)

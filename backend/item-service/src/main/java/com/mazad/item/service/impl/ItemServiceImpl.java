@@ -117,10 +117,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItem(Long id, UUID userId) {
-        itemRepo.findById(id).ifPresent(entity -> {
-            validator.validateDelete(entity, userId);
-            itemRepo.deleteById(id);
-        });
+        ItemEntity entity = itemRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item (" + id + ") can't be found"));
+        validator.validateDelete(entity, userId);
+        itemRepo.deleteById(id);
     }
 
 
@@ -140,7 +139,7 @@ public class ItemServiceImpl implements ItemService {
         entity.setCurrentBid(itemEvent.currentHighestBid());
         entity.setEndsAt(itemEvent.endsAt());
         if (itemEvent.status() == AuctionStatus.CLOSED) {
-            entity.setStatus(itemEvent.lastBidderId() != null ? AuctionStatus.SOLD: AuctionStatus.EXPIRED);
+            entity.setStatus(itemEvent.lastBidderId() != null ? AuctionStatus.SOLD : AuctionStatus.EXPIRED);
         } else entity.setStatus(itemEvent.status());
         itemRepo.save(entity);
     }

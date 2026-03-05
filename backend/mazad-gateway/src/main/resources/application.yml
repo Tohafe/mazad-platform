@@ -20,10 +20,23 @@ spring:
             - AddRequestHeader=X-Source, Mazad-Gateway
 
           routes:
-            - id: item-service-route
+            # OpenAPI docs (Public Items only will be available at /v3/api-docs/public-items)
+            - id: item-service-openapi
               uri: http://items-service:${ITEMS_SERVICE_PORT}
               predicates:
-                - Path=/api/v1/items/**, /api/v1/categories/**, /api/v1/catalog/**, /api/items/**
+                - Path=/v3/api-docs/**
+
+            # Optional: serve docs UI static files from item-service resources (/docs/index.html)
+            - id: item-service-docs-ui
+              uri: http://items-service:${ITEMS_SERVICE_PORT}
+              predicates:
+                - Path=/docs/**
+
+            # Items Public API Route
+            - id: item-service-public-route
+              uri: http://items-service:${ITEMS_SERVICE_PORT}
+              predicates:
+                - Path=/api/items/**
               filters:
                 - name: ApiKeyFilter
                 - name: RequestRateLimiter
@@ -32,6 +45,15 @@ spring:
                     redis-rate-limiter.burstCapacity: 200
                     redis-rate-limiter.requestedTokens: 1
                     key-resolver: "#{@resolveKey}"
+
+            # Items Internal API Route
+            - id: item-service-route
+              uri: http://items-service:${ITEMS_SERVICE_PORT}
+              predicates:
+                - Path=/api/v1/items/**, /api/v1/categories/**, /api/v1/catalog/**
+              filters:
+                - name: ApiKeyFilter
+
 
             - id: auth-service-route
               uri: http://auth-service:${AUTH_SERVER_PORT}
