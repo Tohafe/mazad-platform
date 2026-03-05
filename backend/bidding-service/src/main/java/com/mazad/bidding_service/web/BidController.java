@@ -49,11 +49,11 @@ public class BidController {
     public List<Bid> getBidsList(
             @PathVariable Long auctionId) {
         
-        log.info("auction ID: {}", auctionId);
+        // log.info("auction ID: {}", auctionId);
         
         List<Bid> lb =   bidService.getBidsList(auctionId);
 
-        log.info("auction ID: {}, and userId{}", lb.get(0).getAuctionId() , lb.get(0).getBidderId());
+        // log.info("auction ID: {}, and userId{}", lb.get(0).getAuctionId() , lb.get(0).getBidderId());
         
         return lb;
     }
