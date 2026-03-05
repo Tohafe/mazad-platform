@@ -2,15 +2,17 @@ import React, { useRef, useState } from 'react';
 
 interface DropzoneProps {
     onFilesSelected: (files: File[]) => void;
-    maxSizeMB?: number;
-    acceptedTypes?: string;
-    multiple?: boolean;
+    maxSizeMB?: number; 
+    maxFiles?: number;  
+    acceptedTypes?: string; 
+    multiple?: boolean; 
     children?: React.ReactNode;
 }
 
 const Dropzone: React.FC<DropzoneProps> = ({ 
     onFilesSelected, 
     maxSizeMB = 5,
+    maxFiles = 0,
     acceptedTypes = 'image/*',
     multiple = false,
     children
@@ -77,16 +79,14 @@ const Dropzone: React.FC<DropzoneProps> = ({
                 ? file.type.startsWith('image/')
                 : acceptedTypes.includes(file.type);
 
-            if (!isUnderMaxSize) console.warn(`${file.name} is too large.`);
-            if (!isAcceptedType) console.warn(`${file.name} is not an accepted type.`);
-
             return isUnderMaxSize && isAcceptedType;
         });
 
         if (!multiple && validFiles.length > 0) {
             validFiles = [validFiles[0]];
+        } else if (multiple && maxFiles > 0 && validFiles.length > maxFiles) {
+            validFiles = validFiles.slice(0, maxFiles);
         }
-
         if (validFiles.length > 0) {
             onFilesSelected(validFiles);
         }
