@@ -120,10 +120,7 @@ function transformToBidData(product: ApiProduct): BidData {
     timeProgress,
     currentBid: formatCurrencyWholeNumber(currentBid),
     startingPrice,
-    curator: {
-      name: 'Ger van Oers', // Mock curator name
-      image: 'https://tse1.mm.bing.net/th/id/OIP.7fOnKlaGNbQ3McuCaYM4LwHaHZ?rs=1&pid=ImgDetMain&o=7&rm=3',
-    },
+    sellerId: product.sellerId ?? '',
     quickBidAmounts: generateQuickBidAmounts(currentBid, startingPrice),
     minBid: `${formatCurrencyWholeNumber((currentBid === 0 ? startingPrice : currentBid) + 1)} or up`,
     watchingCount: 0, // Not in API - placeholder

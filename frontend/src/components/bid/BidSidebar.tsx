@@ -5,7 +5,7 @@ import { useBidApi } from '../../hooks/useBidApi';
 import { useBids } from '../../hooks/useBids';
 import { CountdownTimer } from './CountdownTimer';
 import { CurrentBid } from './CurrentBid';
-import { ExpertRow } from './ExpertRow';
+import { SellerRow } from './SellerRow';
 import { QuickBidButtons } from './QuickBidButtons';
 import { BidInput, parseBidValue } from './BidInput';
 import { ActionButtons } from './ActionButtons';
@@ -91,7 +91,7 @@ export function BidSidebar({ data, auctionId }: BidSidebarProps) {
         <ClosedAuctionView
           status={data.status}
           finalBid={data.currentBid}
-          curator={data.curator}
+          sellerId={data.sellerId}
           bids={bidsData?.entries ?? []}
           totalBids={bidsData?.total ?? 0}
           isLoading={bidsLoading}
@@ -118,7 +118,7 @@ export function BidSidebar({ data, auctionId }: BidSidebarProps) {
           <CurrentBid amount={data.currentBid} startingPrice={data.startingPrice} />
           
           <div className="mt-4">
-            <ExpertRow curator={data.curator} />
+            <SellerRow sellerId={data.sellerId} />
           </div>
 
           <QuickBidButtons amounts={data.quickBidAmounts} onBidClick={handleQuickBid} />
