@@ -1,28 +1,109 @@
-import { act, useState } from "react";
+import { act, useEffect, useState } from "react";
 import ConversationList from "../components/Chat/ConversationList";
 import type { Chat } from "../components/Chat/ConversationList";
 import ChatWindow from "../components/Chat/ChatWindow";
+import { apiPrivate } from "../api/axios";
+import { useWebSocket } from "../context/WebSocketContext";
+import { useAuth } from "../context/AuthProvider";
 
 
 function Inbox(){
 
-    const [activeChatId, setActiveChatId] = useState<number | null>(null);
+    const [activeChatId, setActiveChatId] = useState<string | null>(null);
 
     const fakeChats : Chat[]=
     [
-        {id: '014604f7-1668-4b45-8f44-a42096d7da26', name: "Hamzam", lastMessage: ""},
-        {id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        {id: "014604f7-1668-4b45-8f44-a42096d7da29", name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        // {id: 5, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        // {id: 6, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        // {id: 7, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        // {id: 8, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        // {id: 9, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        // {id: 0, name: "Hamza", lastMessage: "Can i get the full history of the Item ?"},
-        // {id: 2, name: "Ahmed", lastMessage: "Is this item still on Mazad ?"}
+        {
+            id: '014604f7-1668-4b45-8f44-a42096d7da26', name: "Hamzam", lastMessage: "",
+            hasUnreadMessages: true
+        },
+        {
+            id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
+            hasUnreadMessages: false
+        },
+        {
+            id: "014604f7-1668-4b45-8f44-a42096d7da29", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
+            hasUnreadMessages: false
+        }
 
     ];
-    
+    // FETCH REAL CHATS FRON /INBOX ENDPOIT
+    const [chats, setChats] = useState<Chat[]>([]);
+    useEffect(()=>{
+        const fetchInbox = async () => {
+            try{
+
+                const response = await apiPrivate.get(`/chat/inbox`);
+                const rawChats = response.data.content;
+                const formattedChats = rawChats.map((dto:any) => ({
+                    id: dto.otherUserId,
+                    name: `User ${dto.otherUserId.substring(0, 4)}..`,
+                    lastMessage: dto.lastMessage,
+                    hasUnreadMessages: dto.hasUnreadMessages
+                }));
+                setChats(formattedChats);
+            }catch(error){
+                console.error("Failed to fetch inbox:", error);
+            }
+        }
+        fetchInbox();
+    }, [apiPrivate]);
+
+    // MARK AS READ AFTER SELECTING A CHAT
+    const handleSelectChat = async (chatId: string) => {
+        setActiveChatId(chatId);
+        // need to set read boolean
+        const selectedChat = chats.find(c => c.id === chatId);
+        if (selectedChat?.hasUnreadMessages) {
+            setChats(prevChats => prevChats.map(c => 
+                    (c.id === chatId) ? {...c, hasUnreadMessages: false} : c 
+            ));
+
+            try{
+                await apiPrivate.patch(`/chat/read/${chatId}`);
+            }catch(e){
+                console.error("Failed to mark chat as read:", e);
+            }
+        }
+    }
+    // SUBSCRIBING TO THE WEBSOCKET LISTENING TO MESSAGES TOPIC
+    const { stompClient, isConnected } = useWebSocket();
+    const { user } = useAuth();
+    useEffect(() => {
+            if (!stompClient || isConnected || user?.id) return ;
+            console.log("Subscribing to real-time chat updates...");
+            const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
+                const incomingMsg = JSON.parse(message.body);
+                setChats((prevChats) => {
+                    const existingChatIndex = prevChats.findIndex(c => c.id === incomingMsg.senderId);
+                    const isCurrentlyOpen = activeChatId === incomingMsg.senderId;
+                    let updatedChats = [...prevChats];
+                    if (existingChatIndex >= 0) {
+                        const existingChat = updatedChats[existingChatIndex];
+                        updatedChats.splice(existingChatIndex,  1);
+                        updatedChats.unshift({
+                            ...existingChat,
+                            lastMessage: incomingMsg.content,
+                            hasUnreadMessages: !isCurrentlyOpen
+                        });
+                    }
+                    else {
+                        updatedChats.unshift({
+                            id: incomingMsg.id,
+                            name: `User ${incomingMsg.senderId.substring(0,4)}..`,
+                            lastMessage: incomingMsg.content,
+                            hasUnreadMessages: !isCurrentlyOpen
+                        });
+                    }
+                    return updatedChats;
+                });
+            });
+            return (() => {
+                console.log("Unsubscribing from chat updates");
+                subscription.unsubscribe();
+            });
+        }, [stompClient, isConnected, user?.id, activeChatId]
+    );
 
     return (
         // PAGE WRAPPER 
@@ -38,9 +119,9 @@ function Inbox(){
                     
                     {/* CONVERSTAION LIST */}
                     <ConversationList 
-                        chats={fakeChats}
+                        chats={chats}
                         activeChatId={activeChatId}
-                        onSelectChat={setActiveChatId}
+                        onSelectChat={handleSelectChat}
                     />
 
 
