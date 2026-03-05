@@ -11,4 +11,5 @@ public class InboxResponseDTO {
     private UUID    otherUserId;
     private String  lastMessage;
     private ZonedDateTime timestamp;
+    private boolean         hasUnreadMessages;
 }

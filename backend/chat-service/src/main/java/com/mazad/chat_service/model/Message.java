@@ -14,7 +14,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
@@ -46,6 +45,9 @@ public class Message {
     @CreationTimestamp
     private ZonedDateTime timestamp;
 
+
+    @Column(nullable = false)
+    private boolean isRead = false;
 
 
 }
