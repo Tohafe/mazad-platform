@@ -1,5 +1,6 @@
 package com.mazad.chat_service.controller;
 
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.mazad.chat_service.repository.MessageRepository;
 import com.mazad.chat_service.service.MessageService;
@@ -20,6 +21,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
+
 
 @Slf4j
 @RestController
@@ -98,23 +102,29 @@ public class MessageController {
             dto.setTimestamp(message.getTimestamp());
 
             UUID otherUserId;
-            if (myId.equals(message.getSenderId()))
+            if (myId.equals(message.getSenderId())){
                 otherUserId = message.getReceiverId();
-            else 
+                dto.setHasUnreadMessages(false);
+            }
+            else {
                 otherUserId = message.getSenderId();
+                dto.setHasUnreadMessages(!message.isRead());
+
+            }
             dto.setOtherUserId(otherUserId);
             return dto;
         });
     }
+    
+    @PatchMapping("/read/{otherUserId}")    
+    public ResponseEntity<Void> markAsRead(
+        @RequestHeader("X-User-Id") UUID myId,
+        @PathVariable UUID otherUserId) 
+    {
+            log.info("User {} is marking message from {} as read",  myId, otherUserId);
+            service.markConversationAsRead(myId, otherUserId);
+            return ResponseEntity.ok().build();
+    }
+        
 
-
-
-
-    // TODO : end point for fetching the chats 
-    // @GetMapping("/inbox/{userId}")
-    // public List<Message> fetchInboxChats(@PathVariable long userId)
-    // {
-    //     System.out.println("In post RequestMapping");
-    //     return service.fetchChatHistory(, userId);
-    // }
-}
+    }
