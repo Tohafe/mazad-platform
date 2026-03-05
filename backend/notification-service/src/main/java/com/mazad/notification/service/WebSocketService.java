@@ -18,17 +18,15 @@ public class WebSocketService {
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationRepo repository;
 
-    public void sendPrivateMessage(String userId, String destination, String message,Object payload, String type){
-        NotificationEntity entity = NotificationEntity.builder()
-                                                .userId(userId)
-                                                .message(message)
-                                                .type(type)
-                                                .isRead(false) 
-                                                .build();
-
-        NotificationEntity savedEntity = repository.save(entity);
-        log.info("Saved Notification ID: {} for User: {} message {}", savedEntity.getId(), userId, message);
-        messagingTemplate.convertAndSendToUser(userId, destination, savedEntity);
+    public void sendPrivateMessage(String userId, String destination, NotificationEntity entity, Object payload, boolean save){
+        if(save){
+            NotificationEntity savedEntity = repository.save(entity);
+            messagingTemplate.convertAndSendToUser(userId, destination, savedEntity);
+        }
+        else{
+            log.info("Saved Notification ID: {} for User: {} message {}", userId, entity.getMessage());
+            messagingTemplate.convertAndSendToUser(userId, destination, payload);
+        }
     }
     
     public void sendGlobalUpdate(String destination, Object payload) {
