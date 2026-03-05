@@ -15,7 +15,7 @@ export function ExpertRow({ curator }: ExpertRowProps) {
           src={curator.image}
           alt={curator.name}
           className="w-10 h-10 rounded-full object-cover"
-          onError={(e) => { e.currentTarget.src = 'https://placehold.co/40x40/e5e7eb/9ca3af?text=?'; }}
+          onError={(e) => { e.currentTarget.src = 'https://img.freepik.com/premium-photo/beautiful-tree-yellow-flower-blossom-with-milky-way-star-night_1003721-860.jpg'; }}
         />
         <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded">
           Expert
