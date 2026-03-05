@@ -1,22 +1,20 @@
 package com.mazad.chat_service.service;
 
-import  com.mazad.chat_service.repository.MessageRepository;
-
-import lombok.extern.slf4j.Slf4j;
-
-import  com.mazad.chat_service.model.Message;
-
-import java.util.UUID;
+import  java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import  org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mazad.chat_service.dto.MessageChateventDTO;
 import com.mazad.chat_service.infrastructure.kafka.ChatEventProducer;
-import org.springframework.transaction.annotation.Transactional;
+import com.mazad.chat_service.model.Message;
+import com.mazad.chat_service.repository.MessageRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j

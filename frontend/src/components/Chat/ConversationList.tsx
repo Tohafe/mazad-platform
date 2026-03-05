@@ -2,6 +2,7 @@ export interface Chat {
     id: string;
     name: string;
     lastMessage: string;
+    hasUnreadMessages: boolean;
 }
 
 interface ConversationListProps {
@@ -18,7 +19,8 @@ function ConversationList( {chats, activeChatId, onSelectChat}: ConversationList
                             {chats.map((chat) => (
                                 <button 
                                 key={chat.id}
-                                onClick={() => onSelectChat(chat.id)}
+                                // add the mark asread request
+                                onClick={() => onSelectChat(chat.id) }
                                 className={`w-full text-left flex  items-center gap-3 p-4 border-b border-gray-100 cursor-pointer transition-colors
                                  ${activeChatId === chat.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : 'bg-white hover:bg-gray-50 border-l-4 border-l-transparent'
                                 }`}
@@ -30,6 +32,10 @@ function ConversationList( {chats, activeChatId, onSelectChat}: ConversationList
                                         <h3 className=" font-semibold text-gray-800 ">{chat.name || 'Unknown User'}</h3>
                                         <p className="text-sm text-gray-500 truncate">{chat.lastMessage || 'No messages yet...'}</p>
                                     </div>
+                                    {chat.hasUnreadMessages && (
+                                            <div className=" flex items-center w-3 h-3 bg-blue-500 rounded-full shrink-0"></div>
+                                    )}
+
                                 </button>
                             ))}
 

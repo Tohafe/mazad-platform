@@ -26,8 +26,6 @@ function ChatWindow({ chatId } : Readonly<{chatId:string}>){
             }
             
         }, 10);
-
-
     }
     // SCROLLING TO THE BOTTOM WHEN CHANGE THE CHAT AND NEW MESSAGE
     useEffect(() => scrollToBottom(), [messages, chatId])
@@ -56,7 +54,7 @@ function ChatWindow({ chatId } : Readonly<{chatId:string}>){
 
     const { user } = useAuth();
     useEffect(() => {
-        console.log(user);
+        console.log(user);  
         setInputText("");
         setMessages([]);
         // TODO: TRIGGER AXIOS FETCH INBOX FOR THE NEW CHATID
@@ -78,7 +76,7 @@ function ChatWindow({ chatId } : Readonly<{chatId:string}>){
         }
         fetchHistory();
     }
-    , [chatId]);
+    , [chatId, user?.id, apiPrivate]);
 
 console.log('haha');
 
