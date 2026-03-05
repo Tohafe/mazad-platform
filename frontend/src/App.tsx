@@ -11,6 +11,7 @@ import SearchAuctions from "./pages/SearchAuctions.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Settings from "./pages/Settings.tsx";
 import Inbox from "./pages/Inbox.tsx";
+import ItemPage from "./pages/ItemPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
                     {
                         path: '/search',
                         element: <SearchAuctions/>
+                    },
+                    {
+                        path:'/Inbox',
+                        element: <Inbox />
                     },
                     {
                         path: '/itemDetails',
@@ -55,13 +60,9 @@ export const router = createBrowserRouter([
                 path: '/login',
                 element: <Login/>
     },
-    {
-        path:'/Inbox',
-        element: <Inbox />
-            },
-        ]
+
+    ]
     },
-<<<<<<< HEAD
     {
         path:'/register',
         element: <Register/>
@@ -74,8 +75,6 @@ export const router = createBrowserRouter([
         path:'/Inbox',
         element: <Inbox />
     }
-=======
->>>>>>> da91bfffdd0de7581191903c095e665c64b3b69e
 ]);
 
 const App = () => {
