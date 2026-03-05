@@ -94,7 +94,7 @@ export interface BidData {
   timeProgress: number;
   currentBid: string;
   startingPrice: number;
-  curator: Curator;
+  sellerId: string;
   quickBidAmounts: string[];
   minBid: string;
   watchingCount: number;

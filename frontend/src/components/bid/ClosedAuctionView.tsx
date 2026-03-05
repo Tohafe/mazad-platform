@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import type { Curator, BidEntry, AuctionStatus } from '../../types';
+import type { BidEntry, AuctionStatus } from '../../types';
+import { useSeller } from '../../hooks/useSeller';
 
 interface ClosedAuctionViewProps {
   status: AuctionStatus;
   finalBid: string;
-  curator: Curator;
+  sellerId: string;
   bids: BidEntry[];
   totalBids: number;
   isLoading?: boolean;
@@ -36,12 +37,13 @@ const STATUS_CONFIG: Record<'SOLD' | 'EXPIRED' | 'CANCELLED', { label: string; c
 export function ClosedAuctionView({
   status,
   finalBid,
-  curator,
+  sellerId,
   bids,
   totalBids,
   isLoading,
 }: ClosedAuctionViewProps) {
   const [expanded, setExpanded] = useState(false);
+  const { data: seller, isLoading: sellerLoading } = useSeller(sellerId);
   
   const config = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.SOLD;
 
@@ -59,29 +61,38 @@ export function ClosedAuctionView({
           </span>
         </div>
 
-        {/* Expert Row */}
-        {curator && (
+        {/* Seller Row */}
+        {sellerId && (
           <div className="flex items-center gap-3 py-3 border-t border-gray-100">
-            <div className="relative">
-              <img
-                src={curator.image}
-                alt={curator.name}
-                className="w-12 h-12 rounded-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = 'https://placehold.co/48x48/e5e7eb/9ca3af?text=?';
-                }}
-              />
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full">
-                Expert
-              </span>
-            </div>
-            <button
-              type="button"
-              className="flex items-center gap-1 text-sm text-gray-700 hover:text-gray-900"
-            >
-              Selected by <span className="font-medium">{curator.name}</span>
-              <ChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
-            </button>
+            {sellerLoading ? (
+              <>
+                <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse" />
+                <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+              </>
+            ) : (
+              <>
+                <div className="relative">
+                  <img
+                    src={seller?.image || ''}
+                    alt={seller?.name || 'Seller'}
+                    className="w-12 h-12 rounded-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://placehold.co/48x48/e5e7eb/9ca3af?text=?';
+                    }}
+                  />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full">
+                    Seller
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="flex items-center gap-1 text-sm text-gray-700 hover:text-gray-900"
+                >
+                  Sold by <span className="font-medium">{seller?.name || 'Unknown'}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
+                </button>
+              </>
+            )}
           </div>
         )}
 
