@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mazad.chat_service.dto.MessageChateventDTO;
 import com.mazad.chat_service.infrastructure.kafka.ChatEventProducer;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -28,7 +29,12 @@ public class MessageService {
     @Autowired
     ChatEventProducer chatEventProducer;
 
-
+    @Transactional
+    public void markConversationAsRead(UUID myId, UUID otherUserId) {
+        String roomId = getRoomId(myId, otherUserId);
+        repository.markMessageAsRead(roomId, myId);
+        log.info("Marked messages as read in room {} for user {}", roomId, myId);
+    }
 
     public Message sendMessage(Message message, UUID myId)
     {
