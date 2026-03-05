@@ -1,5 +1,14 @@
 package com.mazad.user_service.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.mazad.user_service.dto.FriendDto;
 import com.mazad.user_service.dto.FriendResponseDto;
 import com.mazad.user_service.entity.FriendshipEntity;
 import com.mazad.user_service.entity.ProfileEntity;
@@ -8,15 +17,9 @@ import com.mazad.user_service.exception.ResourceNotFoundException;
 import com.mazad.user_service.mapper.FriendshipMapper;
 import com.mazad.user_service.repo.FriendshipRepo;
 import com.mazad.user_service.repo.ProfileRepo;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +35,10 @@ public class FriendshipService {
 
         ProfileEntity requester = profileRepo
                 .findByUserId(requesterId)
-                .orElseThrow(() -> new ResourceNotFoundException("The requester doesn't exist or doesn't have a profile!"));
+                .orElseThrow(() -> new ResourceNotFoundException("The requester doesn't exist"));
         ProfileEntity receiver = profileRepo
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("The receiver doesn't exist or doesn't have a profile!"));
+                .orElseThrow(() -> new ResourceNotFoundException("The receiver doesn't exist"));
         if (requesterId.equals(receiver.getUserId()))
             return;
         FriendshipEntity entity;
@@ -56,6 +59,8 @@ public class FriendshipService {
             friendRepo.save(entity);
         }
     }
+
+
 
     private List<FriendResponseDto> getFriendsWithOnlineStatus(List<ProfileEntity> friends){
         List<String> values = new ArrayList<>();
@@ -107,5 +112,17 @@ public class FriendshipService {
         if (status.equals(FriendshipStatus.PENDING))
             return friends.stream().map(f -> mapper.toFriendshipResponseDto(f, false)).toList();
         return getFriendsWithOnlineStatus(friends);
+    }
+    
+    public FriendDto getFriendById(UUID userId, UUID friendId){
+        FriendshipEntity entity;
+
+        if (!friendRepo.friendshipExists(userId, friendId))
+            throw new ResourceNotFoundException("Not Found");
+        entity = friendRepo.findFriendship(userId, friendId).get();
+        return FriendDto.builder()
+                .requesterId(entity.getRequester().getUserId())
+                .status(entity.getStatus())
+                .build();
     }
 }

@@ -53,6 +53,18 @@ public class GlobalExceptionHandler {
         return badRequestHandler(new BadRequestException("Invalid Data"));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException e) {
+        if (e.getMessage() != null && e.getMessage().contains("UUID")) {
+            ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+            problem.setTitle("Invalid Identifier Format");
+            problem.setDetail("The provided ID is not a valid UUID format.");
+            return problem;
+        }
+        
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+}
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail validationExceptionHandler(MethodArgumentNotValidException e){
         Map<String, Object> errors = new HashMap<>();
