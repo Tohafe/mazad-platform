@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import type {AuctionUpdateEvent} from "../types/auctionUpdateEvent.ts";
 import {type QueryClient, useQueryClient} from "@tanstack/react-query";
 import type {AuctionSummary, CategorizedAuctions} from "../types/item.ts";
@@ -51,6 +51,11 @@ export function updateCache(queryClient: QueryClient, event: AuctionUpdateEvent)
 
     queryClient.setQueriesData(
         {queryKey: ["auctions", "list"]},
+        (oldData: Page<AuctionSummary>) => updateAuctionPage(oldData, event)
+    )
+
+    queryClient.setQueriesData(
+        {queryKey: ["my-auctions"]},
         (oldData: Page<AuctionSummary>) => updateAuctionPage(oldData, event)
     )
 }

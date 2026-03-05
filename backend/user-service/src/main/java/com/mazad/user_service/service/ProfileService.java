@@ -38,13 +38,22 @@ public class ProfileService {
         ProfileEntity profile = repo
                 .findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
-        return mapper.toPrivateResponseDto(profile);
-    }
-
-    public PublicResponseDto getPublicProfile(String username) {
-        ProfileEntity profile = repo
-                .findByUsername(username)
+                return mapper.toPrivateResponseDto(profile);
+            }
+            
+    public PublicResponseDto getPublicProfile(String identifier, boolean isId) {
+        ProfileEntity profile;
+        if (!isId){
+            profile = repo
+            .findByUsername(identifier)
+            .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+        }
+        else{
+            profile = repo
+                .findByUserId(UUID.fromString(identifier))
                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+
+        }
         return mapper.toPublicResponseDto(profile);
     }
 

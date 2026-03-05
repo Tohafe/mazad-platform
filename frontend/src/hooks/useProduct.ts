@@ -85,18 +85,19 @@ function formatEndTime(endsAt: string): string {
   });
 }
 
-// Format currency
-function formatCurrency(amount: number): string {
-  return `¤ ${amount.toFixed(2)}`;
+// Format currency (whole number with thousand separators)
+function formatCurrencyWholeNumber(amount: number): string {
+  return `¤ ${Math.floor(amount).toLocaleString('en-US')}`;
 }
 
 // Generate quick bid amounts
-function generateQuickBidAmounts(currentBid: number): string[] {
-  const increment = 10;
+function generateQuickBidAmounts(currentBid: number, startingPrice: number): string[] {
+  const baseBid = currentBid === 0 ? startingPrice : currentBid;
+  const increment = 5;
   return [
-    formatCurrency(currentBid + increment),
-    formatCurrency(currentBid + increment * 2),
-    formatCurrency(currentBid + increment * 3),
+    formatCurrencyWholeNumber(baseBid + increment),
+    formatCurrencyWholeNumber(baseBid + increment * 2),
+    formatCurrencyWholeNumber(baseBid + increment * 3),
   ];
 }
 
@@ -105,16 +106,11 @@ function transformToBidData(product: ApiProduct): BidData {
   const endsAt = product.endsAt ?? new Date().toISOString();
   const startsAt = product.startsAt ?? new Date().toISOString();
   const currentBid = product.currentBid ?? 0;
+  const startingPrice = product.startingPrice ?? 0;
+  const status = product.status ?? 'ACTIVE';
 
   const countdown = calculateCountdown(endsAt);
   const timeProgress = calculateTimeProgress(startsAt, endsAt);
-  
-  // Generate estimate range based on starting price (mock data)
-  const startingPrice = product.startingPrice ?? currentBid;
-  const estimateRange = {
-    min: formatCurrency(startingPrice * 1.5),
-    max: formatCurrency(startingPrice * 2.5),
-  };
   
   return {
     startsAt,
@@ -122,14 +118,11 @@ function transformToBidData(product: ApiProduct): BidData {
     endTime: formatEndTime(endsAt),
     countdown,
     timeProgress,
-    currentBid: formatCurrency(currentBid),
-    hasReservePrice: false, // Not in API, defaulting to false
-    curator: {
-      name: 'Ger van Oers', // Mock curator name
-      image: 'https://placehold.co/40x40/4f46e5/ffffff?text=GO',
-    },
-    quickBidAmounts: generateQuickBidAmounts(currentBid),
-    minBid: `${formatCurrency(currentBid + 10)} or up`,
+    currentBid: formatCurrencyWholeNumber(currentBid),
+    startingPrice,
+    sellerId: product.sellerId ?? '',
+    quickBidAmounts: generateQuickBidAmounts(currentBid, startingPrice),
+    minBid: `${formatCurrencyWholeNumber((currentBid === 0 ? startingPrice : currentBid) + 1)} or up`,
     watchingCount: 0, // Not in API - placeholder
     recentBids: [], // Not in API - placeholder
     totalBids: 6, // Mock total bids
@@ -137,6 +130,7 @@ function transformToBidData(product: ApiProduct): BidData {
     shippingLocation: 'Morocco', // Could be derived from user location
     trustpilotRating: '4.4',
     trustpilotReviews: '127239',
+    status,
   };
 }
 
@@ -178,7 +172,7 @@ export {
   calculateCountdown,
   calculateTimeProgress,
   formatEndTime,
-  formatCurrency,
+  formatCurrencyWholeNumber,
   generateQuickBidAmounts,
   transformToBidData,
 };

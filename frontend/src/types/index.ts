@@ -22,7 +22,7 @@ export interface ApiProduct {
   endsAt: string;
   createdAt: string;
   updatedAt: string;
-  status: 'ACTIVE' | 'ENDED' | 'PENDING';
+  status: AuctionStatus;
   sellerId: string;
   shippingInfo: string;
 }
@@ -84,6 +84,8 @@ export interface BidEntry {
   amount: string;
 }
 
+export type AuctionStatus = 'ACTIVE' | 'SOLD' | 'EXPIRED' | 'CANCELLED';
+
 export interface BidData {
   startsAt: string;
   endsAt: string;
@@ -91,13 +93,14 @@ export interface BidData {
   countdown: Countdown;
   timeProgress: number;
   currentBid: string;
-  hasReservePrice?: boolean;
-  curator: Curator;
+  startingPrice: number;
+  sellerId: string;
   quickBidAmounts: string[];
   minBid: string;
   watchingCount: number;
   recentBids: BidEntry[];
   totalBids: number;
+  status: AuctionStatus;
   buyerProtectionFee: string;
   shippingLocation: string;
   trustpilotRating: string;

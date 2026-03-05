@@ -1,20 +1,18 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import type { IMessage } from '@stomp/stompjs';
-import { bidApi } from '../api/bidApi';
-import type { ApiBid, BidEntry, ApiProduct } from '../types';
+import type { ApiBid, BidEntry, ApiProduct, AuctionStatus } from '../types';
+import { useBidApi } from './useBidApi';
 import { generatePseudonym } from '../utils';
 import { useWebSocket } from '../context/WebSocketContext';
+import { formatCurrencyWholeNumber } from './useProduct';
 
 /** WebSocket bid event message structure */
 interface BidEventMessage extends ApiBid {
   endsAt?: string;
+  status?: AuctionStatus;
 }
 
-/** Format "€ 123.00" */
-function formatCurrency(amount: number): string {
-  return `€ ${amount.toFixed(2)}`;
-}
 
 /** Relative time label, e.g. "2 min ago", "1 hour ago" */
 function timeAgo(dateStr: string): string {
@@ -33,13 +31,14 @@ function transformBid(bid: ApiBid): BidEntry {
   return {
     pseudonym: generatePseudonym(bid.bidderId),
     timeAgo: timeAgo(bid.createdAt),
-    amount: formatCurrency(bid.amount),
+    amount: formatCurrencyWholeNumber(bid.amount),
   };
 }
 
 export function useBids(auctionId: number) {
   const { stompClient, isConnected } = useWebSocket();
   const queryClient = useQueryClient();
+  const { getBids } = useBidApi();
 
   // Subscribe to real-time bid updates via WebSocket
   useEffect(() => {
@@ -65,6 +64,7 @@ export function useBids(auctionId: number) {
           ...oldProduct,
           currentBid: bidEvent.amount,
           ...(bidEvent.endsAt && { endsAt: bidEvent.endsAt }),
+          ...(bidEvent.status && { status: bidEvent.status }),
         };
       });
 
@@ -80,7 +80,7 @@ export function useBids(auctionId: number) {
 
   return useQuery({
     queryKey: ['bids', auctionId],
-    queryFn: () => bidApi.getBids(auctionId),
+    queryFn: () => getBids(auctionId),
     select: (data: ApiBid[]): { entries: BidEntry[]; total: number } => {
       const sorted = [...(data ?? [])].sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

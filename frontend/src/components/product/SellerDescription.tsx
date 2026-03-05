@@ -2,12 +2,12 @@ import { GlobeIcon } from '../ui/icons';
 
 interface SellerDescriptionProps {
   description: string;
-  hasReservePrice?: boolean;
+  startingPrice?: number;
 }
 
 export function SellerDescription({ 
   description, 
-  hasReservePrice = false 
+  startingPrice = 0 
 }: SellerDescriptionProps) {
   return (
     <div className="border-b border-gray-200 pb-6">
@@ -15,8 +15,8 @@ export function SellerDescription({
         Description from the seller
       </h2>
       <p className="text-sm text-gray-700 mb-2">{description}</p>
-      {!hasReservePrice && (
-        <p className="text-sm text-gray-500 italic mb-3">Without reserve price</p>
+      {startingPrice === 0 && (
+        <p className="text-sm text-gray-500 italic mb-3">No starting price</p>
       )}
       <div className="flex items-center gap-4">
         <button

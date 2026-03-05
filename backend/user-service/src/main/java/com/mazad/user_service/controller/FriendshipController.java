@@ -1,6 +1,7 @@
 package com.mazad.user_service.controller;
 
 import com.mazad.user_service.dto.FriendRequestsDto;
+import com.mazad.user_service.dto.FriendDto;
 import com.mazad.user_service.dto.FriendResponseDto;
 import com.mazad.user_service.enums.FriendshipStatus;
 import com.mazad.user_service.service.FriendshipService;
@@ -35,6 +36,13 @@ public class FriendshipController {
     ) {
         service.addOrUnFriendUser(requesterId, username);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{friendId}")
+    public ResponseEntity<FriendDto> getFriend(@RequestHeader("X-User-Id") UUID userId, @PathVariable("friendId") UUID friendId){
+        FriendDto friend = service.getFriendById(userId, friendId);
+
+        return ResponseEntity.ok(friend);
     }
 
     @GetMapping("/requests")

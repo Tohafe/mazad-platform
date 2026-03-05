@@ -37,19 +37,26 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
                     iconPos={"right"}><span className="block max-w-32  truncate">{user?.username ?? ""}</span></IconButton>
         <Dropdown className="w-60 right-0 left-auto pt-2 border-t-[0.5px] p-2" open={open}>
             <MenuSection>ACCOUNT</MenuSection>
-            <MenuItem link={"/profile"}>Profile</MenuItem>
-            <MenuItem link={"/settings"}>Settings</MenuItem>
-            <MenuItem link={"/Inbox"}>Messages</MenuItem>
-            <MenuSection>LISTING</MenuSection>
-            <MenuItem link={"/listing"}>List an item</MenuItem>
+            <MenuItem onClick={() => setOpen(false)} link={"/profile"}>Profile</MenuItem>
+            <MenuItem onClick={() => setOpen(false)} link={"/settings"}>Settings</MenuItem>
+            <MenuItem onClick={() => setOpen(false)} link={"/Inpox"}>Messages</MenuItem>
+            <MenuSection>SELLING</MenuSection>
+            <MenuItem  onClick={() => setOpen(false)} link={"/dashboard"}>My auctions</MenuItem>
+            <MenuItem  onClick={() => setOpen(false)} link={"/listing"}>List an item</MenuItem>
             <TextButton onClick={() => mutation.mutate()} className="pt-3">Sign out</TextButton>
         </Dropdown>
     </div>
 }
 
 
-const MenuItem = ({link, children}: {link?:string, children: React.ReactNode }) => {
-    return <Link to={link ?? ""}
+interface MenuItemProps {
+    link?: string;
+    children?: React.ReactNode;
+    onClick?: () => void;
+}
+
+const MenuItem = ({link, children, onClick}: MenuItemProps) => {
+    return <Link to={link ?? ""} onClick={onClick}
         className="flex gap-4 items-center font-medium text-base text-primary px-4 py-2 hover:bg-gray-100 cursor-pointer">{children}</Link>
 }
 
