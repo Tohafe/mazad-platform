@@ -1,8 +1,8 @@
 package com.mazad.notification.dto;
-
 import lombok.NoArgsConstructor;
 import java.time.Instant;
 import lombok.Data;
+
 
 @Data
 @NoArgsConstructor
