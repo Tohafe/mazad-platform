@@ -39,7 +39,7 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
             <MenuSection>ACCOUNT</MenuSection>
             <MenuItem link={"/profile"}>Profile</MenuItem>
             <MenuItem link={"/settings"}>Settings</MenuItem>
-            <MenuItem link={"/conversations"}>Messages</MenuItem>
+            <MenuItem link={"/Inbox"}>Messages</MenuItem>
             <MenuSection>LISTING</MenuSection>
             <MenuItem link={"/listing"}>List an item</MenuItem>
             <TextButton onClick={() => mutation.mutate()} className="pt-3">Sign out</TextButton>
