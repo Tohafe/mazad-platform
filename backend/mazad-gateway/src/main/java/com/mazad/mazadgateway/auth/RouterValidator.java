@@ -15,17 +15,17 @@ public class RouterValidator {
     }
 
 
-    private static final Map<String, List<HttpMethod>> openApiEndPoints = Map.of(
-            "/api/v1/auth/login", List.of(HttpMethod.POST),
-            "/api/v1/auth/register", List.of(HttpMethod.POST),
-            "/api/v1/auth/refresh", List.of(HttpMethod.POST),
-            "/api/v1/items", List.of(HttpMethod.GET),
-            "/api/items", List.of(HttpMethod.GET, HttpMethod.POST,  HttpMethod.PUT, HttpMethod.DELETE),
-            "/api/v1/categories", List.of(HttpMethod.GET),
-            "/api/v1/catalog", List.of(HttpMethod.GET),
-            "/ws", List.of(HttpMethod.GET),
-            "/v3/api-docs", List.of(HttpMethod.GET),
-            "/docs/", List.of(HttpMethod.GET)
+    private static final Map<String, List<HttpMethod>> openApiEndPoints = Map.ofEntries(
+                Map.entry("/api/v1/auth/login", List.of(HttpMethod.POST)),
+                Map.entry("/api/v1/auth/register", List.of(HttpMethod.POST)),
+                Map.entry("/api/v1/auth/refresh", List.of(HttpMethod.POST)),
+                Map.entry("/api/v1/items", List.of(HttpMethod.GET)),
+                Map.entry("/api/items", List.of(HttpMethod.GET, HttpMethod.POST,  HttpMethod.PUT, HttpMethod.DELETE)),
+                Map.entry("/api/v1/categories", List.of(HttpMethod.GET)),
+                Map.entry("/api/v1/catalog", List.of(HttpMethod.GET)),
+                Map.entry("/ws", List.of(HttpMethod.GET)),
+                Map.entry("/v3/api-docs", List.of(HttpMethod.GET)),
+                Map.entry("/docs/", List.of(HttpMethod.GET))
     );
 
     private static final List<String> openPaths = List.of(
