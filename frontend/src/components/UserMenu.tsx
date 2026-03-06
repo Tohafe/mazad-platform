@@ -37,7 +37,7 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
                     iconPos={"right"}><span className="block max-w-32  truncate">{user?.username ?? ""}</span></IconButton>
         <Dropdown className="w-60 right-0 left-auto pt-2 border-t-[0.5px] p-2" open={open}>
             <MenuSection>ACCOUNT</MenuSection>
-            <MenuItem onClick={() => setOpen(false)} link={"/profile"}>Profile</MenuItem>
+            <MenuItem onClick={() => setOpen(false)} link={`/profile/${user?.username}`}>Profile</MenuItem>
             <MenuItem onClick={() => setOpen(false)} link={"/settings"}>Settings</MenuItem>
             <MenuItem onClick={() => setOpen(false)} link={"/Inpox"}>Messages</MenuItem>
             <MenuSection>SELLING</MenuSection>

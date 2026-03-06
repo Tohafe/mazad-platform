@@ -12,6 +12,7 @@ import Settings from "./pages/Settings.tsx";
 import Inbox from "./pages/Inbox.tsx";
 import ItemPage from "./pages/ItemPage.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import PublicProfile from "./pages/PublicProfile.tsx";
 
 
 export const router = createBrowserRouter([
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
                         element: <ItemPage />
                     },
                     {
+                        path: '/profile/:username',
+                        element: <PublicProfile/>
+                    },
+                    {
                         element: <RequireAuth/>,
                         children: [
                             {
@@ -67,14 +72,6 @@ export const router = createBrowserRouter([
     },
 
     ]
-    },
-    {
-        path:'/register',
-        element: <Register/>
-    },
-    {
-        path: '/login',
-        element: <Login/>
     },
     {
         path:'/Inbox',

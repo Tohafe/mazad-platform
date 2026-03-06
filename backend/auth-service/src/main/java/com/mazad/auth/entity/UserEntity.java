@@ -41,7 +41,7 @@ public class UserEntity implements UserDetails{
     @Column(nullable=false)
     private String password;
 
-    @Column(name="username", unique=true, nullable=false, length=15)
+    @Column(name="username", unique=true, nullable=false)
     private String username;
 
     @Column(name="is_2fa_enabled")

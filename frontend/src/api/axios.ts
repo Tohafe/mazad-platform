@@ -13,14 +13,12 @@ const HEADERS = {
 const api = axios.create({
     baseURL: BASE_URL,
     headers: HEADERS,
-    timeout: 3000,
     withCredentials: true
 })
 
 export const apiPrivate = axios.create({
     baseURL: BASE_URL,
     headers: HEADERS,
-    timeout: 3000,
     withCredentials: true
 })
 

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useUserApi, type PublicUserProfile } from './useUserApi';
+import { useUserApi, type PublicUserProfile } from './useShouldRemove';
 
 export interface Seller {
   name: string;
