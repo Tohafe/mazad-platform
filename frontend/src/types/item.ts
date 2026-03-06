@@ -42,7 +42,7 @@ export interface AuctionFilters {
 
     // optional useful filters
     keyword?: string;
-    sellerId?: number;
+    sellerId?: string;
 
     // sorting
     sort?: string;

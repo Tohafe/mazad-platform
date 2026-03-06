@@ -1,25 +1,22 @@
-import { useCallback } from 'react';
-import useApiPrivate from './useApiPrivate';
+import type { AxiosInstance } from "axios";
+import { getPublicProfile, getPublicProfileById, isFriend, sendFriendRequest } from "../api/userApi";
+import useApiPrivate from "./useApiPrivate";
 
-export interface PublicUserProfile {
-  username: string;
-  bio: string | null;
-  avatarUrl: string | null;
-  thumbnail: string | null;
-  country: string | null;
+export default function useUserApi(){
+    const api: AxiosInstance = useApiPrivate();
+
+    return {
+        getPublicProfile: async (username: string) => {
+            return await getPublicProfile(api, username);
+        },
+        getPublicProfileById: async (userId: string) => {
+            return await getPublicProfileById(api, userId);
+        },
+        sendFriendRequest: async (username: string) => {
+            return await sendFriendRequest(api, username);
+        },
+        isFriend: async (friendId: string) => {
+            return await isFriend(api, friendId);
+        }
+    };
 }
-
-/** Hook that provides user API methods using authenticated axios instance */
-export function useUserApi() {
-  const api = useApiPrivate();
-
-  /** Get public profile by user ID */
-  const getPublicProfile = useCallback(async (userId: string): Promise<PublicUserProfile> => {
-    const response = await api.get<PublicUserProfile>(`/profile/users/${userId}`);
-    return response.data;
-  }, [api]);
-
-  return { getPublicProfile };
-}
-
-export default useUserApi;

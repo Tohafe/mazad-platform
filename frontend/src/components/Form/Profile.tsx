@@ -31,7 +31,7 @@ const schema = z.object({
         .regex(/^[0-9]+$/, "Invalid phone number")
         .startsWith("0"),
     bio : z.string()
-            .max(500, "must be less than 500 characters"),
+            .max(200, "must be less than 200 characters"),
     country : z.enum(countries, 'Please select a supported country from the list'),
     city : z.string()
             .min(2, "must be at least 2 characters")
