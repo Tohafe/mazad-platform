@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
                         element: <SearchAuctions/>
                     },
                     {
-                        path:'/conversations',
+                        path:'/inbox',
                         element: <Inbox />
                     },
                     {
@@ -100,10 +100,6 @@ export const router = createBrowserRouter([
         path: '/login',
         element: <Login/>
     },
-    {
-        path:'/Inbox',
-        element: <Inbox />
-    }
 ]);
 
 const App = () => {
