@@ -139,7 +139,7 @@ const ItemsSlider = ({className = "", auctions}: { className: string, auctions: 
     >
         {auctions.map((item, i) => (
             <SwiperSlide key={i}>
-                <ItemCardCompact item={item}/>
+                <ItemCardCompact auction={item}/>
             </SwiperSlide>
         ))}
 

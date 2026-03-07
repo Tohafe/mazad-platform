@@ -103,8 +103,10 @@ export function useNotifications(isOpen: boolean) {
 
         
         return () => {
-            console.log("Unsubscribe to notification");
-            subscription.unsubscribe();
+            if (stompClient && stompClient.connected && subscription) {
+                console.log("Unsubscribe to notification");
+                subscription.unsubscribe();
+            }
         };
 
     }, [stompClient, isConnected]);

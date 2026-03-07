@@ -54,12 +54,13 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - ITEM_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+      - ITEM_CANCELLED_TOPIC=${ITEM_CANCELLED_TOPIC}
     depends_on:
       - postgres
       - mazad-gateway
       - kafka-service
     ports:
-    - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
+    - "${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
     networks:
       mazad-network:
     restart: on-failure
@@ -216,6 +217,8 @@ services:
     depends_on:
       - postgres
       - kafka-service
+      - mazad-gateway
+      - auth-service
     environment:
       # DATABASE ENV VARS ====
       - "DB_URL=${DB_URL}/${CHAT_SERVICE_DB_NAME}"

@@ -1,4 +1,4 @@
-
+import type { FileResponse } from "../hooks/useFileUpload";
 export interface UploadableFile {
     file: File;
     localId: string;
@@ -7,8 +7,5 @@ export interface UploadableFile {
     status: 'IDLE' | 'UPLOADING' | 'SUCCESS' | 'FAILED';
     targetWidth?: string;
 
-    data?: {
-        id: string;
-        url: string;
-    };
+    data?: FileResponse;
 }

@@ -1,10 +1,7 @@
 package com.mazad.item.dto;
 
-import com.mazad.item.entity.AuctionStatus;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
-
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +14,8 @@ public record ItemRequestDto(
         @Size(min = 5, max = 100, message = "Title must be between 5 and 100 characters")
         String title,
         String description,
+        @NotNull(message = "Thumbnail is required")
+        String thumbnail,
         List<String> images,
         Map<String, String> specs,
         String shippingInfo,

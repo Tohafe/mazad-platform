@@ -27,7 +27,8 @@ public class NotificationEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
 
-    private String type; 
+    @Column(nullable = true)
+    private String targetUrl;
 
     @Builder.Default
     private boolean isRead = false;

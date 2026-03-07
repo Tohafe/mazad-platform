@@ -52,7 +52,13 @@ public class ProfileController {
 
     @GetMapping("/{username}")
     public ResponseEntity<PublicResponseDto> getPublicProfile(@PathVariable("username") String username) {
-        PublicResponseDto response = service.getPublicProfile(username);
+        PublicResponseDto response = service.getPublicProfile(username, false);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<PublicResponseDto> getPublicProfileByID(@PathVariable("userId") String userId) {
+        PublicResponseDto response = service.getPublicProfile(userId, true);
         return ResponseEntity.ok(response);
     }
 

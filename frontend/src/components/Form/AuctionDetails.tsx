@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { useCategoriesAuctions } from '../../hooks/useAuctions';
 
-// Struct remains identical
 export interface AuctionDetailsData {
     categoryId: number;
     title: string;
@@ -11,7 +11,7 @@ export interface AuctionDetailsData {
     specs: Record<string, string>; 
 }
 
-interface AuctionDetailsStepProps {
+interface AuctionDetailsProps {
     onBack: () => void;
     onSubmit: (data: any) => void;
     isSubmitting: boolean;
@@ -19,19 +19,20 @@ interface AuctionDetailsStepProps {
     hasFailedUploads: boolean;
 }
 
-const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({ 
+const AuctionDetails: React.FC<AuctionDetailsProps> = ({ 
     onBack, onSubmit, isSubmitting, onError, hasFailedUploads 
 }) => {
     
-    // Memory and Handlers remain identical
     const [formData, setFormData] = useState({
-        categoryId: 1, 
+        categoryId: 0, 
         title: '',
         description: '',
         startingPrice: 0,
         endDate: '',
         shippingInfo: ''
     });
+
+    const { data: catalog, isLoading } = useCategoriesAuctions(50, 0);
 
     const [specsList, setSpecsList] = useState<{ key: string; value: string }[]>([
         { key: '', value: '' } 
@@ -64,9 +65,14 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Form Validation logic remains identical
+     
         if (formData.title.trim().length < 5) {
             onError("Title must contain at least 5 visible characters.");
+            return;
+        }
+
+        if (formData.categoryId === 0) {
+            onError("Please select a category.");
             return;
         }
 
@@ -94,8 +100,7 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
 
     const today = new Date().toISOString().slice(0, 16);
 
-    // --- SHARED UI CLASSES for lining philosophy ---
-    // Reduced rounded to standard, ensured border-gray-300 for crisp definition.
+
     const inputClass = "w-full px-4 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:bg-gray-100 disabled:border-gray-200 tabular-nums placeholder-gray-400";
 
     return (
@@ -105,16 +110,15 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                 <p className="text-gray-600 text-sm">Fill out the specifics. All fields marked <span className="text-red-500">*</span> are required.</p>
             </div>
 
-            {/* --- NEW INTERNAL LINING --- */}
-            {/* We group logical fields into structured, bordered containers. */}
+        
             <div className="space-y-6">
                 
-                {/* SECTION 1: CORE DATA (Bordered Box with Gray Background) */}
-                <div className="bg-gray-50 border border-gray-200 p-6 rounded space-y-4">
+
+                <div className="bg-white border border-gray-200 p-6 rounded space-y-4">
                     <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Item Identity</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Title */}
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Item Title <span className="text-red-500">*</span></label>
                             <input
@@ -128,25 +132,40 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                             />
                         </div>
 
-                        {/* Category */}
+
+                        {/* Category Dropdown */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Category <span className="text-red-500">*</span></label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Category <span className="text-red-500">*</span>
+                            </label>
                             <select
                                 name="categoryId"
                                 value={formData.categoryId}
                                 onChange={handleChange}
                                 required
-                                className={`${inputClass} bg-white`}
+                                // Lock the UI if React Query is fetching OR if the form is submitting
+                                disabled={isLoading || isSubmitting}
+                                className={`${inputClass} bg-white disabled:bg-gray-100 disabled:text-gray-500`}
                             >
-                                <option value={1}>Electronics</option>
-                                <option value={2}>Vehicles</option>
-                                <option value={3}>Watches & Jewelry</option>
-                                <option value={4}>Fashion</option>
+                                {isLoading ? (
+                                    <option value="" disabled>Loading categories ⏳...</option>
+                                ) : catalog && catalog.length > 0 ? (
+                                    <>
+                                        <option value="" disabled>-- Select a Category --</option>
+                                        {catalog.map((categorizedNode) => (
+                                            <option key={categorizedNode.category.id} value={categorizedNode.category.id}>
+                                                {categorizedNode.category.name}
+                                            </option>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <option value="" disabled>No categories available</option>
+                                )}
                             </select>
                         </div>
                     </div>
 
-                    {/* Description */}
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-red-500">*</span></label>
                         <textarea
@@ -160,17 +179,14 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                     </div>
                 </div>
 
-                {/* Defined horizontal divider line */}
                 <hr className="border-gray-200" />
 
-                {/* SECTION 2: LOGISTICS & PRICING (Lined Box) */}
                 <div className="border border-gray-200 p-6 rounded space-y-4 bg-white">
                     <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Pricing & Timeline</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Starting Price */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Starting Price (MAD) <span className="text-red-500">*</span></label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Starting Price <span className="text-red-500">*</span></label>
                             <input
                                 type="number"
                                 name="startingPrice"
@@ -182,8 +198,7 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                             />
                         </div>
 
-                        {/* End Date */}
-                        <div className="min-w-0"> {/* safety for grid shift */}
+                        <div className="min-w-0"> 
                             <label className="block text-sm font-medium text-gray-700 mb-1">Auction End Date <span className="text-red-500">*</span></label>
                             <input
                                 type="datetime-local"
@@ -196,7 +211,6 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                         </div>
                     </div>
 
-                    {/* Shipping Info */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Shipping Information <span className="text-red-500">*</span></label>
                         <input
@@ -211,11 +225,11 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                     </div>
                 </div>
 
-                {/* Defined horizontal divider line */}
+
                 <hr className="border-gray-200" />
 
-                {/* SECTION 3: DYNAMIC SPECS (Bordered, Darker gray background) */}
-                <div className="bg-gray-100 p-6 rounded border border-gray-300 space-y-4">
+
+                <div className="bg-white p-6 rounded border border-gray-300 space-y-4">
                     <div className="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
                         <div>
                             <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Custom Specifications</h3>
@@ -225,7 +239,7 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                             type="button"
                             onClick={addSpecRow}
                             disabled={isSubmitting}
-                            // Button design is now crisp, border-based, no shadow
+
                             className="text-sm border border-blue-600 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-50 transition-colors font-medium disabled:opacity-50"
                         >
                             + Add Specification
@@ -235,7 +249,7 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                     <div className="space-y-3">
                         {specsList.map((spec, index) => (
                             <div key={index} className="flex gap-3 items-start animate-fadeIn">
-                                {/* Flex items inside are now also crisp rounded */}
+
                                 <input
                                     type="text"
                                     placeholder="e.g., Brand"
@@ -267,7 +281,7 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                 </div>
             </div>
 
-            {/* NAVIGATION BUTTONS (Crisp, shadow-none) */}
+
             <div className="flex justify-between pt-6 border-t border-gray-200 mt-6">
                 <button 
                     type="button"
@@ -281,13 +295,13 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
                 <button 
                     type="submit" 
                     disabled={isSubmitting}
-                    // Button: No shadow-md, rounded corners reduced.
+
                     className={`px-8 py-3 rounded text-white font-semibold transition-all
                         ${isSubmitting 
                             ? 'bg-gray-400 cursor-not-allowed' 
                             : hasFailedUploads 
-                                ? 'bg-orange-500 hover:bg-orange-600 shadow-none' // TURN SHADOWS OFF
-                                : 'bg-green-600 hover:bg-green-700 shadow-none'}`} // TURN SHADOWS OFF
+                                ? 'bg-orange-500 hover:bg-orange-600 shadow-none' 
+                                : 'bg-green-600 hover:bg-green-700 shadow-none'}`} 
                 >
                     {isSubmitting 
                         ? 'Processing Network Payload...' 
@@ -300,4 +314,4 @@ const AuctionDetailsStep: React.FC<AuctionDetailsStepProps> = ({
     );
 };
 
-export default AuctionDetailsStep;
+export default AuctionDetails;

@@ -3,7 +3,7 @@ import Dropzone from './DropZone';
 import FilePreview from './FilePreview';
 import type { UploadableFile } from '../../types/upload';
 
-interface ImageUploadStepProps {
+interface ImageUploadProps {
     files: UploadableFile[];
     onFilesSelected: (newFiles: File[]) => void;
     onRemoveFile: (idToDrop: string) => void;
@@ -11,7 +11,7 @@ interface ImageUploadStepProps {
     requiredCount: number;
 }
 
-const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
+const ImageUpload: React.FC<ImageUploadProps> = ({
     files,
     onFilesSelected,
     onRemoveFile,
@@ -69,4 +69,4 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
     );
 };
 
-export default ImageUploadStep;
+export default ImageUpload;

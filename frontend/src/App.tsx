@@ -8,6 +8,9 @@ import RequireAuth from "./components/RequireAuth.tsx";
 import CreateAuction from "./pages/CreateAuction.tsx";
 import Login from "./components/Form/LoginForm.tsx";
 import Settings from "./pages/Settings.tsx";
+import Inbox from "./pages/Inbox.tsx";
+import ItemPage from "./pages/ItemPage.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Home from "./pages/Home.tsx";
 
@@ -33,8 +36,20 @@ export const router = createBrowserRouter([
                         element: <SearchAuctions/>
                     },
                     {
+                        path:'/Inbox',
+                        element: <Inbox />
+                    },
+                    {
+                        path: '/itemDetails/:productId',
+                        element: <ItemPage />
+                    },
+                    {
                         element: <RequireAuth/>,
                         children: [
+                            {
+                                path: '/dashboard',
+                                element: <Dashboard/>,
+                            },
                             {
                                 path: '/settings',
                                 element: <Settings/>,
@@ -54,9 +69,22 @@ export const router = createBrowserRouter([
             {
                 path: '/login',
                 element: <Login/>
-            },
-        ]
     },
+
+    ]
+    },
+    {
+        path:'/register',
+        element: <Register/>
+    },
+    {
+        path: '/login',
+        element: <Login/>
+    },
+    {
+        path:'/Inbox',
+        element: <Inbox />
+    }
 ]);
 
 const App = () => {

@@ -15,6 +15,7 @@ spring:
     bootstrap-servers: ${KAFKA_URL:kafka-c:9093}
     topics:
       bid-events: ${AUCTION_UPDATE_TOPIC:bid-events}
+      chat-events: ${CHAT_UPDATE_TOPIC:chat-messages-topic}
     consumer:
       group-id: ${KAFKA_GROUP_ID:notification-group}
       auto-offset-reset: earliest

@@ -1,12 +1,13 @@
 package com.mazad.item.controller;
 
 import com.mazad.item.dto.*;
-import com.mazad.item.dto.event.ItemCreatedEventDto;
+import com.mazad.item.dto.event.ItemEventDto;
 import com.mazad.item.entity.ItemEntity;
 import com.mazad.item.repository.ItemRepository;
 import com.mazad.item.service.ItemService;
 import com.mazad.item.service.kafka.ItemProducer;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
@@ -26,13 +27,16 @@ import java.util.UUID;
 @RequestMapping("/api/v1/items")
 @RequiredArgsConstructor
 public class ItemController {
+
+    private final static String USER_ID_HEADER = "X-User-Id";
+
     private final ItemService itemService;
     private final ItemRepository itemRepository;
     private final ItemProducer itemProducer;
 
     @PostMapping
     public ResponseEntity<ItemDetailsDto> create(
-            @RequestHeader("X-User-Id") UUID userId,
+            @RequestHeader(USER_ID_HEADER) UUID userId,
             @RequestBody @Valid ItemRequestDto itemRequestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -43,17 +47,17 @@ public class ItemController {
     public ResponseEntity<ItemDetailsDto> update(
             @PathVariable Long id,
             @RequestBody @Valid ItemRequestDto itemRequestDto,
-            @RequestHeader("X-User-Id") UUID userId) {
+            @RequestHeader(USER_ID_HEADER) UUID userId) {
         return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto, userId));
     }
 
     @PatchMapping(path = "{id}")
-    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch, @RequestHeader("X-User-Id") UUID userId) {
+    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch, @RequestHeader(USER_ID_HEADER) UUID userId) {
         return ResponseEntity.ok(itemService.patchItem(id, patch, userId));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader("X-User-Id") UUID userId) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader(USER_ID_HEADER) UUID userId) {
         itemService.deleteItem(id, userId);
         return ResponseEntity.noContent().build();
     }
@@ -70,6 +74,14 @@ public class ItemController {
         return itemService.listItemsBy(itemSearch, pageable);
     }
 
+    @GetMapping("/self")
+    public PagedModel<ItemSummaryDto> listSellerItems(
+            @RequestHeader(USER_ID_HEADER) UUID sellerId,
+            @ModelAttribute ItemSearch itemSearch,
+            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return itemService.listItemsBy(sellerId, itemSearch, pageable);
+    }
+
     @GetMapping("/ending-soon")
     public ResponseEntity<List<ItemSummaryDto>> endingSoon(
             @RequestParam(defaultValue = "24") int hours,
@@ -79,7 +91,7 @@ public class ItemController {
     }
 
     @PostMapping("{id}/cancel")
-    public ResponseEntity<ItemDetailsDto> cancel(@PathVariable Long id, @RequestHeader("X-User-Id") UUID userId) {
+    public ResponseEntity<ItemDetailsDto> cancel(@PathVariable Long id, @RequestHeader(USER_ID_HEADER) UUID userId) {
         return ResponseEntity.ok(itemService.cancelItem(id, userId));
     }
 
@@ -98,7 +110,7 @@ public class ItemController {
         for (ItemEntity item : items) {
 //            if (onlyActive && item.getStatus() != AuctionStatus.ACTIVE) continue;
 
-            ItemCreatedEventDto event = ItemCreatedEventDto.builder()
+            ItemEventDto event = ItemEventDto.builder()
                     .id(item.getId())
                     .status(item.getStatus())
                     .startingPrice(item.getStartingPrice())

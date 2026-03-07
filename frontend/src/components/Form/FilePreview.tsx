@@ -20,13 +20,13 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, isMain = 
 
     return (
         <div
-            // 1. min-w-0 stops the grid blowout. h-full keeps all cards equal height. (No overflow-hidden here!)
+
             className="relative border rounded-lg p-3 flex flex-col items-center shadow-sm bg-white select-none h-full min-w-0"
             onMouseDown={(e) => e.preventDefault()}
         >
             {isMain && (
                 <div
-                    className="absolute -top-3 -left-3 text-xl z-10 bg-white rounded-full shadow-sm leading-none"
+                    className="absolute -top-2 -left-2 text-xl z-10 bg-white rounded-full shadow-sm leading-none"
                     title="Main Thumbnail"
                 >
                     ⭐
@@ -41,10 +41,8 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, isMain = 
                 &times;
             </button>
 
-            {/* 2. The Image Container: Strict height, relative anchor, and overflow hidden ONLY here */}
             <div className="w-full h-28 relative bg-gray-100 rounded mb-2 overflow-hidden shrink-0 flex justify-center items-center">
                 {isImage ? (
-                    // 3. Absolute inset-0 divorces the image's real size from the grid layout
                     <img
                         src={fileData.previewUrl}
                         alt={fileData.file.name}
