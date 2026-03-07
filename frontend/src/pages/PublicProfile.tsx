@@ -3,7 +3,6 @@ import useUserApi from '../hooks/useUserApi'
 import type PublicProfile from "../types/PublicProfile";
 import type { AxiosError } from "axios";
 import { useEffect, useState } from "react";
-import Button from "../components/Button/Button";
 import { useAuth } from "../context/AuthProvider";
 import { useAuctions } from "../hooks/useAuctions";
 import ItemGrid from "../components/Grid/ItemGrid";
@@ -21,7 +20,7 @@ export default function PublicProfile(){
     const [profile, setProfile] = useState<PublicProfile | null>(null);
     const [profileErrorMsg, setProfileErrorMsg] = useState<string>('loading');
     const [page, setPage] = useState(0);
-    const {data} = useAuctions({page: page, size: 10})
+    const {data} = useAuctions({page: page, size: 10, sellerId: profile?.userId})
 
     if (!username)
         return (<div>NOT FOUND</div>)
@@ -61,12 +60,16 @@ export default function PublicProfile(){
                         {profile.bio && <p className="text-sm max-w-120"><span className="text-secondary">bio: </span> {profile.bio}</p> }
                     </div>
                 <div className="w-full h-[0.5px] bg-border"></div>
-                    <div className="w-full">
+                    <div className="w-full flex flex-col">
                         <h1 className="font-semibold text-xl">Objects from <span className="text-brand">{profile.username}</span></h1>
-                        {data && <ItemGrid className="w-full h-full pt-4 sm:p-4" compact={false}>
-                        {data.content && data.content.map((item) => <ItemCard key={item.id} className="pt-2" auction={item}/>)}
-                            </ItemGrid>}
-                        {data && <Pagination page={data.page.number + 1} totalPages={data.page.totalPages} onPageChange={(pageNum) => setPage(pageNum - 1)} className="pt-10"/>}
+                        {data && data.content.length > 0 ? 
+                        <>
+                            <ItemGrid className="w-full h-full pt-4 sm:p-4" compact={false}>
+                                {data.content && data.content.map((item) => <ItemCard key={item.id} className="pt-2" auction={item}/>)}
+                            </ItemGrid>
+                            <Pagination page={data.page.number + 1} totalPages={data.page.totalPages} onPageChange={(pageNum) => setPage(pageNum - 1)} className="pt-10"/>
+                        </> : <div className="text-secondary textd-xl  mt-8 w-full text-center"> This user hasn't listed any items</div>}
+            
                     </div>
                 </div>
             }
