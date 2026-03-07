@@ -30,12 +30,12 @@ public class FriendshipController {
     }
 
     @PostMapping("/request/{username}")
-    public ResponseEntity<Void> addFriend(
+    public ResponseEntity<FriendshipStatus> addFriend(
             @RequestHeader("X-User-Id") UUID requesterId,
             @PathVariable("username") String username
     ) {
-        service.addOrUnFriendUser(requesterId, username);
-        return ResponseEntity.ok().build();
+        FriendshipStatus status = service.addOrUnFriendUser(requesterId, username);
+        return ResponseEntity.ok(status);
     }
 
     @GetMapping("/{friendId}")
@@ -51,13 +51,13 @@ public class FriendshipController {
     ) {
         List<FriendRequestsDto> response;
 
-        response = service.getFriendByStatus(userId, FriendshipStatus.PENDING)
+        response = service.getFriendByStatus(userId, FriendshipStatus.PENDDING)
                 .stream()
                 .map(res -> FriendRequestsDto
                         .builder()
                         .username(res.username())
                         .thumbnail(res.thumbnail())
-                        .status(FriendshipStatus.PENDING.toString())
+                        .status(FriendshipStatus.PENDDING.toString())
                         .build())
                 .toList();
         return ResponseEntity.ok(response);

@@ -2,19 +2,22 @@ import CategorySection from "../sections/CategorySection.tsx";
 import ItemCarousel from "../components/Carousel/ItemCarousel.tsx";
 import HeroCarousel from "../components/Carousel/HeroCarousel.tsx";
 import CategoryGrid from "../components/Grid/CategoryGrid.tsx";
-import {useEndingSoonAuctions} from "../hooks/useAuctions.ts";
+import {useAuctions, useEndingSoonAuctions} from "../hooks/useAuctions.ts";
 import {usePopularCategories} from "../hooks/useCategories.ts";
 
 const HomePageContent = () => {
-    const {data: Categories = [], isLoading: LoadingCategories} = usePopularCategories()
-    const {data: EndingSoonAuctions = [], isLoading: LoadingEndingSoonAuctions} = useEndingSoonAuctions(128, 10);
+    const {data: Categories = []} = usePopularCategories()
+    const {data: EndingSoonAuctions = []} = useEndingSoonAuctions(128, 10);
+    const {data: extraAuctions} = useAuctions({page: 0, size: 20});
+    const recentlyAdded = extraAuctions?.content.slice(0, 10) ?? []
+    const mightLikeAuctions = extraAuctions?.content.slice(10, 20) ?? []
     return <div className="flex flex-col gap-10 items-center justify-center max-w-305  w-full py-6">
         <HeroCarousel/>
-        {!LoadingEndingSoonAuctions &&
+        {EndingSoonAuctions &&
             <ItemCarousel auctions={EndingSoonAuctions} carouselTitle="Auctions ending soon"/>}
-        {!LoadingCategories && <CategoryGrid categories={Categories}/>}
-        <ItemCarousel auctions={EndingSoonAuctions} carouselTitle="You might also like"/>
-        <ItemCarousel auctions={EndingSoonAuctions} carouselTitle="Recently viewed"/>
+        {Categories && <CategoryGrid categories={Categories}/>}
+        {mightLikeAuctions.length > 0 && <ItemCarousel auctions={mightLikeAuctions} carouselTitle="You might also like"/>}
+        {recentlyAdded.length > 0 && <ItemCarousel auctions={recentlyAdded} carouselTitle="Recently added"/>}
     </div>
 }
 

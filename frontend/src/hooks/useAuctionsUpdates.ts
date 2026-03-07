@@ -3,7 +3,7 @@ import type {AuctionUpdateEvent} from "../types/auctionUpdateEvent.ts";
 import {type QueryClient, useQueryClient} from "@tanstack/react-query";
 import type {AuctionSummary, CategorizedAuctions} from "../types/item.ts";
 import type {Page} from "../types/pagination.ts";
-import { useWebSocket } from "../context/WebSocketContext.tsx";
+import {useWebSocket} from "../context/WebSocketContext.tsx";
 
 function updateAuctionPage(
     oldPage: Page<AuctionSummary> | undefined,
@@ -62,25 +62,27 @@ export function updateCache(queryClient: QueryClient, event: AuctionUpdateEvent)
 
 
 export function useAuctionsUpdates() {
-    const { stompClient, isConnected } = useWebSocket();
+    const {stompClient, isConnected} = useWebSocket();
     const queryClient = useQueryClient();
 
     useEffect(() => {
         if (!stompClient || !isConnected) return;
-            console.log("WS connected. Subscribing to /topic/auctions");
-            const subscription = stompClient.subscribe("/topic/auctions", (message) => {
-                console.log("Subscribed! to /topic/auctions");
-                console.log("WS /topic/auctions:", message.body);
-                try {
-                    const event = JSON.parse(message.body) as AuctionUpdateEvent;
-                    updateCache(queryClient, event);
-                    console.log("WS parsed:", event);
-                } catch (e) {
-                    console.error("WS parse error:", e);
-                }
-            })
-            return () => {
+        console.log("WS connected. Subscribing to /topic/auctions");
+        const subscription = stompClient.subscribe("/topic/auctions", (message) => {
+            console.log("Subscribed! to /topic/auctions");
+            console.log("WS /topic/auctions:", message.body);
+            try {
+                const event = JSON.parse(message.body) as AuctionUpdateEvent;
+                updateCache(queryClient, event);
+                console.log("WS parsed:", event);
+            } catch (e) {
+                console.error("WS parse error:", e);
+            }
+        })
+        return () => {
+            if (stompClient && stompClient.connected && subscription) {
                 subscription.unsubscribe();
-            };
+            }
+        };
     }, [stompClient, isConnected]);
 }

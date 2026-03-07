@@ -1,7 +1,6 @@
 package com.mazad.user_service.repo;
 
 import com.mazad.user_service.entity.FriendshipEntity;
-import com.mazad.user_service.entity.ProfileEntity;
 import com.mazad.user_service.enums.FriendshipStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

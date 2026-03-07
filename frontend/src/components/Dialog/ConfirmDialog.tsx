@@ -39,7 +39,7 @@ const ConfirmDialog = ({className = "", open, onConfirm, onClose, dialogInfo}: D
         <p className="text-base pt-4 text-center w-full text-primary font-bold line-clamp-2">{dialogInfo.message}</p>
         {dialogInfo.note &&
             <p className="text-xs pt-5 text-secondary font-medium line-clamp-3">{dialogInfo.note} By confirming you
-                agree to our <a className="underline text-brand" href={"/terms-of-use"}>Terms of Use</a></p>}
+                agree to our <a className="underline text-brand" href={"/terms-of-service"}>Terms of Service</a></p>}
         <Button className="w-full"
                 onClick={() => {
                     onConfirm?.();

@@ -59,6 +59,7 @@ public class ProfileMapper {
         return PublicResponseDto
                 .builder()
                 .username(entity.getUsername())
+                .userId(entity.getUserId().toString())
                 .bio(entity.getBio())
                 .avatarUrl(entity.getAvatarUrl())
                 .thumbnail(entity.getAvatarThumbnailUrl())

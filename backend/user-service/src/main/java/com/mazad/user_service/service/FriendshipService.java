@@ -31,7 +31,9 @@ public class FriendshipService {
     private final StringRedisTemplate redisTemplate;
 
     @Transactional
-    public void addOrUnFriendUser(UUID requesterId, String username) {
+    public FriendshipStatus addOrUnFriendUser(UUID requesterId, String username) {
+
+        FriendshipStatus status;
 
         ProfileEntity requester = profileRepo
                 .findByUserId(requesterId)
@@ -40,24 +42,31 @@ public class FriendshipService {
                 .findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("The receiver doesn't exist"));
         if (requesterId.equals(receiver.getUserId()))
-            return;
+            return null;
         FriendshipEntity entity;
+
         if (friendRepo.friendshipExists(requesterId, receiver.getUserId())){
             entity = friendRepo.findFriendship(requesterId, receiver.getUserId()).get();
-            if (entity.getStatus().equals(FriendshipStatus.ACCEPTED) || entity.getRequester().getUserId().equals(requesterId))
+            if (entity.getStatus().equals(FriendshipStatus.ACCEPTED) || entity.getRequester().getUserId().equals(requesterId)){
                 friendRepo.delete(entity);
-            else
+                status = FriendshipStatus.DELETED;
+            }
+            else{
                 entity.setStatus(FriendshipStatus.ACCEPTED);
+                status = FriendshipStatus.ACCEPTED;
+            }
         }
         else{
             entity = FriendshipEntity
-                .builder()
-                .requester(requester)
-                .receiver(receiver)
-                .status(FriendshipStatus.PENDING)
-                .build();
+            .builder()
+            .requester(requester)
+            .receiver(receiver)
+            .status(FriendshipStatus.PENDDING)
+            .build();
             friendRepo.save(entity);
+            status = FriendshipStatus.PENDDING;
         }
+        return status;
     }
 
 
@@ -95,7 +104,7 @@ public class FriendshipService {
         friendships = friendRepo.getAllFriendsByStatus(userId, status);
         if (friendships.isEmpty())
             return  new ArrayList<>();
-        if (status.equals(FriendshipStatus.PENDING)) {
+        if (status.equals(FriendshipStatus.PENDDING)) {
             friendships = friendships
                     .stream()
                     .filter(f -> !f.getRequester().getUserId().equals(userId))
@@ -109,7 +118,7 @@ public class FriendshipService {
                     else
                         return friendship.getReceiver();
                 }).toList();
-        if (status.equals(FriendshipStatus.PENDING))
+        if (status.equals(FriendshipStatus.PENDDING))
             return friends.stream().map(f -> mapper.toFriendshipResponseDto(f, false)).toList();
         return getFriendsWithOnlineStatus(friends);
     }

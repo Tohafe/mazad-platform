@@ -26,12 +26,11 @@ const tables: TableData[] = [
         ]
     },
     {
-        title: "Legal",
+        title: "Account",
         rows: [
-            "Privacy Policy",
-            "Terms of Service",
-            "Cookie Policy",
-            "Licenses"
+            "My Profile",
+            "My Listing",
+            "Settings"
         ]
     },
     {
@@ -46,8 +45,8 @@ const tables: TableData[] = [
 ];
 
 const LegalItemData: { title: string, url: string }[] = [
-    {title: "Privacy Policy", url: "/"},
-    {title: "Terms of Service", url: "/"},
+    {title: "Privacy Policy", url: "/privacy-policy"},
+    {title: "Terms of Service", url: "/terms-of-service"},
     {title: "Cookie Policy", url: "/"},
     {title: "Licenses", url: "/"},
 ]
@@ -90,7 +89,7 @@ const AccountSection = ({className = ""}) => {
         </div>
 
         <p className="line-clamp-1 text-[15px] font-medium invisible lg:visible">Bid on over 65,000 special objects
-            every week, selected by 240+ experts</p>
+            every week.</p>
     </div>
 }
 
