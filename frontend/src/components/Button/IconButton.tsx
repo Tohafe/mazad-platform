@@ -29,7 +29,7 @@ const buttonVariants = cva(buttonBaseStyles, {
     variants: {
         variant: {
             ghost: "bg-transparent text-primary font-semibold",
-            outlined: "text-secondary font-normal border border-border rounded-full"
+            outlined: "text-secondary   font-normal border border-border rounded-full"
         },
         size: {
             sm: "text-sm px-2 h-6",

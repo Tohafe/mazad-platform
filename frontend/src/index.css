@@ -27,6 +27,7 @@
 @theme {
     /* 🎨 Main color */
     --color-brand: #003cff;
+    --color-secondary: #fff;
 
     /* 🧱 Backgrounds (Only generates bg-*) */
     --background-color-main: #ffffff;

@@ -12,6 +12,9 @@ import Settings from "./pages/Settings.tsx";
 import Inbox from "./pages/Inbox.tsx";
 import ItemPage from "./pages/ItemPage.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
+import TermsOfService from "./pages/TermsOfService.tsx";
+import NotFoundPage from "./pages/NotFoundPage.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
 
 
@@ -25,7 +28,6 @@ export const router = createBrowserRouter([
                     {
                         path: '/',
                         element: <Home/>,
-                        errorElement: <span className="text-lg font-semibold p-6">404 NOT FOUND</span>
                     },
                     {
                         path: '/c/:idSlug',
@@ -36,12 +38,20 @@ export const router = createBrowserRouter([
                         element: <SearchAuctions/>
                     },
                     {
-                        path:'/Inbox',
+                        path:'/conversations',
                         element: <Inbox />
                     },
                     {
                         path: '/itemDetails/:productId',
                         element: <ItemPage />
+                    },
+                    {
+                        path: '/privacy-policy',
+                        element: <PrivacyPolicy/>
+                    },
+                    {
+                        path: '/terms-of-service',
+                        element: <TermsOfService/>
                     },
                     {
                         path: '/profile/:username',
@@ -59,6 +69,10 @@ export const router = createBrowserRouter([
                                 element: <Settings/>,
                             }
                         ]
+                    },
+                    {
+                        path: '*',
+                        element: <NotFoundPage/>
                     }
                 ]
             },
@@ -72,6 +86,14 @@ export const router = createBrowserRouter([
     },
 
     ]
+    },
+    {
+        path:'/register',
+        element: <Register/>
+    },
+    {
+        path: '/login',
+        element: <Login/>
     },
     {
         path:'/Inbox',

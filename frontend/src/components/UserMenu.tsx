@@ -4,10 +4,11 @@ import IconButton from "./Button/IconButton.tsx";
 import {MdKeyboardArrowDown} from "react-icons/md";
 import {FaRegUser} from "react-icons/fa";
 import Dropdown from "./Dropdown.tsx";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import TextButton from "./Button/TextButton.tsx";
 import {useSignOut} from "../hooks/useAuctions.ts";
 import {Link} from "react-router-dom";
+import {useOnClickOutside} from "./Notification/NotificationBell.tsx";
 
 
 interface UserMenuProps {
@@ -19,9 +20,10 @@ interface UserMenuProps {
 const UserMenu = ({className = "", user}: UserMenuProps) => {
     const mutation = useSignOut();
     const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement | null>(null);
+    useOnClickOutside(ref, () => setOpen(false));
 
-
-    return <div className={cn("relative flex gap-1 items-center min-w-0", className)}>
+    return <div ref={ref} className={cn("relative flex gap-1 items-center min-w-0", className)}>
         <div className="flex items-center w-8 h-8" onClick={() => setOpen(!open)}>
             {user?.avatarUrl ? (
                 <img
@@ -39,7 +41,7 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
             <MenuSection>ACCOUNT</MenuSection>
             <MenuItem onClick={() => setOpen(false)} link={`/profile/${user?.username}`}>Profile</MenuItem>
             <MenuItem onClick={() => setOpen(false)} link={"/settings"}>Settings</MenuItem>
-            <MenuItem onClick={() => setOpen(false)} link={"/Inpox"}>Messages</MenuItem>
+            <MenuItem onClick={() => setOpen(false)} link={"/conversations"}>Messages</MenuItem>
             <MenuSection>SELLING</MenuSection>
             <MenuItem  onClick={() => setOpen(false)} link={"/dashboard"}>My auctions</MenuItem>
             <MenuItem  onClick={() => setOpen(false)} link={"/listing"}>List an item</MenuItem>
