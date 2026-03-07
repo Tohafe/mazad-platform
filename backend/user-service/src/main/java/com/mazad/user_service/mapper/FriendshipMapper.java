@@ -1,9 +1,10 @@
 package com.mazad.user_service.mapper;
 
-import com.mazad.user_service.dto.FriendResponseDto;
-import com.mazad.user_service.entity.ProfileEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.mazad.user_service.dto.FriendResponseDto;
+import com.mazad.user_service.entity.ProfileEntity;
 
 @Component
 public class FriendshipMapper {
@@ -18,6 +19,7 @@ public class FriendshipMapper {
         return FriendResponseDto
                 .builder()
                 .username(entity.getUsername())
+                .id(entity.getUserId())
                 .thumbnail(defaultThumbnail)
                 .onlineStatus(onlineStatus)
                 .build();
