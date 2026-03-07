@@ -157,8 +157,9 @@ public class UploadService {
 			throw new RuntimeException("Upload Failed " + e.getMessage());
 		}
 
-		String thumbnail = uploadThumbnail(file, newFileName, width, height);
-
+		String thumbnail = null;
+		if(width > 0 && height > 0)
+			thumbnail = uploadThumbnail(file, newFileName, width, height);
 		return responseBuilder(newFileName, file, thumbnail);
 	}
 

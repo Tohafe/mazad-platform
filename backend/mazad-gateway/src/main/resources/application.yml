@@ -84,8 +84,29 @@ spring:
             - id: notification-service-route
               uri: http://notification-service:8080
               predicates:
-                - Path=/api/notifications/**,/ws/**
+                - Path=/api/v1/api/notifications/**
+              filters:
+                - StripPrefix=2
 
+            - id: notification-service-route
+              uri: http://notification-service:8080
+              predicates:
+                - Path=/ws/**
+
+            - id: upload-service-route
+              uri: http://upload-service:8080
+              predicates:
+                - Path=/api/v1/api/media/**
+              filters:
+                - StripPrefix=2
+
+            - id: minio-route
+              uri: http://mazad-minio:9000
+              predicates:
+                - Path=/api/upload/minio/**
+              filters:
+                - StripPrefix=3
+                
           globalcors:
             cors-configurations:
               '[/**]':
@@ -99,10 +120,7 @@ spring:
                   - DELETE
                   - OPTIONS
                 allowed-headers:
-                  - Authorization
-                  - Content-Type
-                  - Accept
-                  - X-API-KEY
+                  - "*"
                 exposed-headers:
                   - X-API-KEY
                 allowCredentials: true 
