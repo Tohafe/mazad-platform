@@ -90,7 +90,11 @@ const CreateAuction = () => {
         if (files.length !== REQUIRED_IMAGE_COUNT) return;
         setErrorToast(null);
 
-        const pendingFiles = files.filter(f => f.status !== 'SUCCESS');
+        const pendingFiles = files.filter((f, index) => {
+            if (f.status !== 'SUCCESS') return true;
+            if (index === 0 && !f.data?.thumbnailUrl) return true;
+            return false; 
+        });
 
         if (pendingFiles.length > 0) {
             console.log(`Uploading ${pendingFiles.length} pending files to MinIO...`);
@@ -105,6 +109,18 @@ const CreateAuction = () => {
                 filesPreparedForUpload, 
                 (localId, progress) => handleProgressUpdate(localId, progress)
             );
+
+
+            setFiles(prev => prev.map(f => {
+                if (failedUploads.includes(f.localId)) {
+                    return { ...f, status: 'FAILED' as any, progress: 0 };
+                }
+                const successMatch = successfulUploads.find(s => s.localId === f.localId);
+                if (successMatch) {
+                    return { ...f, status: 'SUCCESS', data: successMatch.data };
+                }
+                return f;
+            }));
 
             
             if (failedUploads.length > 0) {
@@ -135,6 +151,7 @@ const CreateAuction = () => {
 
             const firstFileId = files[0].localId;
             const newlyUploadedFirst = latestSuccessfulUploads.find(s => s.localId === firstFileId);
+            
             const thumbnailString = newlyUploadedFirst?.data?.thumbnailUrl || files[0].data?.thumbnailUrl || "";
             
             const utcEndDate = new Date(auctionTextData.endDate).toISOString();
