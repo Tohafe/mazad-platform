@@ -5,10 +5,14 @@ import ChatWindow from "../components/Chat/ChatWindow";
 import { apiPrivate } from "../api/axios";
 import { useWebSocket } from "../context/WebSocketContext";
 import { useAuth } from "../context/AuthProvider";
+import FriendList  from "../components/Chat/FriendList"
+import FriendRequestsList from "../components/Chat/FriendRequestsList";
 
+type ViewType = 'messages' | 'friends' | 'requests';
 
 function Inbox(){
 
+    const [ActiveView, setActiveView] = useState<ViewType>('messages');
     const [activeChatId, setActiveChatId] = useState<string | null>(null);
 
     const fakeChats : Chat[]=
@@ -27,7 +31,24 @@ function Inbox(){
         }
 
     ];
-    // FETCH REAL CHATS FRON /INBOX ENDPOIT
+    // FETCH CHATS FRON /INBOX ENDPOIT
+    const fetchUserDetails = async (userId: string) => {
+        try {
+
+            const response = await apiPrivate.get(`/profile/users/${userId}`);
+            const userData = response.data;
+            
+            setChats(prev => prev.map( c => 
+                            c.id === userId 
+                            ? { ...c, name: userData.username, avatar: userData.avatarUrl} 
+                            : c
+                
+            ));
+        } catch(err) {
+            console.error(`could not fetch info for user ${userId}`, err);
+        }
+
+    }
     const [chats, setChats] = useState<Chat[]>([]);
     useEffect(()=>{
         const fetchInbox = async () => {
@@ -42,6 +63,10 @@ function Inbox(){
                     hasUnreadMessages: dto.hasUnreadMessages
                 }));
                 setChats(formattedChats);
+
+                formattedChats.forEach( (chat: Chat) => {
+                    fetchUserDetails(chat.id);
+                })
             }catch(error){
                 console.error("Failed to fetch inbox:", error);
             }
@@ -70,13 +95,21 @@ function Inbox(){
     const { stompClient, isConnected } = useWebSocket();
     const { user } = useAuth();
     useEffect(() => {
-            if (!stompClient || isConnected || user?.id) return ;
+            if (!stompClient || !isConnected || !user?.id){
+                if (stompClient && !isConnected){
+
+                    console.log("waiting for websocket connection...");
+                }
+                return ;
+            } 
             console.log("Subscribing to real-time chat updates...");
             const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
                 const incomingMsg = JSON.parse(message.body);
+                console.log(incomingMsg);
                 setChats((prevChats) => {
                     const existingChatIndex = prevChats.findIndex(c => c.id === incomingMsg.senderId);
-                    const isCurrentlyOpen = activeChatId === incomingMsg.senderId;
+                    const isCurrentlyOpen = activeChatId?.toLowerCase() === incomingMsg.senderId.toLowerCase();
+                    console.log("isCurrentlyOpen", isCurrentlyOpen);
                     let updatedChats = [...prevChats];
                     if (existingChatIndex >= 0) {
                         const existingChat = updatedChats[existingChatIndex];
@@ -89,11 +122,12 @@ function Inbox(){
                     }
                     else {
                         updatedChats.unshift({
-                            id: incomingMsg.id,
+                            id: incomingMsg.senderId,
                             name: `User ${incomingMsg.senderId.substring(0,4)}..`,
                             lastMessage: incomingMsg.content,
                             hasUnreadMessages: !isCurrentlyOpen
                         });
+                        fetchUserDetails(incomingMsg.senderId);
                     }
                     return updatedChats;
                 });
@@ -105,6 +139,37 @@ function Inbox(){
         }, [stompClient, isConnected, user?.id, activeChatId]
     );
 
+    // a hook for send button to move chat to top
+    const moveChatToTop = (chatId: string, lastMessage: string) => {
+        setChats((prevChats) => {
+            const updatedChats = [...prevChats];
+            const index = updatedChats.findIndex(c => c.id === chatId);
+
+            if (index !== -1) {
+                const targetChat = updatedChats[index]; 
+                updatedChats.splice(index, 1);
+                updatedChats.unshift({
+                    ...targetChat, 
+                    lastMessage: lastMessage,
+                    hasUnreadMessages: false
+                });
+            }
+            return updatedChats;
+        });
+    }
+    const handleMessageFriend = async (friendUsername: string) => {
+        try {
+            const   response = await apiPrivate.get(`/profile/${friendUsername}`);
+            const   friendId = response.data.userId;
+            if (friendId){
+                setActiveChatId(friendId);
+                setActiveView('messages');
+            }
+        } catch (error) {
+            console.error(`Failed tos fetch ID for user ${friendUsername}:`, error);
+        }
+    }
+    
     return (
         // PAGE WRAPPER 
         <div className="flex justify-center items-start pt-6 h-[calc(100vh-180px)] w-full  font-sans px-4">
@@ -114,22 +179,65 @@ function Inbox(){
                 <div className="w-96  flex flex-col border-r border-gray-300">
                     {/* header area for the left panel */}
                     <div className=" p-6 border-b border-gray-300">
-                        <h2 className="text-2xl font-bold">Messages</h2>
+                        <h2 className="text-2xl font-bold mb-4">Messages</h2>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setActiveView('messages')}
+                                className={`flex-1 px-3 py-2  font-medium text-sm transition-colors ${
+                                    ActiveView === 'messages' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                >
+                                    Chats
+                                </button>
+                            <button
+                                onClick={() => setActiveView('friends')}
+                                className={`flex-1 px-3 py-2 font-medium text-sm transition-colors ${
+                                    ActiveView === 'friends' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                >
+                                    Friends
+                                </button>
+                            <button
+                                onClick={() => setActiveView('requests')}
+                                className={`flex-1 px-3 py-2 font-medium text-sm transition-colors ${
+                                    ActiveView === 'requests' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                >
+                                    Requests
+                                </button>
+                        </div>
                     </div>
                     
                     {/* CONVERSTAION LIST */}
-                    <ConversationList 
+                    {ActiveView === 'messages' && (
+
+                        
+                        <ConversationList 
                         chats={chats}
                         activeChatId={activeChatId}
                         onSelectChat={handleSelectChat}
-                    />
+                        />
+                    )}
+                    {/* FRIEND LIST */}
+                    {ActiveView === 'friends' && (
+                        <FriendList 
+                        onMessageFriend={handleMessageFriend}
+                        />
+                    )}
+
+                    {ActiveView === 'requests' && (
+                        <FriendRequestsList
+                        />
+                    )}
+
+
 
 
                 </div>
                 {/* Right Panel */}
                 <div className="flex-1 flex flex-col bg-white">
                     {(activeChatId) ? (
-                        <ChatWindow chatId={activeChatId}/>
+                        <ChatWindow 
+                        chatId={activeChatId}
+                        onMessageSent={(msg) => moveChatToTop(activeChatId, msg)}           
+                         />
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center text-gray-500 gap-4">
                             <div className="w-24 h-24 rounded-full mb-2  bg-blue-50 flex items-center justify-center text-blue-500">
