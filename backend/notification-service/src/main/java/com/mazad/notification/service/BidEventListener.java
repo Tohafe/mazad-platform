@@ -29,7 +29,7 @@ public class BidEventListener {
             log.info("Received Bid Event for auction ID: {}", bidEvent.getAuctionId());
             
             webSocketService.sendGlobalUpdate("/topic/auction/" + bidEvent.getAuctionId(), bidEvent );
-            webSocketService.sendGlobalUpdate("/topic/auction/" , bidEvent );
+            webSocketService.sendGlobalUpdate("/topic/auctions" , bidEvent );
         } 
         catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);

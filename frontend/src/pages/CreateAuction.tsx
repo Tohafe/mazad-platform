@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useItems } from '../hooks/useItems';
 import  { useState } from 'react';
 
-//remove step from the name 
+
 
 export interface ItemDetailsResponse {
     id: number;
@@ -156,7 +156,7 @@ const CreateAuction = () => {
             const newAuctionItem = await createItem(finalPayload);
             
             console.log("Auction Created Successfully!", newAuctionItem);
-            navigate(`/items/${newAuctionItem.id}`);
+            navigate(`/itemDetails/${newAuctionItem.id}`);
 
         } catch (error) {
             console.error("Failed to create auction item:", error);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCategoriesAuctions } from '../../hooks/useAuctions';
+import { useCategories } from '../../hooks/useCategories';
 
 export interface AuctionDetailsData {
     categoryId: number;
@@ -32,7 +32,8 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
         shippingInfo: ''
     });
 
-    const { data: catalog, isLoading } = useCategoriesAuctions(50, 0);
+
+    const { data: categories, isLoading } = useCategories();
 
     const [specsList, setSpecsList] = useState<{ key: string; value: string }[]>([
         { key: '', value: '' } 
@@ -143,18 +144,17 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                                 value={formData.categoryId}
                                 onChange={handleChange}
                                 required
-                                // Lock the UI if React Query is fetching OR if the form is submitting
                                 disabled={isLoading || isSubmitting}
                                 className={`${inputClass} bg-white disabled:bg-gray-100 disabled:text-gray-500`}
                             >
                                 {isLoading ? (
                                     <option value="" disabled>Loading categories ⏳...</option>
-                                ) : catalog && catalog.length > 0 ? (
+                                ) : categories && categories.length > 0 ? (
                                     <>
                                         <option value="" disabled>-- Select a Category --</option>
-                                        {catalog.map((categorizedNode) => (
-                                            <option key={categorizedNode.category.id} value={categorizedNode.category.id}>
-                                                {categorizedNode.category.name}
+                                        {categories.map((category) => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
                                             </option>
                                         ))}
                                     </>
