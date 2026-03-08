@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
+import { Link } from "react-router-dom";
 
 export interface FriendRequest {
     username: string;
@@ -36,34 +37,34 @@ function FriendRequestsList() {
                 const response = await apiPrivate.get("/friends/requests");
                 setRequests(response.data);
                 
-                setRequests([
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "abde1", thumbnail: "", status: "PENDING" },
-                    { username: "vintage_seller", thumbnail: "https://i.pravatar.cc/150?img=32", status: "PENDING" }
-                ]);
+                // setRequests([
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "abde1", thumbnail: "", status: "PENDING" },
+                //     { username: "vintage_seller", thumbnail: "https://i.pravatar.cc/150?img=32", status: "PENDING" }
+                // ]);
             
             } catch (error) {
                 console.error("Failed to fetch friend requests", error);
@@ -130,7 +131,9 @@ if (!requests || requests.length === 0) {
                             )}
                         </div>
                         <div className="flex-1 overflow-hidden min-w-0">
-                            <h3 className="font-semibold text-gray-800 truncate">{request.username}</h3>
+                            <Link to={`/profile/${request.username}`}>
+                                <h3 className="font-semibold text-gray-800 truncate">{request.username}</h3>
+                            </Link>
                             <p className="text-xs text-gray-500">Wants to connect</p>
                         </div>
                     </div>
