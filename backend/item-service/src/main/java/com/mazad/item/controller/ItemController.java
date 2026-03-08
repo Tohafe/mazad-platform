@@ -3,6 +3,7 @@ package com.mazad.item.controller;
 import com.mazad.item.dto.*;
 import com.mazad.item.dto.event.ItemEventDto;
 import com.mazad.item.entity.ItemEntity;
+import com.mazad.item.exceptions.AuthorizationException;
 import com.mazad.item.repository.ItemRepository;
 import com.mazad.item.service.ItemService;
 import com.mazad.item.service.kafka.ItemProducer;
@@ -36,8 +37,9 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ItemDetailsDto> create(
-            @RequestHeader(USER_ID_HEADER) UUID userId,
+            @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId,
             @RequestBody @Valid ItemRequestDto itemRequestDto) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(itemService.createItem(itemRequestDto, userId));
@@ -47,17 +49,20 @@ public class ItemController {
     public ResponseEntity<ItemDetailsDto> update(
             @PathVariable Long id,
             @RequestBody @Valid ItemRequestDto itemRequestDto,
-            @RequestHeader(USER_ID_HEADER) UUID userId) {
+            @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto, userId));
     }
 
     @PatchMapping(path = "{id}")
-    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch, @RequestHeader(USER_ID_HEADER) UUID userId) {
+    public ResponseEntity<ItemDetailsDto> patch(@PathVariable Long id, @RequestBody JsonNode patch, @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         return ResponseEntity.ok(itemService.patchItem(id, patch, userId));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader(USER_ID_HEADER) UUID userId) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         itemService.deleteItem(id, userId);
         return ResponseEntity.noContent().build();
     }
@@ -76,9 +81,10 @@ public class ItemController {
 
     @GetMapping("/self")
     public PagedModel<ItemSummaryDto> listSellerItems(
-            @RequestHeader(USER_ID_HEADER) UUID sellerId,
+            @RequestHeader(value = USER_ID_HEADER, required = false) UUID sellerId,
             @ModelAttribute ItemSearch itemSearch,
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        if (sellerId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         return itemService.listItemsBy(sellerId, itemSearch, pageable);
     }
 
@@ -91,7 +97,8 @@ public class ItemController {
     }
 
     @PostMapping("{id}/cancel")
-    public ResponseEntity<ItemDetailsDto> cancel(@PathVariable Long id, @RequestHeader(USER_ID_HEADER) UUID userId) {
+    public ResponseEntity<ItemDetailsDto> cancel(@PathVariable Long id, @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         return ResponseEntity.ok(itemService.cancelItem(id, userId));
     }
 
