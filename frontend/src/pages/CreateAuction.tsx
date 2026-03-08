@@ -1,3 +1,4 @@
+import type { AuctionFormData } from '../components/Form/AuctionDetails';
 import AuctionDetails from '../components/Form/AuctionDetails';
 import ImageUpload from '../components/Form/ImageUpload';
 import { useFileUpload } from '../hooks/useFileUpload';
@@ -33,6 +34,21 @@ const CreateAuction = () => {
     const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
     const { createItem, isCreating } = useItems();
+
+    // 1. Move the Form Data memory up to the Master Controller
+    const [formData, setFormData] = useState<AuctionFormData>({
+        categoryId: 0, 
+        title: '',
+        description: '',
+        startingPrice: 0,
+        endDate: '',
+        shippingInfo: ''
+    });
+
+    // 2. Move the Specifications memory up to the Master Controller
+    const [specsList, setSpecsList] = useState<{ key: string; value: string }[]>([
+        { key: '', value: '' } 
+    ]);
 
     let latestSuccessfulUploads: { localId: string; data: any }[] = [];
 
@@ -218,6 +234,10 @@ const CreateAuction = () => {
                         isSubmitting={isUploading || isCreating}       
                         onError={showError}
                         hasFailedUploads={files.some(f => f.status === 'FAILED')} 
+                        formData={formData}
+                        setFormData={setFormData}
+                        specsList={specsList}
+                        setSpecsList={setSpecsList}
                     />
                 )}
             </div>

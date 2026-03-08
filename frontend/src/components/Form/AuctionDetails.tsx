@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useCategories } from '../../hooks/useCategories';
 
 export interface AuctionDetailsData {
@@ -11,37 +11,41 @@ export interface AuctionDetailsData {
     specs: Record<string, string>; 
 }
 
+export interface AuctionFormData {
+    categoryId: number;
+    title: string;
+    description: string;
+    startingPrice: number;
+    endDate: string;
+    shippingInfo: string;
+}
+
 interface AuctionDetailsProps {
     onBack: () => void;
     onSubmit: (data: any) => void;
     isSubmitting: boolean;
     onError: (message: string) => void;
     hasFailedUploads: boolean;
+
+    formData: AuctionFormData;
+    setFormData: React.Dispatch<React.SetStateAction<any>>;
+    specsList: { key: string; value: string }[];
+    setSpecsList: React.Dispatch<React.SetStateAction<{ key: string; value: string }[]>>;
 }
 
 const AuctionDetails: React.FC<AuctionDetailsProps> = ({ 
-    onBack, onSubmit, isSubmitting, onError, hasFailedUploads 
+    onBack, onSubmit, isSubmitting, onError, hasFailedUploads,
+    formData, setFormData, specsList, setSpecsList
 }) => {
     
-    const [formData, setFormData] = useState({
-        categoryId: 0, 
-        title: '',
-        description: '',
-        startingPrice: 0,
-        endDate: '',
-        shippingInfo: ''
-    });
 
 
     const { data: categories, isLoading } = useCategories();
 
-    const [specsList, setSpecsList] = useState<{ key: string; value: string }[]>([
-        { key: '', value: '' } 
-    ]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
             ...prev,
             [name]: name === 'startingPrice' || name === 'categoryId' ? Number(value) : value
         }));
@@ -148,10 +152,10 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                                 className={`${inputClass} bg-white disabled:bg-gray-100 disabled:text-gray-500`}
                             >
                                 {isLoading ? (
-                                    <option value="" disabled>Loading categories ⏳...</option>
+                                    <option value={0} disabled>Loading categories ⏳...</option>
                                 ) : categories && categories.length > 0 ? (
                                     <>
-                                        <option value="" disabled>-- Select a Category --</option>
+                                        <option value={0} disabled>-- Select a Category --</option>
                                         {categories.map((category) => (
                                             <option key={category.id} value={category.id}>
                                                 {category.name}
@@ -159,7 +163,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                                         ))}
                                     </>
                                 ) : (
-                                    <option value="" disabled>No categories available</option>
+                                    <option value={0} disabled>No categories available</option>
                                 )}
                             </select>
                         </div>
