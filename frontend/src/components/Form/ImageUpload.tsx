@@ -28,7 +28,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
                 <Dropzone
                     multiple={true}
-                    acceptedTypes={'image/png image/jpeg  video/mp4'}
                     maxSizeMB={200}
                     onFilesSelected={onFilesSelected}
                 />
