@@ -1,6 +1,7 @@
 import type { AuctionFormData } from '../components/Form/AuctionDetails';
 import AuctionDetails from '../components/Form/AuctionDetails';
 import ImageUpload from '../components/Form/ImageUpload';
+import FilePreview from '../components/Form/FilePreview';
 import { useFileUpload } from '../hooks/useFileUpload';
 import type { UploadableFile } from '../types/upload';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +36,7 @@ const CreateAuction = () => {
 
     const { createItem, isCreating } = useItems();
 
-    // 1. Move the Form Data memory up to the Master Controller
+    
     const [formData, setFormData] = useState<AuctionFormData>({
         categoryId: 0, 
         title: '',
@@ -45,7 +46,6 @@ const CreateAuction = () => {
         shippingInfo: ''
     });
 
-    // 2. Move the Specifications memory up to the Master Controller
     const [specsList, setSpecsList] = useState<{ key: string; value: string }[]>([
         { key: '', value: '' } 
     ]);
@@ -128,8 +128,16 @@ const CreateAuction = () => {
 
 
             setFiles(prev => prev.map(f => {
-                if (failedUploads.includes(f.localId)) {
-                    return { ...f, status: 'FAILED' as any, progress: 0 };
+                // Find if this file is in the newly updated failed list
+                const failedMatch = failedUploads.find(fail => fail.localId === f.localId);
+                
+                if (failedMatch) {
+                    return { 
+                        ...f, 
+                        status: 'FAILED' as any, 
+                        progress: 0, 
+                        errorMessage: failedMatch.errorMessage // <-- Save the Spring Boot message!
+                    };
                 }
                 const successMatch = successfulUploads.find(s => s.localId === f.localId);
                 if (successMatch) {
@@ -140,10 +148,7 @@ const CreateAuction = () => {
 
             
             if (failedUploads.length > 0) {
-                setFiles(prev => prev.map(f => 
-                    failedUploads.includes(f.localId) ? { ...f, status: 'FAILED' as any, progress: 0 } : f
-                ));
-                showError(`${failedUploads.length} images failed. Please check your connection and click Retry.`);
+                showError(`${failedUploads.length} images failed. Please check the error messages and click Retry.`);
                 return; 
             }
 
@@ -247,6 +252,40 @@ const CreateAuction = () => {
                     <span className="font-medium">{errorToast}</span>
                 </div>
             )}
+
+        {isUploading && (
+                <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 animate-fadeIn">
+                    <div className="bg-white rounded-xl shadow-2xl p-8 max-w-4xl w-full">
+                        
+                        <div className="text-center mb-6">
+                            <h3 className="text-2xl font-bold text-gray-800">Securing Your Auction</h3>
+                            <p className="text-gray-500 mt-2">Uploading high-resolution media to the server...</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {files.map((fileObj, index) => (
+                                <div key={fileObj.localId}>
+                                    <FilePreview 
+                                        fileData={fileObj} 
+                                        onRemove={() => {}} 
+                                        isMain={index === 0}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-8 flex justify-center items-center gap-3 text-blue-600">
+                            <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span className="font-semibold text-lg">Uploading ...</span>
+                        </div>
+                        
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

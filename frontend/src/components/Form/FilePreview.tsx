@@ -41,7 +41,8 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, isMain = 
                 &times;
             </button>
 
-            <div className="w-full h-28 relative bg-gray-100 rounded mb-2 overflow-hidden shrink-0 flex justify-center items-center">
+         <div className="w-full h-28 relative bg-gray-100 rounded mb-2 overflow-hidden shrink-0 flex justify-center items-center">
+                
                 {isImage ? (
                     <img
                         src={fileData.previewUrl}
@@ -50,28 +51,59 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, isMain = 
                         draggable={false}
                     />
                 ) : (
-                    <svg
-                        className="w-12 h-12 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
+                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                 )}
-            </div>
 
-            <div className="w-full text-center select-none min-w-0 mt-auto">
-                <p
-                    className="text-sm font-medium text-gray-700 truncate w-full block"
-                    title={fileData.file.name}
-                >
-                    {fileData.file.name}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                    {formatSize(fileData.file.size)}
-                </p>
-            </div>
+                {fileData.status === 'UPLOADING' && (
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-4 z-20">
+                        <span className="text-white font-bold text-sm mb-2 drop-shadow-md">
+                            {fileData.progress || 0}%
+                        </span>
+                        
+                        <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                            <div 
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300 ease-out" 
+                                style={{ width: `${fileData.progress || 0}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                )}
+
+                {fileData.status === 'SUCCESS' && (
+                    <div className="absolute inset-0 border-5 border-green-500 rounded z-30 pointer-events-none"></div>
+                )}
+                </div>
+
+                <div className="w-full text-center select-none min-w-0 mt-auto">
+                    <p
+                        className="text-sm font-medium text-gray-700 truncate w-full block"
+                        title={fileData.file.name}
+                    >
+                        {fileData.file.name}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                        {formatSize(fileData.file.size)}
+                    </p>
+                </div>
+
+                {fileData.status === 'FAILED' && (
+                    <div className="absolute inset-2  bg-red-900/75 flex flex-col items-center justify-center p-3 z-20 text-center animate-fadeIn">
+                        <span
+                            className="text-red-900 mb-1 drop-shadow-md text-2xl leading-none"
+                            aria-hidden="true"
+                        >
+                            ⚠️
+                        </span>
+                        <span className="text-red-600 font-bold text-sm mb-1 drop-shadow-md">Upload Failed</span>
+
+                        <span className="text-gray-400 text-xs font-medium line-clamp-2 px-2">
+                            {fileData.errorMessage || "Network connection failed."}
+                        </span>
+                    </div>
+                    )}
+
         </div>
     );
 };

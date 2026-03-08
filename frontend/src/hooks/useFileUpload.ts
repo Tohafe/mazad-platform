@@ -50,31 +50,40 @@ export const useFileUpload = () => {
            
             const uploadPromises = filesToUpload.map(async (fileObj) => {
                 try {
-                   
                     const data = await uploadSingleFile(
                         fileObj.file, 
                         fileObj.targetWidth || '0', 
                         (progress) => onProgressUpdate(fileObj.localId, progress)
                     );
-                    
                     return { localId: fileObj.localId, data, success: true };
-                } catch (error) {
-
-                    return { localId: fileObj.localId, data: null, success: false };
+                } catch (error: any) {
+                    // THE EXTRACTION: Dig into the Axios error to find what Spring Boot said!
+                    const backendMessage = 
+                        error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        "The server rejected this file.";
+                        
+                    return { localId: fileObj.localId, data: null, success: false, errorMessage: backendMessage };
                 }
             });
 
             const results = await Promise.allSettled(uploadPromises);
 
             const successfulUploads: { localId: string; data: FileResponse }[] = [];
-            const failedUploads: string[] = [];
+            
+            // We change this from an array of strings to an array of objects so it can hold the message!
+            const failedUploads: { localId: string; errorMessage: string }[] = [];
 
             results.forEach(result => {
                 if (result.status === 'fulfilled') {
                     if (result.value.success && result.value.data) {
                         successfulUploads.push({ localId: result.value.localId, data: result.value.data });
                     } else {
-                        failedUploads.push(result.value.localId);
+                        // Pass the extracted message into the failed list!
+                        failedUploads.push({ 
+                            localId: result.value.localId, 
+                            errorMessage: result.value.errorMessage || "Unknown error" 
+                        });
                     }
                 }
             });
@@ -82,7 +91,7 @@ export const useFileUpload = () => {
             return { successfulUploads, failedUploads };
 
         } catch (error) {
-            console.error("Critical error in batch upload:", error);
+            console.error("error in  upload:", error);
             throw error;
         } finally {
             setIsUploading(false);
