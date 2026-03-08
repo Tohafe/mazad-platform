@@ -60,7 +60,7 @@ export function BidInput({ minBid, currentBidNumeric, value, onChange, error }: 
         />
       </div>
       {displayError && (
-        <p className="text-xs text-red-500 mt-1 px-1">{displayError}</p>
+        <p className="text-xs text-error mt-1 px-1">{displayError}</p>
       )}
     </div>
   );

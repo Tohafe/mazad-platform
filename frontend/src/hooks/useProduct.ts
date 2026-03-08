@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { productApi } from '../api/productApi';
+import { productApi } from '../api';
 import type { ApiProduct, ProductImage, ProductDetail, BidData, Countdown } from '../types';
 
 // Transform API images to component format
@@ -87,7 +87,7 @@ function formatEndTime(endsAt: string): string {
 
 // Format currency (whole number with thousand separators)
 function formatCurrencyWholeNumber(amount: number): string {
-  return `¤ ${Math.floor(amount).toLocaleString('en-US')}`;
+  return `$ ${Math.floor(amount).toLocaleString('en-US')}`;
 }
 
 // Generate quick bid amounts
@@ -123,13 +123,7 @@ function transformToBidData(product: ApiProduct): BidData {
     sellerId: product.sellerId ?? '',
     quickBidAmounts: generateQuickBidAmounts(currentBid, startingPrice),
     minBid: `${formatCurrencyWholeNumber((currentBid === 0 ? startingPrice : currentBid) + 1)} or up`,
-    watchingCount: 0, // Not in API - placeholder
-    recentBids: [], // Not in API - placeholder
-    totalBids: 6, // Mock total bids
-    buyerProtectionFee: '8% + ¤ 3',
     shippingLocation: 'Morocco', // Could be derived from user location
-    trustpilotRating: '4.4',
-    trustpilotReviews: '127239',
     status,
   };
 }

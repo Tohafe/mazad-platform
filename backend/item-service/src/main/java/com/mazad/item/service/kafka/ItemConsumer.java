@@ -18,7 +18,7 @@ public class ItemConsumer {
 
     private final JsonMapper jsonMapper;
 
-    @KafkaListener(topics = "${item.updated.topic}", groupId = "Item")
+    @KafkaListener(topics = "${auction.update.topic}", groupId = "Item")
     public void handleItemUpdateEvent(String event) {
         log.info("Received item update event: {}", event);
         try {

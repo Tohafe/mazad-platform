@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar } from 'lucide-react';
 import type { Countdown } from '../../types';
 import { TimeBlock } from '../ui';
+import {BiCalendar} from "react-icons/bi";
 
 interface CountdownTimerProps {
   endTime: string;
@@ -52,7 +52,7 @@ export function CountdownTimer({ endTime, startsAt, endsAt }: CountdownTimerProp
       <div className="bg-gray-100 px-4 py-3">
         <div className="flex items-center justify-end gap-1.5 text-gray-500">
           <span className="text-sm">{endTime}</span>
-          <Calendar className="w-4 h-4" />
+          <BiCalendar className="w-4 h-4" />
         </div>
       </div>
 

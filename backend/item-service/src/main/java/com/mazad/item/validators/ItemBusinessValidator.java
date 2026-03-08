@@ -3,6 +3,7 @@ package com.mazad.item.validators;
 import com.mazad.item.dto.ItemRequestDto;
 import com.mazad.item.entity.AuctionStatus;
 import com.mazad.item.entity.ItemEntity;
+import com.mazad.item.exceptions.AuthorizationException;
 import com.mazad.item.exceptions.ItemNotEditableException;
 import com.mazad.item.mapper.ItemMapper;
 import com.mazad.item.repository.CategoryRepository;
@@ -118,7 +119,7 @@ public final class ItemBusinessValidator {
 
     public void validateCancel(ItemEntity entity, UUID userId) {
         if (!entity.getSellerId().equals(userId))
-            throw new ValidationException("Item can only be cancelled by its seller");
+            throw new AuthorizationException("You don't have permission to perform this action.");
         if (entity.getStatus() != AuctionStatus.ACTIVE)
             throw new ValidationException("Item already closed");
     }

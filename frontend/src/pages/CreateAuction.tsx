@@ -224,7 +224,7 @@ const CreateAuction = () => {
             setFiles([]);
             console.log("Auction Created Successfully!", newAuctionItem);
             
-            navigate(`/itemDetails/${newAuctionItem.id}`);
+            navigate(`/auction/${newAuctionItem.id}`);
             
         } catch (error: any) {
             console.error("Backend rejected the item:", error);

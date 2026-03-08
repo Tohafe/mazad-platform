@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
                         element: <SearchAuctions/>
                     },
                     {
-                        path: '/itemDetails/:productId',
+                        path: '/auction/:productId',
                         element: <ItemPage />
                     },
                     {

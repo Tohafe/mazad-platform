@@ -1,4 +1,4 @@
-import { Shield } from 'lucide-react';
+import {BiShield} from "react-icons/bi";
 
 interface BuyerProtectionProps {
   title?: string;
@@ -16,7 +16,7 @@ export function BuyerProtection({
   return (
     <div className="flex items-start gap-3 py-4 border-t border-gray-100">
       <div className="p-1.5 bg-red-100 rounded-full">
-        <Shield className="w-4 h-4 text-red-500" />
+        <BiShield className="w-4 h-4 text-red-500" />
       </div>
       <div>
         <p className="text-sm font-semibold text-gray-900">{title}</p>

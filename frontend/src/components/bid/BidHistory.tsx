@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { BidEntry } from '../../types';
+import {BiChevronDown, BiChevronUp} from "react-icons/bi";
 
 interface BidHistoryProps {
   bids: BidEntry[];
@@ -57,12 +57,12 @@ export function BidHistory({ bids, totalBids, isLoading }: BidHistoryProps) {
           {expanded ? (
             <>
               Show less
-              <ChevronUp className="w-4 h-4" />
+              <BiChevronUp className="w-4 h-4" />
             </>
           ) : (
             <>
               See all bids ({totalBids})
-              <ChevronDown className="w-4 h-4" />
+              <BiChevronDown className="w-4 h-4" />
             </>
           )}
         </button>

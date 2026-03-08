@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Database error: " + e.getLocalizedMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Database error");
     }
 
     @ExceptionHandler(ValidationException.class)
@@ -51,5 +51,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ItemNotEditableException.class)
     public ProblemDetail handleItemNotEditableException(ItemNotEditableException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ProblemDetail handleAuthorizationException(AuthorizationException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 }

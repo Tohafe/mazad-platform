@@ -1,4 +1,4 @@
-import { Star } from 'lucide-react';
+import {BiStar} from "react-icons/bi";
 
 interface TrustpilotRowProps {
   rating: string;
@@ -8,7 +8,7 @@ interface TrustpilotRowProps {
 export function TrustpilotRow({ rating, reviewCount }: TrustpilotRowProps) {
   return (
     <div className="flex items-start gap-3 py-4 border-t border-gray-100">
-      <Star className="w-4 h-4 text-green-500 fill-green-500 mt-0.5" />
+      <BiStar className="w-4 h-4 text-green-500 fill-green-500 mt-0.5" />
       <div>
         <p className="text-sm text-gray-900">
           <span className="font-semibold">Trustpilot {rating}</span>

@@ -1,3 +1,5 @@
+import type {AuctionStatus} from "../types/item";
+
 export type TimeLeftStyle = "short" | "long";
 
 /**
@@ -6,19 +8,20 @@ export type TimeLeftStyle = "short" | "long";
  * - "1 hour left"
  * - "30 min left"
  * - "35 sec left"
- * - "Ended"
+ * - "Closed"
  */
 export function formatTimeLeft(
+    status: AuctionStatus = "CLOSED",
     endsAtIso: string,
     now: Date = new Date(),
-    style: TimeLeftStyle = "long"
+    style: TimeLeftStyle = "long",
 ): string {
     const endsAt = new Date(endsAtIso);
 
     if (Number.isNaN(endsAt.getTime())) return "";
     const diffMs = endsAt.getTime() - now.getTime();
 
-    if (diffMs <= 0) return "Ended";
+    if (diffMs <= 0 || status !== "ACTIVE") return "Closed";
 
     const totalSeconds = Math.floor(diffMs / 1000);
     const days = Math.floor(totalSeconds / 86400);
