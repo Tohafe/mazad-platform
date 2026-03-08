@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useCategories } from '../../hooks/useCategories';
 
 export interface AuctionDetailsData {
@@ -11,37 +11,41 @@ export interface AuctionDetailsData {
     specs: Record<string, string>; 
 }
 
+export interface AuctionFormData {
+    categoryId: number;
+    title: string;
+    description: string;
+    startingPrice: number;
+    endDate: string;
+    shippingInfo: string;
+}
+
 interface AuctionDetailsProps {
     onBack: () => void;
     onSubmit: (data: any) => void;
     isSubmitting: boolean;
     onError: (message: string) => void;
     hasFailedUploads: boolean;
+
+    formData: AuctionFormData;
+    setFormData: React.Dispatch<React.SetStateAction<any>>;
+    specsList: { key: string; value: string }[];
+    setSpecsList: React.Dispatch<React.SetStateAction<{ key: string; value: string }[]>>;
 }
 
 const AuctionDetails: React.FC<AuctionDetailsProps> = ({ 
-    onBack, onSubmit, isSubmitting, onError, hasFailedUploads 
+    onBack, onSubmit, isSubmitting, onError, hasFailedUploads,
+    formData, setFormData, specsList, setSpecsList
 }) => {
     
-    const [formData, setFormData] = useState({
-        categoryId: 0, 
-        title: '',
-        description: '',
-        startingPrice: 0,
-        endDate: '',
-        shippingInfo: ''
-    });
 
 
     const { data: categories, isLoading } = useCategories();
 
-    const [specsList, setSpecsList] = useState<{ key: string; value: string }[]>([
-        { key: '', value: '' } 
-    ]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
             ...prev,
             [name]: name === 'startingPrice' || name === 'categoryId' ? Number(value) : value
         }));
@@ -77,6 +81,18 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
             return;
         }
 
+        const selectedDate = new Date(formData.endDate);
+        
+        if (selectedDate.getTime() < minAllowedDate.getTime()) {
+            onError("Auction must last at least 6 minutes.");
+            return;
+        }
+
+        if (selectedDate.getTime() > maxAllowedDate.getTime()) {
+            onError("Auction cannot last longer than 30 days.");
+            return;
+        }
+
         const specsMap: Record<string, string> = {};
         for (const spec of specsList) {
             const cleanKey = spec.key.trim();
@@ -99,7 +115,19 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
         onSubmit(finalPayload); 
     };
 
-    const today = new Date().toISOString().slice(0, 16);
+    const toLocalISOString = (date: Date) => {
+        const tzOffset = date.getTimezoneOffset() * 60000; 
+        const localDate = new Date(date.getTime() - tzOffset);
+        return localDate.toISOString().slice(0, 16);
+    };
+
+    const now = new Date();
+    
+    const minAllowedDate = new Date(now.getTime() + 6 * 60 * 1000); 
+    const minDateString = toLocalISOString(minAllowedDate);
+    
+    const maxAllowedDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const maxDateString = toLocalISOString(maxAllowedDate);
 
 
     const inputClass = "w-full px-4 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:bg-gray-100 disabled:border-gray-200 tabular-nums placeholder-gray-400";
@@ -134,7 +162,6 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                         </div>
 
 
-                        {/* Category Dropdown */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Category <span className="text-red-500">*</span>
@@ -148,10 +175,10 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                                 className={`${inputClass} bg-white disabled:bg-gray-100 disabled:text-gray-500`}
                             >
                                 {isLoading ? (
-                                    <option value="" disabled>Loading categories ⏳...</option>
+                                    <option value={0} disabled>Loading categories ⏳...</option>
                                 ) : categories && categories.length > 0 ? (
                                     <>
-                                        <option value="" disabled>-- Select a Category --</option>
+                                        <option value={0} disabled>-- Select a Category --</option>
                                         {categories.map((category) => (
                                             <option key={category.id} value={category.id}>
                                                 {category.name}
@@ -159,7 +186,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                                         ))}
                                     </>
                                 ) : (
-                                    <option value="" disabled>No categories available</option>
+                                    <option value={0} disabled>No categories available</option>
                                 )}
                             </select>
                         </div>
@@ -199,16 +226,22 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                         </div>
 
                         <div className="min-w-0"> 
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Auction End Date <span className="text-red-500">*</span></label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Auction End Date <span className="text-red-500">*</span>
+                            </label>
                             <input
                                 type="datetime-local"
                                 name="endDate"
                                 value={formData.endDate}
                                 onChange={handleChange}
-                                required min={today}
+                                required 
+                                min={minDateString}
+                                max={maxDateString}
                                 className={inputClass}
                             />
+                            <p className="text-xs text-gray-500 mt-1">Duration: 6 mins to 30 days</p>
                         </div>
+
                     </div>
 
                     <div>

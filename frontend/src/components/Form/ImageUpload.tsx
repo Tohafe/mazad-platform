@@ -28,7 +28,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
                 <Dropzone
                     multiple={true}
-                    maxSizeMB={15}
+                    maxSizeMB={200}
                     onFilesSelected={onFilesSelected}
                 />
             </div>
@@ -40,9 +40,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {files.map((fileObj, index) => (
-                            <FilePreview 
-                                key={fileObj.localId} 
-                                fileData={fileObj} 
+                            <FilePreview
+                                key={fileObj.localId}
+                                fileData={fileObj}
                                 onRemove={onRemoveFile}
                                 isMain={index === 0}
                             />

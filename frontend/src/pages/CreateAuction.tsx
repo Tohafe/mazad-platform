@@ -1,5 +1,7 @@
+import type { AuctionFormData } from '../components/Form/AuctionDetails';
 import AuctionDetails from '../components/Form/AuctionDetails';
 import ImageUpload from '../components/Form/ImageUpload';
+import FilePreview from '../components/Form/FilePreview';
 import { useFileUpload } from '../hooks/useFileUpload';
 import type { UploadableFile } from '../types/upload';
 import { useNavigate } from 'react-router-dom';
@@ -33,6 +35,20 @@ const CreateAuction = () => {
     const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
     const { createItem, isCreating } = useItems();
+
+    
+    const [formData, setFormData] = useState<AuctionFormData>({
+        categoryId: 0, 
+        title: '',
+        description: '',
+        startingPrice: 0,
+        endDate: '',
+        shippingInfo: ''
+    });
+
+    const [specsList, setSpecsList] = useState<{ key: string; value: string }[]>([
+        { key: '', value: '' } 
+    ]);
 
     let latestSuccessfulUploads: { localId: string; data: any }[] = [];
 
@@ -69,6 +85,30 @@ const CreateAuction = () => {
         });
     };
 
+    const extractBackendError = (error: any): string => {
+        if (error.response && error.response.data) {
+            const data = error.response.data;
+            
+            if (data.message && typeof data.message === 'string') return data.message;
+            
+
+            if (data.error && typeof data.error === 'string') return data.error;
+            
+
+            if (Array.isArray(data.errors)) return data.errors.join(", ");
+            
+
+            if (typeof data === 'string') return data;
+        }
+        
+
+        if (error.message) return error.message;
+        
+
+        return "Failed to create the auction. Please check your details.";
+    };
+    
+
     const handleRemoveFile = (idToDrop: string) => {
         setFiles(prevFiles => {
             const fileToDelete = prevFiles.find(f => f.localId === idToDrop);
@@ -90,7 +130,11 @@ const CreateAuction = () => {
         if (files.length !== REQUIRED_IMAGE_COUNT) return;
         setErrorToast(null);
 
-        const pendingFiles = files.filter(f => f.status !== 'SUCCESS');
+        const pendingFiles = files.filter((f, index) => {
+            if (f.status !== 'SUCCESS') return true;
+            if (index === 0 && !f.data?.thumbnailUrl) return true;
+            return false; 
+        });
 
         if (pendingFiles.length > 0) {
             console.log(`Uploading ${pendingFiles.length} pending files to MinIO...`);
@@ -106,12 +150,28 @@ const CreateAuction = () => {
                 (localId, progress) => handleProgressUpdate(localId, progress)
             );
 
+
+            setFiles(prev => prev.map(f => {
+                const failedMatch = failedUploads.find(fail => fail.localId === f.localId);
+                
+                if (failedMatch) {
+                    return { 
+                        ...f, 
+                        status: 'FAILED' as any, 
+                        progress: 0, 
+                        errorMessage: failedMatch.errorMessage 
+                    };
+                }
+                const successMatch = successfulUploads.find(s => s.localId === f.localId);
+                if (successMatch) {
+                    return { ...f, status: 'SUCCESS', data: successMatch.data };
+                }
+                return f;
+            }));
+
             
             if (failedUploads.length > 0) {
-                setFiles(prev => prev.map(f => 
-                    failedUploads.includes(f.localId) ? { ...f, status: 'FAILED' as any, progress: 0 } : f
-                ));
-                showError(`${failedUploads.length} images failed. Please check your connection and click Retry.`);
+                showError(`${failedUploads.length} images failed. Please check the error messages and click Retry.`);
                 return; 
             }
 
@@ -125,42 +185,52 @@ const CreateAuction = () => {
 
         console.log("All images secured! Stitching final DTO payload...");
 
+
+            
+
+        const finalImageUrls = files.map(f => {
+            const justUploaded = latestSuccessfulUploads.find(s => s.localId === f.localId);
+            return justUploaded?.data?.url || f.data?.url; 
+        }).filter(Boolean) as string[]; 
+
+        const firstFileId = files[0].localId;
+        const newlyUploadedFirst = latestSuccessfulUploads.find(s => s.localId === firstFileId);
+        
+        const thumbnailString = 
+            newlyUploadedFirst?.data?.thumbnailUrl || 
+            files[0].data?.thumbnailUrl || 
+            newlyUploadedFirst?.data?.url || 
+            files[0].data?.url || 
+            "";
+        
+        const finalPayload = {
+            categoryId: auctionTextData.categoryId,
+            title: auctionTextData.title,
+            description: auctionTextData.description,
+            specs: auctionTextData.specs,
+            shippingInfo: auctionTextData.shippingInfo, 
+            startingPrice: auctionTextData.startingPrice,
+            endsAt: new Date(auctionTextData.endDate).toISOString(),       
+            thumbnail: thumbnailString,       
+            images: finalImageUrls            
+        };
+
+        console.log("Transmitting payload to items-service:", finalPayload);
+
+
         try {
-            const finalImageUrls = files.map(f => {
-                const justUploaded = latestSuccessfulUploads.find(s => s.localId === f.localId);
-                if (justUploaded?.data?.url) return justUploaded.data.url;
-                
-                return f.data?.url || null; 
-            }).filter(Boolean) as string[]; 
-
-            const firstFileId = files[0].localId;
-            const newlyUploadedFirst = latestSuccessfulUploads.find(s => s.localId === firstFileId);
-            const thumbnailString = newlyUploadedFirst?.data?.thumbnailUrl || files[0].data?.thumbnailUrl || "";
-            
-            const utcEndDate = new Date(auctionTextData.endDate).toISOString();
-            
-            const finalPayload = {
-                categoryId: auctionTextData.categoryId,
-                title: auctionTextData.title,
-                description: auctionTextData.description,
-                specs: auctionTextData.specs,
-                shippingInfo: auctionTextData.shippingInfo, 
-                startingPrice: auctionTextData.startingPrice,
-                endsAt: utcEndDate,       
-                thumbnail: thumbnailString,       
-                images: finalImageUrls            
-            };
-
-            console.log("Transmitting payload to items-service:", finalPayload);
-            
             const newAuctionItem = await createItem(finalPayload);
             
+            setFiles([]);
             console.log("Auction Created Successfully!", newAuctionItem);
+            
             navigate(`/itemDetails/${newAuctionItem.id}`);
-
-        } catch (error) {
-            console.error("Failed to create auction item:", error);
-            showError("Images uploaded safely, but creating the auction failed. Please click Retry.");
+            
+        } catch (error: any) {
+            console.error("Backend rejected the item:", error);
+            
+            const exactErrorMessage = extractBackendError(error);
+            showError(exactErrorMessage);
         }
     };
 
@@ -201,6 +271,10 @@ const CreateAuction = () => {
                         isSubmitting={isUploading || isCreating}       
                         onError={showError}
                         hasFailedUploads={files.some(f => f.status === 'FAILED')} 
+                        formData={formData}
+                        setFormData={setFormData}
+                        specsList={specsList}
+                        setSpecsList={setSpecsList}
                     />
                 )}
             </div>
@@ -210,6 +284,40 @@ const CreateAuction = () => {
                     <span className="font-medium">{errorToast}</span>
                 </div>
             )}
+
+        {isUploading && (
+                <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 animate-fadeIn">
+                    <div className="bg-white rounded-xl shadow-2xl p-8 max-w-4xl w-full">
+                        
+                        <div className="text-center mb-6">
+                            <h3 className="text-2xl font-bold text-gray-800">Securing Your Auction</h3>
+                            <p className="text-gray-500 mt-2">Uploading high-resolution media to the server...</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {files.map((fileObj, index) => (
+                                <div key={fileObj.localId}>
+                                    <FilePreview 
+                                        fileData={fileObj} 
+                                        onRemove={() => {}} 
+                                        isMain={index === 0}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-8 flex justify-center items-center gap-3 text-blue-600">
+                            <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span className="font-semibold text-lg">Uploading ...</span>
+                        </div>
+                        
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

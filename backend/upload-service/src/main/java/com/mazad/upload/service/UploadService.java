@@ -70,7 +70,7 @@ public class UploadService {
 
 	private String uploadThumbnail(MultipartFile file, String fileName, int width, int height){
 		if(!(isImage(file) && shouldResize(file, width, height)))
-			return null;
+			return fileName;
 		String thumbName = "thumbnail_" + fileName;
 		
 		String format = "jpg";
@@ -160,6 +160,8 @@ public class UploadService {
 		String thumbnail = null;
 		if(width > 0 && height > 0)
 			thumbnail = uploadThumbnail(file, newFileName, width, height);
+		else
+			thumbnail = newFileName;
 		return responseBuilder(newFileName, file, thumbnail);
 	}
 
@@ -171,8 +173,12 @@ public class UploadService {
 		} catch (Exception e) {
 			throw new RuntimeException("Update Failed " + e.getMessage());
 		}
-		String thumbnail = uploadThumbnail(file, fileName, width, height);
 
+		String thumbnail = null;
+		if(width > 0 && height > 0)
+			thumbnail = uploadThumbnail(file, fileName, width, height);
+		else
+			thumbnail = fileName;
 		return responseBuilder(fileName, file, thumbnail);
 	}
 
