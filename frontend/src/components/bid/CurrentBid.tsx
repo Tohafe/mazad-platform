@@ -13,7 +13,7 @@ export function CurrentBid({ amount, startingPrice = 0 }: CurrentBidProps) {
           No starting price
         </span>
       ) : (
-        <span className="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full mt-2">
+        <span className="inline-block bg-[#edf4e6] text-[#11a88a] px-3 py-1 text-xs font-semibold  mt-2">
           Starting price: ${startingPrice.toLocaleString()}
         </span>
       )}

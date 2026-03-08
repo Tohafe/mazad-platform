@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { BidEntry, AuctionStatus } from '../../types';
 import { useSeller } from '../../hooks/useSeller';
+import {BiChevronDown, BiChevronUp} from "react-icons/bi";
 
 interface ClosedAuctionViewProps {
   status: AuctionStatus;
@@ -89,7 +89,7 @@ export function ClosedAuctionView({
                   className="flex items-center gap-1 text-sm text-gray-700 hover:text-gray-900"
                 >
                   Sold by <span className="font-medium">{seller?.name || 'Unknown'}</span>
-                  <ChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
+                  <BiChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
                 </button>
               </>
             )}
@@ -110,9 +110,9 @@ export function ClosedAuctionView({
                 >
                   See all bids ({totalBids})
                   {expanded ? (
-                    <ChevronUp className="w-4 h-4" />
+                    <BiChevronUp className="w-4 h-4" />
                   ) : (
-                    <ChevronDown className="w-4 h-4" />
+                    <BiChevronDown className="w-4 h-4" />
                   )}
                 </button>
 

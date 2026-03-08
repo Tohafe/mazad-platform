@@ -1,5 +1,5 @@
-import { ChevronRight } from 'lucide-react';
 import type { Curator } from '../../types';
+import {BiChevronRight} from "react-icons/bi";
 
 interface ExpertRowProps {
   curator: Curator;
@@ -25,7 +25,7 @@ export function ExpertRow({ curator }: ExpertRowProps) {
         <span className="text-sm text-gray-700">
           Selected by <span className="font-medium">{curator.name}</span>
         </span>
-        <ChevronRight className="w-4 h-4 text-gray-400" />
+        <BiChevronRight className="w-4 h-4 text-gray-400" />
       </div>
     </div>
   );

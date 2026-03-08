@@ -1,5 +1,5 @@
-import { ChevronRight } from 'lucide-react';
 import { useSeller } from '../../hooks/useSeller';
+import {BiChevronRight} from "react-icons/bi";
 
 interface SellerRowProps {
   sellerId: string;
@@ -38,7 +38,7 @@ export function SellerRow({ sellerId }: SellerRowProps) {
         <span className="text-sm text-gray-700">
           Sold by <span className="font-medium">{seller?.name || 'Unknown'}</span>
         </span>
-        <ChevronRight className="w-4 h-4 text-gray-400" />
+        <BiChevronRight className="w-4 h-4 text-gray-400" />
       </div>
     </div>
   );
