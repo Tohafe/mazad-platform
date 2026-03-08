@@ -81,6 +81,18 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
             return;
         }
 
+        const selectedDate = new Date(formData.endDate);
+        
+        if (selectedDate.getTime() < minAllowedDate.getTime()) {
+            onError("Auction must last at least 6 minutes.");
+            return;
+        }
+
+        if (selectedDate.getTime() > maxAllowedDate.getTime()) {
+            onError("Auction cannot last longer than 30 days.");
+            return;
+        }
+
         const specsMap: Record<string, string> = {};
         for (const spec of specsList) {
             const cleanKey = spec.key.trim();
@@ -103,7 +115,19 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
         onSubmit(finalPayload); 
     };
 
-    const today = new Date().toISOString().slice(0, 16);
+    const toLocalISOString = (date: Date) => {
+        const tzOffset = date.getTimezoneOffset() * 60000; 
+        const localDate = new Date(date.getTime() - tzOffset);
+        return localDate.toISOString().slice(0, 16);
+    };
+
+    const now = new Date();
+    
+    const minAllowedDate = new Date(now.getTime() + 6 * 60 * 1000); 
+    const minDateString = toLocalISOString(minAllowedDate);
+    
+    const maxAllowedDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const maxDateString = toLocalISOString(maxAllowedDate);
 
 
     const inputClass = "w-full px-4 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:bg-gray-100 disabled:border-gray-200 tabular-nums placeholder-gray-400";
@@ -138,7 +162,6 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                         </div>
 
 
-                        {/* Category Dropdown */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Category <span className="text-red-500">*</span>
@@ -203,16 +226,22 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                         </div>
 
                         <div className="min-w-0"> 
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Auction End Date <span className="text-red-500">*</span></label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Auction End Date <span className="text-red-500">*</span>
+                            </label>
                             <input
                                 type="datetime-local"
                                 name="endDate"
                                 value={formData.endDate}
                                 onChange={handleChange}
-                                required min={today}
+                                required 
+                                min={minDateString}
+                                max={maxDateString}
                                 className={inputClass}
                             />
+                            <p className="text-xs text-gray-500 mt-1">Duration: 6 mins to 30 days</p>
                         </div>
+
                     </div>
 
                     <div>
