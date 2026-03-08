@@ -18,7 +18,7 @@ const ItemCard = ({className = "", auction}: ItemCardProps) => {
     const timeLeftLabel = useAuctionTimeLeft(auction.status, auction.endsAt);
 
     return (
-        <Link to={`/item/${auction.id}`} className={cn(baseStyles, className)}>
+        <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
             <div className="relative w-full h-full xl:h-89">
                 <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
                 <IconButton className="absolute top-3 left-3 bg-main" variant="outlined" icon={LuHeart}

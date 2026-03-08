@@ -33,7 +33,7 @@ const ListingCard = ({
     const baseStyles = "flex flex-col w-full aspect-square justify-center gap-2 shrink-0 cursor-pointer";
     const timeLeftLabel = useAuctionTimeLeft(auction.status, auction.endsAt);
     return (
-        <Link to={`/item/${auction.id}`} className={cn(baseStyles, className)}>
+        <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
 
             <div className={cn("relative w-full h-full", imgClassName)}>
                 <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
@@ -46,7 +46,7 @@ const ListingCard = ({
                     <label className="text-black font-medium text-xl text-start">{auction.currentBid}</label>
                 </div>
                 {auction.status === "ACTIVE" && handleCancelClick &&
-                    <Button size="sm" onClick={() => handleCancelClick(auction)} variant="danger" icon={MdCancel}
+                    <Button size="sm" onMouseDown={() => handleCancelClick(auction)} variant="danger" icon={MdCancel}
                             iconClassName="">Cancel</Button>}
             </div>
             <label className="text-muted font-medium text-sm font-noto">{timeLeftLabel}</label>

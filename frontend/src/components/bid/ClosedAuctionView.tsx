@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { BidEntry, AuctionStatus } from '../../types';
 import { useSeller } from '../../hooks/useSeller';
 import {BiChevronDown, BiChevronUp} from "react-icons/bi";
+import {Link} from "react-router-dom";
 
 interface ClosedAuctionViewProps {
   status: AuctionStatus;
@@ -88,7 +89,7 @@ export function ClosedAuctionView({
                   type="button"
                   className="flex items-center gap-1 text-sm text-gray-700 hover:text-gray-900"
                 >
-                  Sold by <span className="font-medium">{seller?.name || 'Unknown'}</span>
+                  Sold by <Link to={`/profile/${seller?.name}`}><span className="font-medium">{seller?.name || 'Unknown'}</span></Link>
                   <BiChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
                 </button>
               </>

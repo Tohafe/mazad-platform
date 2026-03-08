@@ -1,7 +1,7 @@
 import Tab from "../components/Card/Tab.tsx";
 import Divider from "../components/Divider.tsx";
 import {type ReactNode, useEffect, useState} from "react";
-import {useAuctions, useCancelAuction, useMyAuctions} from "../hooks/useAuctions.ts";
+import {useCancelAuction, useMyAuctions} from "../hooks/useAuctions.ts";
 import Pagination from "../components/Pagination.tsx";
 import Button from "../components/Button/Button.tsx";
 import type {AuctionStatus, AuctionSummary} from "../types/item.ts";
