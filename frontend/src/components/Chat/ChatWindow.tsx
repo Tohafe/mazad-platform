@@ -1,10 +1,12 @@
 import {  useEffect, useRef, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import { useAuth } from "../../context/AuthProvider"
+import { useWebSocket } from "../../context/WebSocketContext";
+import { string } from "zod";
 
 
 
-function ChatWindow({ chatId } : Readonly<{chatId:string}>){
+function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessageSent: (msg: string) => void }>, ){
 
     const apiPrivate = useApiPrivate();
 
@@ -45,6 +47,8 @@ function ChatWindow({ chatId } : Readonly<{chatId:string}>){
                 receiverId: chatId,
                 content: newMessage.text
             });
+            // MOVE THE CHAT TO THE TOP
+            onMessageSent(newMessage.text);
         } catch (error){
             console.error("Failed to send message: ",  error);
             // doing some disign for failed send
@@ -77,7 +81,43 @@ function ChatWindow({ chatId } : Readonly<{chatId:string}>){
         fetchHistory();
     }
     , [chatId, user?.id, apiPrivate]);
+    // SUBSCRIBING TO THE WEBSOCKET 
+    const {stompClient, isConnected } = useWebSocket();
+    useEffect(() => {
+        if (!stompClient || !isConnected || !chatId) return;
+        const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
+            const incomingMsg = JSON.parse(message.body);
 
+            const isRelevent  = incomingMsg.senderId === chatId || incomingMsg.receiverId === chatId;
+            if (isRelevent){
+                setMessages((prev) => {
+                    return [...prev, {
+                        id: incomingMsg.id,
+                        text: incomingMsg.content,
+                        sender: incomingMsg.senderId === user?.id ? "me" : "them"
+                    }];
+                });
+            }
+        });
+        return (() => subscription.unsubscribe());
+    }, [stompClient, isConnected, chatId, user?.id]);
+
+
+    const [otherUser, setOtherUser] = useState<{username:string, avatar?:string} | null>(null);
+    useEffect(() => {
+        const getOtherUserInfo = async () => {
+            try{
+                const response = await apiPrivate.get(`/profile/users/${chatId}`);
+                setOtherUser({
+                    username: response.data.username,
+                    avatar: response.data.avatarUrl
+                });
+            } catch(error){
+                setOtherUser({ username: `User ${chatId.substring(0,4)}` });
+            }
+        };
+        getOtherUserInfo();
+    }, [chatId])
 console.log('haha');
 
     return (
@@ -86,11 +126,18 @@ console.log('haha');
             <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white">
                 {/* AVATAR */}
                 <div className="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-full font-bold text-blue-600">
-                    ?
+                    {otherUser?.avatar ? (
+                        <img
+                        src={otherUser.avatar}
+                        alt={otherUser.username.charAt(0).toUpperCase()}
+                        className="w-full h-full object-cover rounded-full"
+                        />
+                    ): (
+                        <span>{otherUser?.username.charAt(0).toUpperCase()}</span>
+                    )}
                 </div>
                 <div>
-                    <h3 className="font-semibold text-gray-800">User {chatId}</h3>
-                    <p className="text-xs text-green-500"> Online{/*  || Offline TODO: get status somehow*/}</p>
+                    <h3 className="font-semibold text-gray-800"> {otherUser ? otherUser.username : "Loading.." }</h3>
                 </div>
             </div>
 

@@ -39,10 +39,6 @@ export const router = createBrowserRouter([
                         element: <SearchAuctions/>
                     },
                     {
-                        path:'/conversations',
-                        element: <Inbox />
-                    },
-                    {
                         path: '/itemDetails/:productId',
                         element: <ItemPage />
                     },
@@ -72,6 +68,10 @@ export const router = createBrowserRouter([
                             {
                                 path: '/create',
                                 element: <CreateAuction/>
+                            },
+                            {
+                                path:'/inbox',
+                                element: <Inbox />
                             }
                         ]
                     },
@@ -100,10 +100,6 @@ export const router = createBrowserRouter([
         path: '/login',
         element: <Login/>
     },
-    {
-        path:'/Inbox',
-        element: <Inbox />
-    }
 ]);
 
 const App = () => {

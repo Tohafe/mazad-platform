@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom";
+
 export interface Chat {
     id: string;
     name: string;
+    avatar?: string;
     lastMessage: string;
     hasUnreadMessages: boolean;
 }
@@ -26,10 +29,16 @@ function ConversationList( {chats, activeChatId, onSelectChat}: ConversationList
                                 }`}
                                 >
                                     <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full font-bold text-gray-600 text-lg shrink-0 ">
-                                        {chat.name ? chat.name.charAt(0).toUpperCase(): '?'}
+                                    { (chat.avatar)
+                                        ? <img src={chat.avatar} className="rounded-full"></img>
+                                        : <> {chat.name ? chat.name.charAt(0).toUpperCase(): '?'} </>
+                                    }
+
                                     </div>
                                     <div className="flex-1 overflow-hidden">
-                                        <h3 className=" font-semibold text-gray-800 ">{chat.name || 'Unknown User'}</h3>
+                                        <Link to={`/profile/${chat.name}`}>
+                                            <h3 className=" font-semibold text-gray-800 ">{chat.name || 'Unknown User'}</h3>
+                                        </Link>
                                         <p className="text-sm text-gray-500 truncate">{chat.lastMessage || 'No messages yet...'}</p>
                                     </div>
                                     {chat.hasUnreadMessages && (
