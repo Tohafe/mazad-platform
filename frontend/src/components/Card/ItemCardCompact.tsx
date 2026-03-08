@@ -12,9 +12,6 @@ export interface Item {
     endsAt: string;
 }
 
-
-
-
 interface ItemCardCompactProps {
     auction: AuctionSummary
     className?: string
@@ -24,7 +21,7 @@ interface ItemCardCompactProps {
 const ItemCardCompact = ({className = "", imgClassName = "", auction}: ItemCardCompactProps) => {
     const baseStyles = "flex flex-col w-full aspect-square justify-center gap-2 shrink-0 cursor-pointer";
     return (
-        <Link to={`/itemDetails/${auction.id}`} className={cn(baseStyles, className)}>
+        <Link to={`/item/${auction.id}`} className={cn(baseStyles, className)}>
             <div className={cn("relative w-full h-full", imgClassName)}>
                 <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
                 <IconButton className="absolute top-3 left-3 bg-main" variant="outlined" icon={LuHeart}

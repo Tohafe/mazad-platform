@@ -97,14 +97,8 @@ export interface BidData {
   sellerId: string;
   quickBidAmounts: string[];
   minBid: string;
-  watchingCount: number;
-  recentBids: BidEntry[];
-  totalBids: number;
   status: AuctionStatus;
-  buyerProtectionFee: string;
   shippingLocation: string;
-  trustpilotRating: string;
-  trustpilotReviews: string;
 }
 
 // ============================================

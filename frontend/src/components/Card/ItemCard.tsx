@@ -2,19 +2,8 @@ import {cn} from "../../lib/utils.ts";
 import IconButton from "../Button/IconButton.tsx";
 import {LuHeart} from "react-icons/lu";
 import type {AuctionSummary} from "../../types/item.ts";
-import {useEffect, useMemo, useState} from "react";
-import {formatTimeLeft} from "../../lib/timeFormater.ts";
 import {Link} from "react-router-dom";
-
-export interface Item {
-    id: number;
-    title: string;
-    currentBid: number;
-    imageUrl: string
-    endsAt: string;
-}
-
-
+import {useAuctionTimeLeft} from "../../lib/useAuctionTimeLeft.ts";
 
 
 interface ItemCardProps {
@@ -26,18 +15,10 @@ interface ItemCardProps {
 
 const ItemCard = ({className = "", auction}: ItemCardProps) => {
     const baseStyles = "flex flex-col w-full aspect-4/5 justify-center gap-2 shrink-0 cursor-pointer";
-    const [now, setNow] = useState(() => new Date());
+    const timeLeftLabel = useAuctionTimeLeft(auction.status, auction.endsAt);
 
-    useEffect(() => {
-        const id = window.setInterval(() => setNow(new Date()), 1000);
-        return () => window.clearInterval(id);
-    }, []);
-
-    const timeLeftLabel = useMemo(() => {
-        return formatTimeLeft(auction.endsAt, now, "long");
-    }, [auction.endsAt, now]);
     return (
-        <Link to={`/itemDetails/${auction.id}`} className={cn(baseStyles, className)}>
+        <Link to={`/item/${auction.id}`} className={cn(baseStyles, className)}>
             <div className="relative w-full h-full xl:h-89">
                 <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
                 <IconButton className="absolute top-3 left-3 bg-main" variant="outlined" icon={LuHeart}
