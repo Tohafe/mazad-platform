@@ -1,6 +1,11 @@
 {
   "properties": [
     {
+      "name": "item.created.topic",
+      "type": "java.lang.String",
+      "description": "Description for item.created.topic."
+    },
+    {
       "name": "item.updated.topic",
       "type": "java.lang.String",
       "description": "Description for item.updated.topic."
@@ -9,5 +14,10 @@
       "name": "item.cancelled.topic",
       "type": "java.lang.String",
       "description": "Description for item.cancelled.topic."
+    },
+    {
+      "name": "auction.update.topic",
+      "type": "java.lang.String",
+      "description": "Description for auction.update.topic."
     }
   ] }

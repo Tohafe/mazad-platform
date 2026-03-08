@@ -16,8 +16,8 @@ public class ItemProducer {
     @Value("${item.created.topic}")
     private String itemCreatedTopic;
 
-    @Value("${item.cancelled.topic}")
-    private String itemCancelledTopic;
+    @Value("${item.updated.topic}")
+    private String itemUpdatedTopic;
 
     private final JsonMapper jsonMapper;
 
@@ -34,7 +34,7 @@ public class ItemProducer {
 
     public void sendItemCancelledEvent(ItemEventDto event) {
         String data = jsonMapper.writeValueAsString(event);
-        kafkaTemplate.send(itemCancelledTopic, data)
+        kafkaTemplate.send(itemUpdatedTopic, data)
                 .whenComplete((result, error) -> {
                     if (error != null) log.error("Failed to send item cancelled event!: {}", error.getMessage());
                     else log.info("Item cancelled event sent successfully!: {}", data);
