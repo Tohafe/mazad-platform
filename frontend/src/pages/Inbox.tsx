@@ -7,6 +7,7 @@ import { useWebSocket } from "../context/WebSocketContext";
 import { useAuth } from "../context/AuthProvider";
 import FriendList  from "../components/Chat/FriendList"
 import FriendRequestsList from "../components/Chat/FriendRequestsList";
+import useUserApi from "../hooks/useUserApi";
 
 type ViewType = 'messages' | 'friends' | 'requests';
 
@@ -20,6 +21,10 @@ function Inbox(){
         {
             id: '014604f7-1668-4b45-8f44-a42096d7da26', name: "Hamzam", lastMessage: "",
             hasUnreadMessages: true
+        },
+        {
+            id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
+            hasUnreadMessages: false
         },
         {
             id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
@@ -157,22 +162,25 @@ function Inbox(){
             return updatedChats;
         });
     }
+
+    const   { getPublicProfile } = useUserApi();
     const handleMessageFriend = async (friendUsername: string) => {
-        try {
-            const   response = await apiPrivate.get(`/profile/${friendUsername}`);
-            const   friendId = response.data.userId;
-            if (friendId){
-                setActiveChatId(friendId);
-                setActiveView('messages');
-            }
-        } catch (error) {
-            console.error(`Failed tos fetch ID for user ${friendUsername}:`, error);
-        }
+        getPublicProfile(friendUsername)
+            .then((response) => {
+                const   friendId = response.userId;
+                if (friendId){
+                    setActiveChatId(friendId);
+                    setActiveView('messages');
+                } 
+            })
+            .catch ((error) => {
+                console.error(`Failed tos fetch ID for user ${friendUsername}:`, error);
+            }) 
     }
     
     return (
         // PAGE WRAPPER 
-        <div className="flex justify-center items-start pt-6 h-[calc(100vh-180px)] w-full  font-sans px-4">
+        <div className="flex justify-center items-start pt-6  w-full  font-sans px-4">
             {/* MAIN INBOX CONTAINER */}
             <div className="flex w-full max-w-7xl h-[calc(100vh-220px)] min-h-150 bg-white border  border-gray-300  overflow-y-hidden ">
                 {/* Left panel */}
@@ -221,7 +229,6 @@ function Inbox(){
                         onMessageFriend={handleMessageFriend}
                         />
                     )}
-
                     {ActiveView === 'requests' && (
                         <FriendRequestsList
                         />
