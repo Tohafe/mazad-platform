@@ -85,6 +85,30 @@ const CreateAuction = () => {
         });
     };
 
+    const extractBackendError = (error: any): string => {
+        if (error.response && error.response.data) {
+            const data = error.response.data;
+            
+            if (data.message && typeof data.message === 'string') return data.message;
+            
+
+            if (data.error && typeof data.error === 'string') return data.error;
+            
+
+            if (Array.isArray(data.errors)) return data.errors.join(", ");
+            
+
+            if (typeof data === 'string') return data;
+        }
+        
+
+        if (error.message) return error.message;
+        
+
+        return "Failed to create the auction. Please check your details.";
+    };
+    
+
     const handleRemoveFile = (idToDrop: string) => {
         setFiles(prevFiles => {
             const fileToDelete = prevFiles.find(f => f.localId === idToDrop);
@@ -128,7 +152,6 @@ const CreateAuction = () => {
 
 
             setFiles(prev => prev.map(f => {
-                // Find if this file is in the newly updated failed list
                 const failedMatch = failedUploads.find(fail => fail.localId === f.localId);
                 
                 if (failedMatch) {
@@ -136,7 +159,7 @@ const CreateAuction = () => {
                         ...f, 
                         status: 'FAILED' as any, 
                         progress: 0, 
-                        errorMessage: failedMatch.errorMessage // <-- Save the Spring Boot message!
+                        errorMessage: failedMatch.errorMessage 
                     };
                 }
                 const successMatch = successfulUploads.find(s => s.localId === f.localId);
@@ -162,43 +185,52 @@ const CreateAuction = () => {
 
         console.log("All images secured! Stitching final DTO payload...");
 
+
+            
+
+        const finalImageUrls = files.map(f => {
+            const justUploaded = latestSuccessfulUploads.find(s => s.localId === f.localId);
+            return justUploaded?.data?.url || f.data?.url; 
+        }).filter(Boolean) as string[]; 
+
+        const firstFileId = files[0].localId;
+        const newlyUploadedFirst = latestSuccessfulUploads.find(s => s.localId === firstFileId);
+        
+        const thumbnailString = 
+            newlyUploadedFirst?.data?.thumbnailUrl || 
+            files[0].data?.thumbnailUrl || 
+            newlyUploadedFirst?.data?.url || 
+            files[0].data?.url || 
+            "";
+        
+        const finalPayload = {
+            categoryId: auctionTextData.categoryId,
+            title: auctionTextData.title,
+            description: auctionTextData.description,
+            specs: auctionTextData.specs,
+            shippingInfo: auctionTextData.shippingInfo, 
+            startingPrice: auctionTextData.startingPrice,
+            endsAt: new Date(auctionTextData.endDate).toISOString(),       
+            thumbnail: thumbnailString,       
+            images: finalImageUrls            
+        };
+
+        console.log("Transmitting payload to items-service:", finalPayload);
+
+
         try {
-            const finalImageUrls = files.map(f => {
-                const justUploaded = latestSuccessfulUploads.find(s => s.localId === f.localId);
-                if (justUploaded?.data?.url) return justUploaded.data.url;
-                
-                return f.data?.url || null; 
-            }).filter(Boolean) as string[]; 
-
-            const firstFileId = files[0].localId;
-            const newlyUploadedFirst = latestSuccessfulUploads.find(s => s.localId === firstFileId);
-            
-            const thumbnailString = newlyUploadedFirst?.data?.thumbnailUrl || files[0].data?.thumbnailUrl || "";
-            
-            const utcEndDate = new Date(auctionTextData.endDate).toISOString();
-            
-            const finalPayload = {
-                categoryId: auctionTextData.categoryId,
-                title: auctionTextData.title,
-                description: auctionTextData.description,
-                specs: auctionTextData.specs,
-                shippingInfo: auctionTextData.shippingInfo, 
-                startingPrice: auctionTextData.startingPrice,
-                endsAt: utcEndDate,       
-                thumbnail: thumbnailString,       
-                images: finalImageUrls            
-            };
-
-            console.log("Transmitting payload to items-service:", finalPayload);
-            
             const newAuctionItem = await createItem(finalPayload);
             
+            setFiles([]);
             console.log("Auction Created Successfully!", newAuctionItem);
+            
             navigate(`/itemDetails/${newAuctionItem.id}`);
-
-        } catch (error) {
-            console.error("Failed to create auction item:", error);
-            showError("Images uploaded safely, but creating the auction failed. Please click Retry.");
+            
+        } catch (error: any) {
+            console.error("Backend rejected the item:", error);
+            
+            const exactErrorMessage = extractBackendError(error);
+            showError(exactErrorMessage);
         }
     };
 
