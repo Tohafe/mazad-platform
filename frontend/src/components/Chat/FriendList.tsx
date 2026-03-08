@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
+import { Link } from "react-router-dom";
 
 export interface Friend {
     username: string;
     userId: string;
     thumbnail: string;
-    isOnline: boolean;
+    onlineStatus: boolean;
 }
 
 interface FriendListProps {
@@ -110,8 +111,8 @@ function FriendList({ onMessageFriend }: FriendListProps) {
             try {
                 const response = await apiPrivate.get("/friends");
                 setFriends(response.data);
-                console.log(response);
-                setFriends(FAKE_FRIENDS);
+                console.log(response.data);
+                // setFriends(FAKE_FRIENDS);
             } catch (error) {
                 console.error("Failed to fetch friends list", error);
             } finally {
@@ -163,11 +164,13 @@ function FriendList({ onMessageFriend }: FriendListProps) {
                                     <span>{friend.username.charAt(0).toUpperCase()}</span>
                                 )}
                             </div>
-                            <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${friend.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                            <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${friend.onlineStatus ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <h3 className="font-semibold text-gray-800">{friend.username}</h3>
-                            <p className="text-xs text-gray-500">{friend.isOnline ? 'Online' : 'Offline'}</p>
+                            <Link to={`/profile/${friend.username}`}>
+                                <h3 className="font-semibold text-gray-800">{friend.username}</h3>
+                            </Link>
+                            <p className="text-xs text-gray-500">{friend.onlineStatus ? 'Online' : 'Offline'}</p>
                         </div>
                     </div>
                     
