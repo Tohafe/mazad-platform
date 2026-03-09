@@ -36,9 +36,7 @@ function ConversationList( {chats, activeChatId, onSelectChat}: ConversationList
 
                                     </div>
                                     <div className="flex-1 overflow-hidden">
-                                        <Link to={`/profile/${chat.name}`}>
-                                            <h3 className=" font-semibold text-gray-800 ">{chat.name || 'Unknown User'}</h3>
-                                        </Link>
+                                        <h3 className=" font-semibold text-gray-800 ">{chat.name || 'Unknown User'}</h3>
                                         <p className="text-sm text-gray-500 truncate">{chat.lastMessage || 'No messages yet...'}</p>
                                     </div>
                                     {chat.hasUnreadMessages && (
