@@ -54,28 +54,28 @@ function Inbox(){
         }
 
     }
+    const fetchInbox = async () => {
+        try{
+
+            const response = await apiPrivate.get(`/chat/inbox`);
+            const rawChats = response.data.content;
+            const formattedChats = rawChats.map((dto:any) => ({
+                id: dto.otherUserId,
+                name: `User ${dto.otherUserId.substring(0, 4)}..`,
+                lastMessage: dto.lastMessage,
+                hasUnreadMessages: dto.hasUnreadMessages
+            }));
+            setChats(formattedChats);
+
+            formattedChats.forEach( (chat: Chat) => {
+                fetchUserDetails(chat.id);
+            })
+        }catch(error){
+            console.error("Failed to fetch inbox:", error);
+        }
+    }
     const [chats, setChats] = useState<Chat[]>([]);
     useEffect(()=>{
-        const fetchInbox = async () => {
-            try{
-
-                const response = await apiPrivate.get(`/chat/inbox`);
-                const rawChats = response.data.content;
-                const formattedChats = rawChats.map((dto:any) => ({
-                    id: dto.otherUserId,
-                    name: `User ${dto.otherUserId.substring(0, 4)}..`,
-                    lastMessage: dto.lastMessage,
-                    hasUnreadMessages: dto.hasUnreadMessages
-                }));
-                setChats(formattedChats);
-
-                formattedChats.forEach( (chat: Chat) => {
-                    fetchUserDetails(chat.id);
-                })
-            }catch(error){
-                console.error("Failed to fetch inbox:", error);
-            }
-        }
         fetchInbox();
     }, [apiPrivate]);
 
@@ -138,14 +138,17 @@ function Inbox(){
                 });
             });
             return (() => {
-                console.log("Unsubscribing from chat updates");
-                subscription.unsubscribe();
+                if (stompClient && stompClient.connected && subscription) {
+                    console.log("Unsubscribing from chat updates");
+                    subscription.unsubscribe();
+                }
             });
         }, [stompClient, isConnected, user?.id, activeChatId]
     );
 
     // a hook for send button to move chat to top
     const moveChatToTop = (chatId: string, lastMessage: string) => {
+        fetchInbox();
         setChats((prevChats) => {
             const updatedChats = [...prevChats];
             const index = updatedChats.findIndex(c => c.id === chatId);
