@@ -7,6 +7,7 @@ interface ImageUploadProps {
     files: UploadableFile[];
     onFilesSelected: (newFiles: File[]) => void;
     onRemoveFile: (idToDrop: string) => void;
+    onSetMainFile: (idToMakeMain: string) => void;
     onNextStep: () => void; 
     requiredCount: number;
 }
@@ -15,6 +16,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     files,
     onFilesSelected,
     onRemoveFile,
+    onSetMainFile,
     onNextStep,
     requiredCount
 }) => {
@@ -43,6 +45,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                             <FilePreview
                                 key={fileObj.localId}
                                 fileData={fileObj}
+                                onSetMain={() => onSetMainFile(fileObj.localId)}
                                 onRemove={onRemoveFile}
                                 isMain={index === 0}
                             />

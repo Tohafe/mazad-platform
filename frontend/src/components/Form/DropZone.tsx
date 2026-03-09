@@ -64,7 +64,6 @@ const Dropzone: React.FC<DropzoneProps> = ({
 
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             processFiles(e.dataTransfer.files);
-            e.dataTransfer.clearData();
         }
     };
 
@@ -106,7 +105,6 @@ const Dropzone: React.FC<DropzoneProps> = ({
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            /* Use inline-block so it shrinks */
             className={children ? "inline-block cursor-pointer" : "block cursor-pointer"}
         >
             {children ? (
