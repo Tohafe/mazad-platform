@@ -117,6 +117,18 @@ const CreateAuction = () => {
         });
     };
 
+    const handleSetMainFile = (idToMakeMain: string) => {
+        setFiles(prevFiles => {
+            const currentIndex = prevFiles.findIndex(f => f.localId === idToMakeMain);
+            if (currentIndex <= 0) return prevFiles; 
+            const newArray = [...prevFiles];
+            const [selectedImage] = newArray.splice(currentIndex, 1);
+            newArray.unshift(selectedImage);
+            
+            return newArray;
+        });
+    };
+
     const handleProgressUpdate = (localId: string, progress: number) => {
         setFiles(prevFiles => prevFiles.map(fileObj => 
             fileObj.localId === localId 
@@ -259,6 +271,7 @@ const CreateAuction = () => {
                         files={files}
                         onFilesSelected={handleFilesSelected}
                         onRemoveFile={handleRemoveFile}
+                        onSetMainFile={handleSetMainFile}
                         requiredCount={REQUIRED_IMAGE_COUNT}
                         onNextStep={() => setCurrentStep(2)} 
                     />
@@ -299,7 +312,8 @@ const CreateAuction = () => {
                                 <div key={fileObj.localId}>
                                     <FilePreview 
                                         fileData={fileObj} 
-                                        onRemove={() => {}} 
+                                        onRemove={() => {}}
+                                        onSetMain={() => {}} 
                                         isMain={index === 0}
                                     />
                                 </div>

@@ -5,10 +5,11 @@ import React from 'react';
 interface FilePreviewProps {
     fileData: UploadableFile;
     onRemove: (idToDrop: string) => void;
+    onSetMain: () => void;
     isMain?: boolean;
 }
 
-const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, isMain = false }) => {
+const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, onSetMain, isMain = false }) => {
     const isImage = fileData.file.type.startsWith('image/');
 
     const formatSize = (bytes: number) => {
@@ -21,7 +22,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, isMain = 
 
     return (
         <div
-
+            onClick={onSetMain}
             className="relative border rounded-lg p-3 flex flex-col items-center shadow-sm bg-white select-none h-full min-w-0"
             onMouseDown={(e) => e.preventDefault()}
         >
@@ -35,7 +36,10 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, isMain = 
             )}
 
             <button
-                onClick={() => onRemove(fileData.localId)}
+                onClick={(e) => {
+                    e.stopPropagation(); 
+                    onRemove(fileData.localId);
+                }}
                 className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 focus:outline-none z-10 shadow-sm"
                 title="Remove file"
             >

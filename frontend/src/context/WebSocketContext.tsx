@@ -1,4 +1,4 @@
-import { createContext, type ReactNode , useState, useEffect, useContext} from 'react';
+import { createContext, type ReactNode , useState, useRef, useEffect, useContext} from 'react';
 import { useAuth } from './AuthProvider.tsx';
 import { Client } from '@stomp/stompjs'; 
 
@@ -23,17 +23,29 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     const [stompClient, setStompClient] = useState<Client | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false); 
 
+    const tokenRef = useRef<string | null>(accessToken);
+
     useEffect(() => {
-        const endpoint = accessToken 
-            ? `${WS_IP}/ws?token=Bearer ${accessToken}` 
-            : `${WS_IP}/ws`;
+        tokenRef.current = accessToken;
+        console.log("token changed");
+    }, [accessToken]);
+
+    const isLoggedIn = !!accessToken;
+
+    useEffect(() => {
 
         const client = new Client({
-            brokerURL: endpoint,
             reconnectDelay: 5000,
-
             heartbeatIncoming: 10000, 
             heartbeatOutgoing: 10000,
+
+            beforeConnect: () => {
+                const currentToken = tokenRef.current;
+                
+                client.brokerURL = currentToken 
+                    ? `${WS_IP}/ws?token=Bearer ${currentToken}` 
+                    : `${WS_IP}/ws`;
+            },
 
             onConnect: () => {
                 console.log(`Global STOMP Engine Online! (Auth: ${accessToken ? 'YES' : 'NO'})`);
@@ -63,7 +75,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             setIsConnected(false);
         };
         
-    }, [accessToken]); 
+    }, [isLoggedIn]); 
 
 
     return (
@@ -80,4 +92,3 @@ export const useWebSocket = () => {
     }
     return context;
 };
-//a57268f2-a275-4e0a-9a35-f61fa7d8e307
