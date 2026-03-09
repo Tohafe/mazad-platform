@@ -3,6 +3,7 @@ import useApiPrivate from "../../hooks/useApiPrivate";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
 import { string } from "zod";
+import { Link } from "react-router-dom";
 
 
 
@@ -99,7 +100,11 @@ function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessa
                 });
             }
         });
-        return (() => subscription.unsubscribe());
+        return (() =>{
+            if (stompClient && stompClient.connected && subscription){
+                subscription.unsubscribe();
+            }
+        });
     }, [stompClient, isConnected, chatId, user?.id]);
 
 
@@ -137,7 +142,9 @@ console.log('haha');
                     )}
                 </div>
                 <div>
-                    <h3 className="font-semibold text-gray-800"> {otherUser ? otherUser.username : "Loading.." }</h3>
+                    <Link to={`/profile/${otherUser?.username}`}>
+                        <h3 className="font-semibold text-gray-800"> {otherUser ? otherUser.username : "Loading.." }</h3>
+                    </Link>
                 </div>
             </div>
 
