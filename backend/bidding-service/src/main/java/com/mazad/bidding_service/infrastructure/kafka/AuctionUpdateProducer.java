@@ -4,6 +4,9 @@ package com.mazad.bidding_service.infrastructure.kafka;
 import com.mazad.bidding_service.domain.auction.Auction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.UUID;
+
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -22,16 +25,21 @@ public class AuctionUpdateProducer {
     @Value("${auction.update.topic}")
     private String updateTopic;
     
-    public void sendUpdate(@NonNull Auction auction) {
+    public void sendUpdate(@NonNull Auction auction, UUID previousBidderId) {
         AuctionUpdateEvent event = new AuctionUpdateEvent(
                 auction.getAuctionId(),
                 auction.getCurrentHighestBid(),
                 auction.getEndsAt(),
                 auction.getStatus(),
-                auction.getCurrentHighestBidderId()
+                auction.getCurrentHighestBidderId(),
+                previousBidderId
         );
 
+        
         String data = jsonMapper.writeValueAsString(event);
+
+        log.info("the data value: {}.", data);
+
         kafkaTemplate.send(updateTopic, auction.getAuctionId().toString(), data)
                 .whenComplete((result, ex) -> {
                     if (ex == null) {

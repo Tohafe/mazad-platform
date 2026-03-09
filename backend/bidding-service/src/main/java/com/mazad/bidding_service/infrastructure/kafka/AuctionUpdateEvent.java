@@ -10,5 +10,6 @@ public record AuctionUpdateEvent(
         Long currentHighestBid,
         Instant endsAt,
         AuctionStatus status,
-        UUID lastBidderId
+        UUID lastBidderId,
+        UUID previousBidderId
 ) {}
