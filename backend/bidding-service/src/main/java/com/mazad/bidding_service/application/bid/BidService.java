@@ -37,6 +37,7 @@ public class BidService {
     @Transactional
     public BidResponse placeBid(Long auctionId, UUID userId, Long amount) {
 
+        UUID previousBidderId;
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionNotFoundException());
 
@@ -51,6 +52,7 @@ public class BidService {
         bid.setAuctionId(auction.getAuctionId());
 
         auction.setCurrentHighestBid(amount);
+        previousBidderId =auction.getCurrentHighestBidderId();
         auction.setCurrentHighestBidderId(userId);
 
         bidRepository.save(bid);
@@ -63,7 +65,7 @@ public class BidService {
         bidRes.setCreatedAt(bid.getCreatedAt());
 
         // Trigger the Kafka event
-        auctionUpdateProducer.sendUpdate(auction);
+        auctionUpdateProducer.sendUpdate(auction, previousBidderId);
 
         return bidRes;
     }

@@ -6,6 +6,9 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
+
+import jakarta.validation.constraints.Null;
+
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,6 @@ public class CloseExpiredAuctionsService {
         log.info("Auction {} has been closed successfully.", auction.getAuctionId());
 
         // Trigger the Kafka event
-        auctionUpdateProducer.sendUpdate(auction);
+        auctionUpdateProducer.sendUpdate(auction, null);
     }
 }
