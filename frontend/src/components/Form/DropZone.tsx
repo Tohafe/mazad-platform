@@ -105,7 +105,7 @@ const Dropzone: React.FC<DropzoneProps> = ({
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            className={children ? "inline-block cursor-pointer" : "block cursor-pointer"}
+            className={children ? "inline-block cursor-pointer w-full" : "block cursor-pointer"}
         >
             {children ? (
                 children

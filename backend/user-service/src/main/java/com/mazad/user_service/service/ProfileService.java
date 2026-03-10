@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mazad.user_service.dto.AvatarDto;
 import com.mazad.user_service.dto.CurrentUser;
 import com.mazad.user_service.dto.PatchDto;
 import com.mazad.user_service.dto.PrivateResponseDto;
@@ -63,22 +64,15 @@ public class ProfileService {
                 throw new ProfileAlreadyExistException();
         });
         ProfileEntity profile = mapper.toEntity(requestDto);
+
         profile.setUserId(user.id());
         profile.setEmail(user.email());
         profile.setUsername(user.username());
-
-        if (isAvatarValid(requestDto.avatarImageId(), requestDto.avatarUrl(), requestDto.avatarThumbnailUrl())) {
-            profile.setAvatarUrl(requestDto.avatarUrl());
-            profile.setAvatarImageId(requestDto.avatarImageId());
-            profile.setAvatarThumbnailUrl(requestDto.avatarThumbnailUrl());
-        }
         profile.setComplete(true);
-        profile = repo.save(profile);
-        return mapper.toPrivateResponseDto(profile);
-    }
 
-    private boolean isAvatarValid(String avatarId, String avatarUrl, String thumbnail) {
-        return avatarId != null && !avatarId.isBlank() && avatarUrl != null && !avatarUrl.isBlank() && thumbnail != null && !thumbnail.isBlank();
+        profile = repo.save(profile);
+
+        return mapper.toPrivateResponseDto(profile);
     }
 
     public PrivateResponseDto patch(UUID userId, ObjectNode jsonNode, boolean isInternal) {
@@ -89,10 +83,9 @@ public class ProfileService {
             jsonMapper.readerForUpdating(dto).readValue(jsonNode);
             patchValidator.validate(jsonNode, dto);
 
-            log.info("Dto = "  + dto);
             profile = repo
                     .findByUserId(userId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Profile Not Found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
             if (!profile.isComplete())
                 throw new BadRequestException("The profile should be completed first with Post request");
         }
@@ -110,5 +103,16 @@ public class ProfileService {
     public void deleteProfile(UUID userId) {
         if (repo.existsByUserId(userId))
             repo.deleteByUserId(userId);
+    }
+    
+    public PrivateResponseDto changeAvatar(AvatarDto dto, UUID userId) {
+        ProfileEntity profile = repo
+                .findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+        profile.setAvatarUrl(dto.avatarUrl());
+        profile.setAvatarImageId(dto.avatarImageId());
+        profile.setAvatarThumbnailUrl(dto.avatarThumbnailUrl());
+        profile = repo.save(profile);
+        return mapper.toPrivateResponseDto(profile);
     }
 }

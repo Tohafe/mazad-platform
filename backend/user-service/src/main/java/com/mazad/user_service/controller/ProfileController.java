@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mazad.user_service.dto.AvatarDto;
 import com.mazad.user_service.dto.CurrentUser;
 import com.mazad.user_service.dto.PrivateResponseDto;
 import com.mazad.user_service.dto.PublicResponseDto;
@@ -79,6 +80,14 @@ public class ProfileController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PostMapping("/avatar")
+    public ResponseEntity<PrivateResponseDto> editAvatar(@Valid @RequestBody AvatarDto dto, @RequestHeader(name = "X-User-Id") UUID userId){
+        PrivateResponseDto response;
+        
+        response = service.changeAvatar(dto, userId);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping

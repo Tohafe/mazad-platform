@@ -1,5 +1,5 @@
 import { useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {apiPrivate} from "../api/axios";
 import { useAuth } from "../context/AuthProvider";
 import useRefreshToken from "./useRefreshToken";
@@ -8,6 +8,7 @@ const useApiPrivate = () =>{
     const {accessToken} = useAuth();
     const refresh = useRefreshToken();
     const navigate = useNavigate();
+    const location = useLocation();
 
 
     useEffect(() => {
@@ -32,7 +33,7 @@ const useApiPrivate = () =>{
                         prevRequest.headers.Authorization = `Bearer ${response.accessToken}`;
                         return apiPrivate(prevRequest);
                     }catch(err){
-                        navigate('/login');
+                        navigate('/login', {state: {from: location}});
                         return Promise.reject(err);
                     }
                 }

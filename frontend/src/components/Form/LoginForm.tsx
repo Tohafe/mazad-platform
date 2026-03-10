@@ -1,4 +1,4 @@
-import { Link , useNavigate, useLocation} from "react-router-dom";
+import { Link , useNavigate, useLocation } from "react-router-dom";
 import {useForm} from 'react-hook-form'
 import {z} from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,11 +8,11 @@ import Input from "../Input/Input";
 import Button from "../Button/Button";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthProvider";
-import useApiPrivate from "../../hooks/useApiPrivate";
 import type User from "../../types/user";
 
 import DEFAULT_AVATAR from '../../../../resources/images/avatar.jpg'
 import DEFAULT_THUMB from '../../../../resources/images/avatar_thumb.jpg'
+import { useEffect } from "react";
 
 
 const schema = z.object({
@@ -34,35 +34,41 @@ export default function Login(){
         resolver: zodResolver(schema)
     });
 
-    const {setAccessToken, setUser} = useAuth();
+    const {setAccessToken, setUser, isAuthenticated} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || '/';
-    const apiPrivate = useApiPrivate();
+    const from = location.state?.from;
 
-    const onSubmit = async (data: LoginData) => {
-        let message : string = '';
+    
+    useEffect(() => {
+        if (isAuthenticated)
+            navigate(from?.pathname || '/');
+}, []);
 
+
+const onSubmit = async (data: LoginData) => {
+    let message : string = '';
+    
+    try{
+        const login = await api.post('/auth/login', data);
+        setAccessToken(login.data?.accessToken);
         try{
-            const login = await api.post('/auth/login', data);
-            setAccessToken(login.data?.accessToken);
-            try{
-                const user: User = (await apiPrivate.get('/profile')).data;
-                setUser(user);
-            }catch(errors: any){
-                const user : User = login.data?.user;
-                user.avatarUrl = DEFAULT_AVATAR;
-                user.avatarThumbnailUrl = DEFAULT_THUMB;
-                setUser(login.data?.user);
-            }
-            navigate(from);
+            const user: User = (await api.get('/profile')).data;
+            setUser(user);
         }catch(errors: any){
-            setAccessToken(null);
-            if (errors.response?.status !== 401){
-                message = "An unexpected error occurred, Please try later.";
-            }
-            setError('root', {message: message});
+            const user : User = login.data?.user;
+            user.avatarUrl = DEFAULT_AVATAR;
+            user.avatarThumbnailUrl = DEFAULT_THUMB;
+            setUser(login.data?.user);
         }
+        navigate(from?.pathname || '/');
+    }catch(errors: any){
+        setAccessToken(null);
+        if (errors.response?.status !== 401){
+            message = "An unexpected error occurred, Please try later.";
+        }
+        setError('root', {message: message});
+    }
     }
 
 
@@ -70,7 +76,7 @@ export default function Login(){
         <div className="bg-white z-20 shadow-2xl border border-gray-200 p-3 w-87  sm:w-110 sm:p-5">
             <div className='flex items-center justify-between mb-10'>
                 <h1 className='font-medium text-xl'>Welcome back!</h1>
-                <Link to = '/register' className='text-brand mt-6'>Create account</Link>
+                <Link to = '/register' state={{ from: from }} replace={true}  className='text-brand mt-6'>Create account</Link>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <Input {...register("email")}
@@ -89,7 +95,7 @@ export default function Login(){
                 } 
 
                 <p className='text-xs mt-5 text-gray-600 '>By signing in, you agree to our 
-                <Link to='/term-of-use' className="text-brand"> Terms of Use</Link>
+                <Link to='/terms-of-service' className="text-brand"> Terms of Service</Link>
                 </p>
                 <Button type="submit" className="w-full mt-3" disabled={isSubmitting} >
                     {!isSubmitting ? "Sign in" :

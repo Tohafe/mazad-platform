@@ -7,10 +7,19 @@ import z from 'zod'
 import Select from "../Input/Select";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import type User from "../../types/user";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CgSpinner } from "react-icons/cg";
-import { AiOutlineEdit } from "react-icons/ai";
+import { IoMdMore } from "react-icons/io";
 import IconButton from "../Button/IconButton";
+import type AvatarData from "../../types/AvatarData";
+import { useFileUpload } from "../../hooks/useFileUpload";
+import useUserApi from "../../hooks/useUserApi";
+import Dropdown from "../Dropdown";
+import { MenuItem } from "../UserMenu";
+import Dropzone from "./DropZone";
+import TextButton from "../Button/TextButton";
+import { useOnClickOutside } from "../Notification/NotificationBell";
+import ConfirmDialog from "../Dialog/ConfirmDialog";
 
 const countries = ["Morocco"];
 
@@ -47,6 +56,10 @@ export default function Profile(){
     const {user, setUser} = useAuth();
     const api = useApiPrivate();
     const [success, setSuccess] = useState(false);
+    const [more, setMore] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const {saveFile, deleteFile} = useFileUpload();
+    const {editAvatar} = useUserApi();
 
 
     const {
@@ -57,6 +70,8 @@ export default function Profile(){
     } = useForm<ProfileData>({
         resolver: zodResolver(schema)
     });
+    const moreRef = useRef<HTMLDivElement>(null);
+    useOnClickOutside(moreRef, () => {setMore(false)});
 
 
     const getDiff = (original: User, modified: ProfileData) : Partial<ProfileData> =>{
@@ -99,6 +114,45 @@ export default function Profile(){
         }
     }
 
+    const uploadAvatar = async (files: File[]) => {
+        setMore(false);
+        try{
+            const response = await saveFile(files[0], user?.avatarImageId, "400", "400");
+            const avatarData: AvatarData ={
+                avatarImageId: response.id,
+                avatarUrl: response.url,
+                avatarThumbnailUrl: response.thumbnailUrl
+            }
+            if (user?.avatarImageId == null)
+                editAvatar(avatarData)
+                    .then((user: User) => setUser(user));
+            else{
+                const updatedUser = {
+                    ...user, 
+                    avatarThumbnailUrl: avatarData.avatarThumbnailUrl,
+                    avatarUrl: avatarData.avatarUrl
+                };
+                setUser(updatedUser);
+            }
+        }catch (err: any){
+            console.log("Error on uploadAvatar = ", err);
+        }
+    }
+    
+    const deleteAvatar = async () => {
+        setShowConfirm(false)
+        try{
+            if (user?.avatarImageId != null){
+                deleteFile(user.avatarImageId);
+                editAvatar({avatarImageId: null, avatarUrl: null, avatarThumbnailUrl: null})
+                .then((user: User) => setUser(user));
+            }
+        }catch (err: any){
+            console.log("Error on deleteAvatar = ", err);
+        }
+    }
+
+
     return (
         <div className="flex flex-col justify-center w-full space-y-5 max-w-200">
             <h2 className="text-xl font-semibold">Profile</h2>
@@ -106,7 +160,33 @@ export default function Profile(){
             <div className="flex justify-center">
                 <div className="relative w-40 h-40">
                     <img src={user?.avatarUrl || ''} className="w-full h-full rounded-full shadow-2xl"/>
-                    <IconButton size={"xlg"} icon={AiOutlineEdit} className="absolute -bottom-2 left-30 text-brand"></IconButton>
+                        <IconButton 
+                            size={"xlg"}
+                            icon={IoMdMore}
+                            className="absolute -bottom-2 left-30 text-brand"
+                            onClick={() => setMore(true)}
+                        >
+                        </IconButton>
+                        <div ref={moreRef} className="absolute -right-22 bottom-1 w-22 ">
+                            <Dropdown open={more}>
+                                <Dropzone onFilesSelected={uploadAvatar}  >
+                                    <TextButton className="hover:bg-gray-100 cursor-pointer w-full">Update</TextButton>
+                                </Dropzone>
+                                <div className="w-full h-[0.5px] bg-border "></div>
+                                {user?.avatarImageId
+                                    && <TextButton onClick={() => {setMore(!more); setShowConfirm(!showConfirm)}} className="hover:bg-gray-100 cursor-pointer w-full">Delete</TextButton>}
+                            </Dropdown>
+                        </div>
+                        <ConfirmDialog 
+                            open={showConfirm}
+                            onConfirm={deleteAvatar}
+                            onClose={() => {setShowConfirm(false)}}
+                            dialogInfo={{
+                                title: "Delete Profile Picture",
+                                message: "Are you sure you want to delete your profile avatar?",
+                                note: " "
+                            }}
+                        ></ConfirmDialog>
                 </div>
             </div>
             <form className="space-y-3">
