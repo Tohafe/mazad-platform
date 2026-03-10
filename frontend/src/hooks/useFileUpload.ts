@@ -132,8 +132,33 @@ export const useFileUpload = () => {
             }
         });
 
+        // const timestamp = new Date().getTime(); 
+        
+        // if (response.data.url) {
+        //     response.data.url = `${response.data.url}?t=${timestamp}`;
+        // }
+        // if (response.data.thumbnailUrl) {
+        //     response.data.thumbnailUrl = `${response.data.thumbnailUrl}?t=${timestamp}`;
+        // }
+
         console.log(`Backend confirmed: File ${fileId} successfully replaced.`);
         return response.data;
+    };
+
+
+    const saveFile = async (
+        file: File, 
+        fileId?: string, 
+        targetWidth: string = '0', 
+        targetheight: string = '300', 
+        onProgress?: (progress: number) => void
+    ): Promise<FileResponse> => {
+        
+        if (fileId) {
+            return await updateFile(fileId, file, targetWidth, targetheight, onProgress);
+        } else {
+            return await uploadSingleFile(file, targetWidth, targetheight, onProgress);
+        }
     };
 
     return {
@@ -141,6 +166,7 @@ export const useFileUpload = () => {
         uploadSingleFile,
         uploadMultipleFiles,
         deleteFile,
+        saveFile,
         updateFile
     };
 };
