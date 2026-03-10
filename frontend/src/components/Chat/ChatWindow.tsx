@@ -2,8 +2,8 @@ import {  useEffect, useRef, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
-import { string } from "zod";
 import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid'
 
 
 
@@ -37,7 +37,7 @@ function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessa
         if (inputText.trim() === "")
             return ;
         const newMessage = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             text: inputText,
             sender: "me"
         };
@@ -85,11 +85,18 @@ function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessa
     // SUBSCRIBING TO THE WEBSOCKET 
     const {stompClient, isConnected } = useWebSocket();
     useEffect(() => {
-        if (!stompClient || !isConnected || !chatId) return;
+        if (!stompClient || !isConnected || !chatId) {
+            if (stompClient && !isConnected){
+                console.log("waiting for websocket connection in chatWindow...");
+            }
+            return ;
+        }
+        console.log("Subscribing to real-time chat updates in chatWindow...");
+
         const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
             const incomingMsg = JSON.parse(message.body);
 
-            const isRelevent  = incomingMsg.senderId === chatId || incomingMsg.receiverId === chatId;
+            const isRelevent  = incomingMsg.senderId.toLowerCase() === chatId.toLowerCase() || incomingMsg.receiverId.toLowerCase() === chatId.toLowerCase();
             if (isRelevent){
                 setMessages((prev) => {
                     return [...prev, {
@@ -103,9 +110,10 @@ function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessa
         return (() =>{
             if (stompClient && stompClient.connected && subscription){
                 subscription.unsubscribe();
+                console.log("Unsubscribing from chat updates");
             }
         });
-    }, [stompClient, isConnected, chatId, user?.id]);
+    }, [stompClient, isConnected]);
 
 
     const [otherUser, setOtherUser] = useState<{username:string, avatar?:string} | null>(null);
