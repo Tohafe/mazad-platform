@@ -1,6 +1,4 @@
 import {cn} from "../../lib/utils.ts";
-import IconButton from "../Button/IconButton.tsx";
-import {LuHeart} from "react-icons/lu";
 import type {AuctionSummary} from "../../types/item.ts";
 import {Link} from "react-router-dom";
 import {useAuctionTimeLeft} from "../../lib/useAuctionTimeLeft.ts";
@@ -21,8 +19,6 @@ const ItemCard = ({className = "", auction}: ItemCardProps) => {
         <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
             <div className="relative w-full h-full xl:h-89">
                 <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
-                <IconButton className="absolute top-3 left-3 bg-main" variant="outlined" icon={LuHeart}
-                            iconClassName="text-brand">759</IconButton>
             </div>
             <p className="text-black font-semibold leading-5 line-clamp-2 min-h-10">{auction.title}</p>
             <div className="flex flex-col start-0">

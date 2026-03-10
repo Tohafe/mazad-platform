@@ -1,7 +1,5 @@
 import {cn} from "../../lib/utils.ts";
 import type {AuctionSummary} from "../../types/item.ts";
-import IconButton from "../Button/IconButton.tsx";
-import {LuHeart} from "react-icons/lu";
 import {Link} from "react-router-dom";
 
 export interface Item {
@@ -24,8 +22,6 @@ const ItemCardCompact = ({className = "", imgClassName = "", auction}: ItemCardC
         <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
             <div className={cn("relative w-full h-full", imgClassName)}>
                 <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
-                <IconButton className="absolute top-3 left-3 bg-main" variant="outlined" icon={LuHeart}
-                            iconClassName="text-brand">759</IconButton>
             </div>
             <div className="flex flex-col start-0 pt-1">
                 <label className="text-muted font-mono tracking-widest text-[12px]">CURRENT BID</label>
