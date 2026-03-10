@@ -2,7 +2,10 @@ package com.mazad.notification.service;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import com.mazad.notification.dto.AuctionStatus;
 import com.mazad.notification.dto.BidEvent;
+import com.mazad.notification.entity.NotificationEntity;
+
 import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,32 @@ public class BidEventListener {
             
             webSocketService.sendGlobalUpdate("/topic/auction/" + bidEvent.getAuctionId(), bidEvent );
             webSocketService.sendGlobalUpdate("/topic/auctions" , bidEvent );
+
+            if(bidEvent.getStatus() == AuctionStatus.ACTIVE 
+                && bidEvent.getPreviousBidderId() != null
+                && !bidEvent.getLastBidderId().equals(bidEvent.getPreviousBidderId()))
+            {
+                NotificationEntity entity = NotificationEntity.builder()
+                        .userId(bidEvent.getPreviousBidderId())
+                        .message("You have been outbid on auction the new bid is: " + bidEvent.getCurrentHighestBid())
+                        .targetUrl("/auction/" + bidEvent.getAuctionId())
+                        .build();
+                webSocketService.sendPrivateMessage(bidEvent.getPreviousBidderId(), "/queue/notification",
+                                                     entity, null, true);
+            }
+            else if(bidEvent.getLastBidderId() != null
+                    && bidEvent.getStatus() == AuctionStatus.CLOSED)
+            {
+                NotificationEntity entity = NotificationEntity.builder()
+                        .userId(bidEvent.getLastBidderId())
+                        .message("Congratulations! You won the auction. Your winning bid is: " + bidEvent.getCurrentHighestBid())
+                        .targetUrl("/auction/" + bidEvent.getAuctionId())
+                        .build();
+                webSocketService.sendPrivateMessage(bidEvent.getLastBidderId(), "/queue/notification",
+                                                     entity, null, true);
+            }
+                    
+
         } 
         catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);

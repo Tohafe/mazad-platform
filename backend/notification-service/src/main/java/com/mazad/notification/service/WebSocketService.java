@@ -24,7 +24,7 @@ public class WebSocketService {
             messagingTemplate.convertAndSendToUser(userId, destination, savedEntity);
         }
         else{
-            log.info("Saved Notification ID: {} for User: {} destination {}", userId, destination);
+            log.info("Saved Notification ID: {} for User: {} message {}", userId, entity.getMessage());
             messagingTemplate.convertAndSendToUser(userId, destination, payload);
         }
     }
