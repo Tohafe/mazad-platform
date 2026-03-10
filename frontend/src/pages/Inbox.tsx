@@ -100,6 +100,12 @@ function Inbox(){
     const { stompClient, isConnected } = useWebSocket();
     const { user } = useAuth();
     useEffect(() => {
+            console.log("status check", {
+                hasStompClient: !!stompClient,
+                userId: user?.id,
+                isConnected: isConnected,
+                fullUserObject: user
+            });
             if (!stompClient || !isConnected || !user?.id){
                 if (stompClient && !isConnected){
 
@@ -143,25 +149,33 @@ function Inbox(){
                     subscription.unsubscribe();
                 }
             });
-        }, [stompClient, isConnected, user?.id, activeChatId]
+        }, [stompClient, isConnected]
     );
 
     // a hook for send button to move chat to top
     const moveChatToTop = (chatId: string, lastMessage: string) => {
-        fetchInbox();
         setChats((prevChats) => {
             const updatedChats = [...prevChats];
             const index = updatedChats.findIndex(c => c.id === chatId);
 
-            if (index !== -1) {
+            if (index === -1) {
+                updatedChats.unshift({
+                    id: chatId,
+                    name: "Loading ...",
+                    lastMessage: lastMessage,
+                    hasUnreadMessages: false
+                });
+                fetchUserDetails(chatId);
+            }else {
                 const targetChat = updatedChats[index]; 
                 updatedChats.splice(index, 1);
                 updatedChats.unshift({
                     ...targetChat, 
                     lastMessage: lastMessage,
                     hasUnreadMessages: false
-                });
+                }); 
             }
+
             return updatedChats;
         });
     }
