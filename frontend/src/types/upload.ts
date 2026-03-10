@@ -6,6 +6,7 @@ export interface UploadableFile {
     progress: number;
     status: 'IDLE' | 'UPLOADING' | 'SUCCESS' | 'FAILED';
     targetWidth?: string;
+    targetheight?: string;
     errorMessage?: string;
 
     data?: FileResponse;
