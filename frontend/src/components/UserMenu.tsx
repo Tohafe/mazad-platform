@@ -25,10 +25,10 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
 
     return <div ref={ref} className={cn("relative flex gap-1 items-center min-w-0", className)}>
         <div className="flex items-center w-8 h-8" onClick={() => setOpen(!open)}>
-            {user?.avatarUrl ? (
+            {user?.avatarThumbnailUrl ? (
                 <img
                     className="shrink-0 w-full h-full rounded-full object-cover cursor-pointer"
-                    src={user?.avatarUrl}
+                    src={user?.avatarThumbnailUrl}
                     alt={"avatar"}
                 />) : (
                 <FaRegUser size={20} className="shrink-0 text-brand"/>)
@@ -57,7 +57,7 @@ interface MenuItemProps {
     onClick?: () => void;
 }
 
-const MenuItem = ({link, children, onClick}: MenuItemProps) => {
+export const MenuItem = ({link, children, onClick}: MenuItemProps) => {
     return <Link to={link ?? ""} onClick={onClick}
         className="flex gap-4 items-center font-medium text-base text-primary px-4 py-2 hover:bg-gray-100 cursor-pointer">{children}</Link>
 }

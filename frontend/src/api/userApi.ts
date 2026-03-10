@@ -1,5 +1,6 @@
 import type { AxiosInstance } from "axios";
 import type PublicProfile from "../types/PublicProfile";
+import type AvatarData from "../types/AvatarData";
 
 
 async function getPublicProfile(api: AxiosInstance, username: string): Promise<PublicProfile>{
@@ -42,10 +43,21 @@ async function isFriend(api: AxiosInstance, friendId: string) {
     return response?.data;
 }
 
+async function editAvatar(api: AxiosInstance, avatarData: AvatarData) {
+    let response;
+    try{
+        response = await api.post('/profile/avatar', avatarData);
+    }catch(errors: any){
+        throw errors;
+    }
+    return response?.data;
+}
+
 
 export {
     getPublicProfile,
     getPublicProfileById,
     sendFriendRequest,
+    editAvatar,
     isFriend
 }

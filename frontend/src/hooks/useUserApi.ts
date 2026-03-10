@@ -1,6 +1,7 @@
 import type { AxiosInstance } from "axios";
-import { getPublicProfile, getPublicProfileById, isFriend, sendFriendRequest } from "../api/userApi";
+import { editAvatar, getPublicProfile, getPublicProfileById, isFriend, sendFriendRequest } from "../api/userApi";
 import useApiPrivate from "./useApiPrivate";
+import type AvatarData from "../types/AvatarData";
 
 export default function useUserApi(){
     const api: AxiosInstance = useApiPrivate();
@@ -14,6 +15,9 @@ export default function useUserApi(){
         },
         sendFriendRequest: async (username: string) => {
             return await sendFriendRequest(api, username);
+        },
+        editAvatar: async (avatarData: AvatarData) => {
+            return await editAvatar(api, avatarData);
         },
         isFriend: async (friendId: string) => {
             return await isFriend(api, friendId);

@@ -12,6 +12,7 @@ public record PrivateResponseDto(
     String bio,
     String avatarUrl,
     String avatarThumbnailUrl,
+    String avatarImageId,
     String phoneNumber,
     String address,
     String city,

@@ -132,14 +132,14 @@ export const useFileUpload = () => {
             }
         });
 
-        // const timestamp = new Date().getTime(); 
+        const timestamp = new Date().getTime(); 
         
-        // if (response.data.url) {
-        //     response.data.url = `${response.data.url}?t=${timestamp}`;
-        // }
-        // if (response.data.thumbnailUrl) {
-        //     response.data.thumbnailUrl = `${response.data.thumbnailUrl}?t=${timestamp}`;
-        // }
+        if (response.data.url) {
+            response.data.url = `${response.data.url}?t=${timestamp}`;
+        }
+        if (response.data.thumbnailUrl) {
+            response.data.thumbnailUrl = `${response.data.thumbnailUrl}?t=${timestamp}`;
+        }
 
         console.log(`Backend confirmed: File ${fileId} successfully replaced.`);
         return response.data;
@@ -148,7 +148,7 @@ export const useFileUpload = () => {
 
     const saveFile = async (
         file: File, 
-        fileId?: string, 
+        fileId?: string | null,
         targetWidth: string = '0', 
         targetheight: string = '300', 
         onProgress?: (progress: number) => void
