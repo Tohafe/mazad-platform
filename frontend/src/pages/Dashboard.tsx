@@ -78,7 +78,7 @@ const Dashboard = () => {
             <h1 className="font-serif text-5xl py-12 font-semibold">My Auctions</h1>
             <Button link="/listing">List an item</Button>
         </div>
-        <div className="flex gap-2 items-center justify-start">
+        <div className="flex gap-2 items-center justify-start overflow-x-auto">
             {tabs.map((tabInfo) =>
                 <Tab
                     className="py-3"
