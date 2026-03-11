@@ -10,7 +10,7 @@ export function DetailsGrid({ details, title = 'Details' }: DetailsGridProps) {
 
   return (
     <div className="border-t  border-border pt-6">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-secondary mb-4">
+      <h2 className="text-base font-semibold uppercase tracking-widest text-secondary mb-4">
         {title}
       </h2>
       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">

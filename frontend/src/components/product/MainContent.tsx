@@ -30,7 +30,7 @@ export function MainContent({
       <ProductTitle title={title} />
 
       {/* Image Gallery with Bleed Effect */}
-      <div className="md:-ml-25">
+      <div className="">
         <ImageGallery images={images} />
       </div>
 

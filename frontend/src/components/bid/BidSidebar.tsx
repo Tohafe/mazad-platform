@@ -66,7 +66,7 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
 
     if (isAuctionClosed(data.status)) {
         return (
-            <div className="space-y-4 w-full lg:max-w-xs">
+            <div className="space-y-4 w-full max-w-100">
                 <ClosedAuctionView
                     status={data.status}
                     finalBid={data.currentBid}
@@ -81,7 +81,7 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
     }
 
     return (
-        <div className="space-y-4 w-full lg:max-w-xs">
+        <div className="space-y-4">
             <div className="bg-white border border-border overflow-hidden">
 
                 <CountdownTimer
