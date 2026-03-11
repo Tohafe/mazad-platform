@@ -52,11 +52,11 @@ function ItemPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="max-w-305 w-full min-h-screen bg-white">
             {/* <Header /> */}
 
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+            <main className="max-w-305 w-full py-4 sm:py-8">
                 <TwoColumnLayout
                     mainContent={
                         <MainContent
@@ -71,7 +71,7 @@ function ItemPage() {
                     sidebar={<BidSidebar data={data.bidData} auctionId={numericProductId}/>}
                 />
                 {otherAuctions && seller && otherAuctions.length > 0 &&
-                    <ItemCarousel className="pt-10" carouselTitle={`Other auctions from ${seller?.name}`} auctions={otherAuctions}/>}
+                    <ItemCarousel className="pt-15" carouselTitle={`Other auctions from ${seller?.name}`} auctions={otherAuctions}/>}
             </main>
         </div>
     );

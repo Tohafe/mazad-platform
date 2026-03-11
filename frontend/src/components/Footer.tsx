@@ -6,50 +6,47 @@ import logo from "../assets/logo.png"
 import {FaFacebook, FaInstagram} from "react-icons/fa";
 import Divider from "./Divider.tsx";
 import {useAuth} from "../context/AuthProvider.tsx";
+
 const tables: TableData[] = [
     {
-        title: "Company",
+        title: "Team",
         rows: [
-            "About Us",
-            "Careers",
-            "Press",
-            "Blog"
+            {title: "About Us", url: "/about"},
+            {title: "How it works", url: "/how-it-works"},
+            {title: "Technologies", url: "/technologies"},
+            {title: "API Documentation", url: "http://localhost:8080/docs/index.html", external: true},
         ]
     },
     {
-        title: "Support",
+        title: "Legal",
         rows: [
-            "Help Center",
-            "Contact Us",
-            "Status",
-            "FAQs"
+            {title: "Privacy Policy", url: "/privacy-policy"},
+            {title: "Terms of Service", url: "/terms-of-service"},
         ]
     },
     {
         title: "Account",
         rows: [
-            "My Profile",
-            "My Listing",
-            "Settings"
+            {title: "My Listing", url: "/dashboard"},
+            {title: "List an item", url: "/listing"},
+            {title: "Conversations", url: "/inbox"},
+            {title: "Settings", url: "/settings"},
         ]
     },
     {
         title: "Resources",
         rows: [
-            "Documentation",
-            "API Reference",
-            "Community",
-            "Developers"
+            { title: "React Documentation", url: "https://react.dev/reference/react", external: true },
+            { title: "TypeScript Tutorial", url: "https://www.youtube.com/watch?v=d56mG7DezGs", external: true },
+            { title: "Spring Documentation", url: "https://spring.io/projects", external: true },
+            { title: "Spring Tutorial", url: "https://www.youtube.com/watch?v=4XTsAAHW_Tc", external: true },
         ]
     }
 ];
 
-const LegalItemData: { title: string, url: string }[] = [
-    {title: "Privacy Policy", url: "/privacy-policy"},
-    {title: "Terms of Service", url: "/terms-of-service"},
-    {title: "Cookie Policy", url: "/"},
-    {title: "Licenses", url: "/"},
-]
+export type FooterElement = {
+    title: string, url: string, external?: boolean
+}
 
 interface FooterProps {
     className?: string
@@ -57,6 +54,7 @@ interface FooterProps {
 
 const Footer = ({className = ""}: FooterProps) => {
     const {isAuthenticated} = useAuth();
+
     return <div className={cn("flex flex-col gap-4 py-12", className)}>
         {!isAuthenticated && <Divider/>}
         {!isAuthenticated && <AccountSection/>}
@@ -64,16 +62,10 @@ const Footer = ({className = ""}: FooterProps) => {
         <TableGrid className="my-6 grid-cols-2 md:grid-cols-4" tables={tables}/>
         <Divider/>
         <div className="flex gap-4 items-center justify-between w-full">
-            <div className="grid grid-cols-2 md:flex gap-4">
-                {LegalItemData.map((item, index) =>
-                    <a className="text-[15px] text-secondary font-medium hover:underline" href={item.url}
-                       key={index}>{item.title}</a>
-                )}
-            </div>
             <div className="flex justify-end items-center gap-4">
-                <a href="/" ><FaFacebook size={24} className="text-muted"/></a>
-                <a href="/" ><FaInstagram size={24} className="text-muted"/></a>
-                <a href="/" ><img src={logo} alt="Logo" className="w-12 cursor-pointer"/></a>
+                <a href="/"><img src={logo} alt="Logo" className="w-12 cursor-pointer"/></a>
+                <a href="/"><FaFacebook size={24} className="text-muted"/></a>
+                <a href="/"><FaInstagram size={24} className="text-muted"/></a>
             </div>
 
         </div>

@@ -12,18 +12,18 @@ export function TwoColumnLayout({
   className = '' 
 }: TwoColumnLayoutProps) {
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 ${className}`}>
+    <div className={`flex flex-col lg:flex-row w-full gap-6 px-2 lg:gap-10 ${className}`}>
       {/* Main Content - Left Column */}
-      <main className="lg:col-span-7 order-1 lg:order-1">
+      <main className="flex-2 w-full">
         {mainContent}
       </main>
 
       {/* Sidebar - Right Column (Sticky) */}
-      <aside className="lg:col-span-5 order-2 lg:order-2">
-        <div className="lg:sticky lg:top-8 self-start">
+      {/*<aside className="lg:col-span-5 order-2 lg:order-2">*/}
+        <div className="flex-1 w-full max-w-160">
           {sidebar}
         </div>
-      </aside>
+      {/*</aside>*/}
     </div>
   );
 }

@@ -79,8 +79,8 @@ const onSubmit: SubmitHandler<RegisterData> = async (data: RegisterData) =>{
             <form onSubmit={handleSubmit(onSubmit)} className='space-y-3'>
                 <Input error={errors.username?.message} { ...register("username")} label="Userame"></Input>
                 <Input error={errors.email?.message} {...register("email")} label="Email"></Input>
-                <Input type="password" error={errors.password?.message} {...register("password")} label="Password"></Input>
-                <Input type="password" error={errors.confirmPassword?.message} {...register("confirmPassword")} label="Confirm Password"></Input>
+                <Input isPass={true} error={errors.password?.message} {...register("password")} label="Password"></Input>
+                <Input isPass={true} error={errors.confirmPassword?.message} {...register("confirmPassword")} label="Confirm Password"></Input>
                 {errors.root && (
                     <span className="text-red-500 text-sm ml-2">
                         {errors.root.message}
