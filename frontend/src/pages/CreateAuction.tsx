@@ -6,6 +6,7 @@ import { useFileUpload } from '../hooks/useFileUpload';
 import type { UploadableFile } from '../types/upload';
 import { useNavigate } from 'react-router-dom';
 import { useItems } from '../hooks/useItems';
+import { FiLoader } from 'react-icons/fi';
 import  { useState } from 'react';
 
 
@@ -53,13 +54,29 @@ const CreateAuction = () => {
     let latestSuccessfulUploads: { localId: string; data: any }[] = [];
 
     const [files, setFiles] = useState<UploadableFile[]>([]);
+    const [additionalMedia, setAdditionalMedia] = useState<UploadableFile | null>(null);
+
     const [errorToast, setErrorToast] = useState<string | null>(null);
 
-    const { uploadMultipleFiles, isUploading } = useFileUpload();
+    const { uploadMultipleFiles, uploadSingleFile, deleteFile, isUploading } = useFileUpload();
 
     const showError = (message: string) => {
         setErrorToast(message); 
         setTimeout(() => setErrorToast(null), 3000);
+    };
+
+    const handleAdditionalMediaSelected = (newFiles: File[]) => {
+        if (newFiles.length === 0) return;
+        
+        const file = newFiles[0]; 
+        
+        setAdditionalMedia({
+            file,
+            localId: Math.random().toString(36).substring(7), 
+            previewUrl: URL.createObjectURL(file), 
+            progress: 0,
+            status: 'IDLE'
+        });
     };
 
     const handleFilesSelected = (newFiles: File[]) => {
@@ -109,12 +126,33 @@ const CreateAuction = () => {
     };
     
 
-    const handleRemoveFile = (idToDrop: string) => {
-        setFiles(prevFiles => {
-            const fileToDelete = prevFiles.find(f => f.localId === idToDrop);
-            if (fileToDelete) URL.revokeObjectURL(fileToDelete.previewUrl);
-            return prevFiles.filter(f => f.localId !== idToDrop);
-        });
+    const handleRemoveAdditionalMedia = async () => {
+        if (!additionalMedia) return;
+        if (additionalMedia.status === 'SUCCESS' && additionalMedia.data?.id) {
+            
+            const success = await deleteFile(additionalMedia.data.id);
+            
+            if (!success) {
+                showError("Failed to delete the document from the server. Please try again.");
+                return; 
+            }
+        }
+        URL.revokeObjectURL(additionalMedia.previewUrl);
+        setAdditionalMedia(null);
+    };
+
+    const handleRemoveFile = async (idToDrop: string) => {
+        const fileToDelete = files.find(f => f.localId === idToDrop);
+        if (!fileToDelete) return;
+        if (fileToDelete.status === 'SUCCESS' && fileToDelete.data?.id) {
+            const success = await deleteFile(fileToDelete.data.id);
+            if (!success) {
+                showError("Failed to delete the image from the server. Please try again.");
+                return; 
+            }
+        }
+        URL.revokeObjectURL(fileToDelete.previewUrl);
+        setFiles(prevFiles => prevFiles.filter(f => f.localId !== idToDrop));
     };
 
     const handleSetMainFile = (idToMakeMain: string) => {
@@ -197,8 +235,39 @@ const CreateAuction = () => {
 
         console.log("All images secured! Stitching final DTO payload...");
 
-
+        let finalDocumentUrl = additionalMedia?.data?.url || null; 
+        if (additionalMedia && additionalMedia.status !== 'SUCCESS') {
+            console.log(`Uploading supporting document: ${additionalMedia.file.name}...`);
             
+            try {
+                const docResponse = await uploadSingleFile(
+                    additionalMedia.file, 
+                    '0', '0', 
+                    (progress) => {
+                        setAdditionalMedia(prev => prev ? { 
+                            ...prev, 
+                            progress, 
+                            status: progress === 100 ? 'SUCCESS' : 'UPLOADING' 
+                        } : null);
+                    }
+                );
+                
+                finalDocumentUrl = docResponse.url;
+                
+                setAdditionalMedia(prev => prev ? { ...prev, status: 'SUCCESS', data: docResponse } : null);
+
+            } catch (error: any) {
+                setAdditionalMedia(prev => prev ? { 
+                    ...prev, 
+                    status: 'FAILED', 
+                    progress: 0, 
+                    errorMessage: extractBackendError(error) 
+                } : null);
+                
+                showError("Failed to upload the supporting document. Please check the error and retry.");
+                return; 
+            }
+        }
 
         const finalImageUrls = files.map(f => {
             const justUploaded = latestSuccessfulUploads.find(s => s.localId === f.localId);
@@ -274,6 +343,9 @@ const CreateAuction = () => {
                         onSetMainFile={handleSetMainFile}
                         requiredCount={REQUIRED_IMAGE_COUNT}
                         onNextStep={() => setCurrentStep(2)} 
+                        additionalMedia={additionalMedia}
+                        onAdditionalMediaSelected={handleAdditionalMediaSelected}
+                        onRemoveAdditionalMedia={handleRemoveAdditionalMedia}
                     />
                 )}
 
@@ -304,7 +376,7 @@ const CreateAuction = () => {
                         
                         <div className="text-center mb-6">
                             <h3 className="text-2xl font-bold text-gray-800">Securing Your Auction</h3>
-                            <p className="text-gray-500 mt-2">Uploading high-resolution media to the server...</p>
+                            <p className="text-gray-500 mt-2">Uploading media to the server...</p>
                         </div>
                         
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -321,10 +393,7 @@ const CreateAuction = () => {
                         </div>
 
                         <div className="mt-8 flex justify-center items-center gap-3 text-blue-600">
-                            <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                            <FiLoader className="animate-spin h-6 w-6" />
                             <span className="font-semibold text-lg">Uploading ...</span>
                         </div>
                         
