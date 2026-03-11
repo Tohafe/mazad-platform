@@ -5,7 +5,6 @@ import Input from "../Input/Input";
 import { useForm } from "react-hook-form";
 import z from 'zod'
 import Select from "../Input/Select";
-import useApiPrivate from "../../hooks/useApiPrivate";
 import type User from "../../types/user";
 import { useRef, useState } from "react";
 import { CgSpinner } from "react-icons/cg";
@@ -15,7 +14,6 @@ import type AvatarData from "../../types/AvatarData";
 import { useFileUpload } from "../../hooks/useFileUpload";
 import useUserApi from "../../hooks/useUserApi";
 import Dropdown from "../Dropdown";
-import { MenuItem } from "../UserMenu";
 import Dropzone from "./DropZone";
 import TextButton from "../Button/TextButton";
 import { useOnClickOutside } from "../Notification/NotificationBell";
@@ -50,16 +48,15 @@ const schema = z.object({
         .max(200, "must be less than 200 characters"),
 })
 
-type ProfileData = z.infer<typeof schema>;
+export type ProfileData = z.infer<typeof schema>;
 
 export default function Profile(){
     const {user, setUser} = useAuth();
-    const api = useApiPrivate();
     const [success, setSuccess] = useState(false);
     const [more, setMore] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const {saveFile, deleteFile} = useFileUpload();
-    const {editAvatar} = useUserApi();
+    const {editAvatar, addProfile, editProfile} = useUserApi();
 
 
     const {
@@ -68,7 +65,16 @@ export default function Profile(){
         formState: {errors, isSubmitting},
         setError
     } = useForm<ProfileData>({
-        resolver: zodResolver(schema)
+        resolver: zodResolver(schema),
+        values: {
+            firstName: user?.firstName || '',
+            lastName: user?.lastName || '',
+            phoneNumber: user?.phoneNumber || '',
+            bio: user?.bio || '',
+            country: (user?.country) || 'Morocco',
+            city: user?.city || '',
+            address: user?.address || ''
+        }
     });
     const moreRef = useRef<HTMLDivElement>(null);
     useOnClickOutside(moreRef, () => {setMore(false)});
@@ -87,30 +93,30 @@ export default function Profile(){
 
     const onSubmit = async (data: ProfileData)=> {
         if (!user?.isComplete){
-            try{
-                
-                const profile : User = (await api.post('/profile', data)).data;
-                setUser(profile);
-                setSuccess(true);
-            }catch(errors: any){
-                setSuccess(false);
-                console.log(errors.response.data);
-                setError('root', {message: 'An unexpected error occurred, Please try later.'})
-            }
+            addProfile(data)
+                .then((profile: User) => {
+                    setUser(profile);
+                    setSuccess(true);
+                })
+                .catch(() => {
+                    setSuccess(false);
+                    setError('root', {message: 'An unexpected error occurred, Please try later.'})
+                })
         }
         else{
-            try{
-                const changed = getDiff(user, data);
-                if (Object.keys(changed).length === 0)
-                    return;
-                const profile : User = (await api.patch('/profile', data)).data;
-                setUser(profile);
-                setSuccess(true);
-            }catch(errors: any){
-                setSuccess(false);
-                setError('root', {message: 'An unexpected error occurred, Please try again.'})
-                console.log(errors.response);
-            }
+            const changed = getDiff(user, data);
+            if (Object.keys(changed).length === 0)
+                return;
+
+            editProfile(data)
+                .then((profile: User) => {
+                    setUser(profile);
+                    setSuccess(true);
+                })
+                .catch(() => {
+                    setSuccess(false);
+                    setError('root', {message: 'An unexpected error occurred, Please try again.'})
+                })
         }
     }
 
@@ -159,7 +165,7 @@ export default function Profile(){
             <div className="w-full h-[0.5px] bg-border my-6"></div>
             <div className="flex justify-center">
                 <div className="relative w-40 h-40">
-                    <img src={user?.avatarUrl || ''} className="w-full h-full rounded-full shadow-2xl"/>
+                    <img src={user?.avatarUrl || undefined} className="w-full h-full rounded-full shadow-2xl"/>
                         <IconButton 
                             size={"xlg"}
                             icon={IoMdMore}
@@ -192,35 +198,29 @@ export default function Profile(){
             <form className="space-y-3">
                 <div className="grid grid-cols-2 gap-4">
                     <Input  label="First name"
-                            defaultValue={user?.firstName ? user.firstName : ''}
                             {...register('firstName')}
                             error={errors.firstName?.message}
                     >
                     </Input>
                     <Input  label="Last name"
-                            defaultValue={user?.lastName ? user?.lastName : ''}
                             {...register('lastName')}
                             error={errors.lastName?.message}
                     ></Input>
                 </div>
                 <Input  label="Phone number"
-                        defaultValue={user?.phoneNumber ? user.phoneNumber : ''}
                         {...register('phoneNumber')}
                         error={errors.phoneNumber?.message}
                 ></Input>
                 <Input  label="Bio"
-                        defaultValue={user?.bio ? user.bio : ''}
                         {...register('bio')}
                         error={errors.bio?.message}
                 ></Input>
                 <div className="grid grid-cols-2 gap-4">
                     <Select options={countries}
                          {...register('country')}
-                         defaultValue={user?.country || ''}
                          label="Country"
                     ></Select>
                     <Input  label="City"
-                            defaultValue={user?.city ? user.city : ''}
                             {...register('city')}
                             error={errors.city?.message}
                     ></Input>
@@ -230,7 +230,6 @@ export default function Profile(){
                 <label className=" text-secondary text-xs ml-3 ">Currently, we only support countries shown here.</label>
                 </div>
                 <Input  label="Address"
-                        defaultValue={user?.address ? user.address : ''}
                         {...register('address')}
                         error={errors.address?.message}
                 ></Input>
