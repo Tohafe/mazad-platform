@@ -17,6 +17,9 @@ import NotFoundPage from "./pages/NotFoundPage.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Home from "./pages/Home.tsx";
+import AboutPage from "./pages/footer/About.tsx";
+import HowItWorksPage from "./pages/footer/HowItWorks.tsx";
+import TechnologiesPage from "./pages/footer/Technologies.tsx";
 
 
 export const router = createBrowserRouter([
@@ -88,6 +91,18 @@ export const router = createBrowserRouter([
                         element: <NotFoundPage/>
                     },
                 ]
+            },
+            {
+                path: '/about',
+                element: <AboutPage/>
+            },
+            {
+                path: '/how-it-works',
+                element: <HowItWorksPage/>
+            },
+            {
+                path: '/technologies',
+                element: <TechnologiesPage/>
             }
     ]
     },
