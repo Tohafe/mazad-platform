@@ -45,7 +45,7 @@ const ListingCard = ({
                     <label className="text-muted font-mono tracking-widest text-[12px]">CURRENT BID</label>
                     <label className="text-black font-medium text-xl text-start">{auction.currentBid}</label>
                 </div>
-                {auction.status === "ACTIVE" && handleCancelClick &&
+                {auction.status === "ACTIVE" && handleCancelClick && auction.currentBid === 0 &&
                     <Button size="sm" onMouseDown={() => handleCancelClick(auction)} variant="danger" icon={MdCancel}
                             iconClassName="">Cancel</Button>}
             </div>
