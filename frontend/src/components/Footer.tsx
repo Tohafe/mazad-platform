@@ -34,9 +34,12 @@ const tables: TableData[] = [
         ]
     },
     {
-        title: "Project",
+        title: "Resources",
         rows: [
-            { title: "Source Code", url: "https://github.com/Tohafe/mazad-platform", external: true },  // optional GitHub link
+            { title: "React Documentation", url: "https://react.dev/reference/react", external: true },
+            { title: "TypeScript Tutorial", url: "https://www.youtube.com/watch?v=d56mG7DezGs", external: true },
+            { title: "Spring Documentation", url: "https://spring.io/projects", external: true },
+            { title: "Spring Tutorial", url: "https://www.youtube.com/watch?v=4XTsAAHW_Tc", external: true },
         ]
     }
 ];
