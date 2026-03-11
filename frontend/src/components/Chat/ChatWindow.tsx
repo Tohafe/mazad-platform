@@ -2,8 +2,6 @@ import {  useEffect, useRef, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
-import { string } from "zod";
-
 
 
 function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessageSent: (msg: string) => void }>, ){

@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ConversationList from "../components/Chat/ConversationList";
 import type { Chat } from "../components/Chat/ConversationList";
 import ChatWindow from "../components/Chat/ChatWindow";
@@ -16,26 +16,26 @@ function Inbox(){
     const [ActiveView, setActiveView] = useState<ViewType>('messages');
     const [activeChatId, setActiveChatId] = useState<string | null>(null);
 
-    const fakeChats : Chat[]=
-    [
-        {
-            id: '014604f7-1668-4b45-8f44-a42096d7da26', name: "Hamzam", lastMessage: "",
-            hasUnreadMessages: true
-        },
-        {
-            id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
-            hasUnreadMessages: false
-        },
-        {
-            id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
-            hasUnreadMessages: false
-        },
-        {
-            id: "014604f7-1668-4b45-8f44-a42096d7da29", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
-            hasUnreadMessages: false
-        }
+    // const fakeChats : Chat[]=
+    // [
+    //     {
+    //         id: '014604f7-1668-4b45-8f44-a42096d7da26', name: "Hamzam", lastMessage: "",
+    //         hasUnreadMessages: true
+    //     },
+    //     {
+    //         id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
+    //         hasUnreadMessages: false
+    //     },
+    //     {
+    //         id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
+    //         hasUnreadMessages: false
+    //     },
+    //     {
+    //         id: "014604f7-1668-4b45-8f44-a42096d7da29", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
+    //         hasUnreadMessages: false
+    //     }
 
-    ];
+    // ];
     // FETCH CHATS FRON /INBOX ENDPOIT
     const fetchUserDetails = async (userId: string) => {
         try {

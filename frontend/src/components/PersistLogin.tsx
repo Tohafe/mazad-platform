@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthProvider';
 import { Outlet } from 'react-router-dom';
 import useApiPrivate from '../hooks/useApiPrivate';
 import type User from '../types/user';
-import DEFAULT_AVATAR from '../../../resources/images/avatar.jpg'
-import DEFAULT_THUMB from '../../../resources/images/avatar_thumb.jpg'
+import DEFAULT_AVATAR from '../assets/avatar.jpg'
+import DEFAULT_THUMB from '../assets/avatar_thumb.jpg'
 
 export default function PersistLogin(){
     const refresh = useRefreshToken();

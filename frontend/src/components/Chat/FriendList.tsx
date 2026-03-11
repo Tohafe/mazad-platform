@@ -13,93 +13,93 @@ interface FriendListProps {
     onMessageFriend: (username: string) => void; 
 }
 
-const FAKE_FRIENDS: Friend[] = [
-    {
-        username: "abde1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "gamil1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "abde1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "gamil1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "abde1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "gamil1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "abde1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "gamil1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "abde1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "gamil1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "abde1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "gamil1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "abde1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
-    {
-        username: "gamil1",
-        userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        isOnline: true
-    },
+// const FAKE_FRIENDS: Friend[] = [
+//     {
+//         username: "abde1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "gamil1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "abde1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "gamil1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "abde1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "gamil1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "abde1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "gamil1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "abde1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "gamil1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "abde1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "gamil1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "abde1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
+//     {
+//         username: "gamil1",
+//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         isOnline: true
+//     },
    
-];
+// ];
 
 function FriendList({ onMessageFriend }: FriendListProps) {
     const apiPrivate = useApiPrivate();

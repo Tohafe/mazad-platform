@@ -1,4 +1,28 @@
 services:
+  # ============== FRONTEND ==============
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_KEY=${API_KEY}
+        - VITE_DEFAUTLT_AVATAR=${AVATAR_URL}
+        - VITE_DEFAUTLT_AVATAR_THUMB=${AVATAR_THUMBNAIL_URL}
+    container_name: frontend-c
+    image: mazad-frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/certs/generated/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
+      - ./infrastructure/certs/generated/nginx.key:/etc/nginx/ssl/nginx.key:ro
+      - ./infrastructure/certs/generated/mazad-root-ca.crt:/etc/nginx/ssl/mazad-root-ca.crt:ro
+    networks:
+      - mazad-network
+    depends_on:
+      - mazad-gateway
+    restart: unless-stopped
+
+  # ============== DATABASE ==============
   postgres:
     container_name: postgres-c
     image: postgres:latest
@@ -32,14 +56,21 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
-      - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
+      # - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - API_KEY=${API_KEY}
-      - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
-      - USER_SERVER_PORT=${USER_SERVER_PORT}
-      - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
+      # - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
+      # - USER_SERVER_PORT=${USER_SERVER_PORT}
+      # - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
       - FRONT_URL=${FRONT_URL}
+      # SSL Configuration
+      - SSL_ENABLED=true
+      - SSL_KEYSTORE=/etc/ssl/gateway.p12
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+    volumes:
+      - ./infrastructure/certs/generated/gateway.p12:/etc/ssl/gateway.p12:ro
+      - ./infrastructure/certs/generated/mazad-root-ca.crt:/etc/ssl/mazad-root-ca.crt:ro
     ports:
-      - "8080:8080"
+      - "8443:8443"
     networks:
       mazad-network:
     restart: on-failure
@@ -52,16 +83,21 @@ services:
       - DB_URL=${DB_URL}/${ITEMS_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
-      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+      # - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - ITEM_CREATED_TOPIC=${ITEM_CREATED_TOPIC}
       - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC}
+      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
+      - ITEM_CANCELLED_TOPIC=${ITEM_CANCELLED_TOPIC}
+      # SSL Configuration
+      - SSL_ENABLED=true
+      - SSL_KEYSTORE=/etc/ssl/items-service.p12
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+    volumes:
+      - ./infrastructure/certs/generated/items-service.p12:/etc/ssl/items-service.p12:ro
     depends_on:
       - postgres
       - mazad-gateway
       - kafka-service
-    ports:
-    - "${ITEMS_SERVICE_PORT}:${ITEMS_SERVICE_PORT}" #this should be removed, accept connection only via Gateway api
     networks:
       mazad-network:
     restart: on-failure
@@ -76,15 +112,19 @@ services:
      - DB_NAME=${BID_DB_NAME}
      - DB_USER=${BID_DB_USER}
      - DB_PASSWORD=${BID_DB_PASSWORD}
-     - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
+    #  - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
      - ITEM_UPDATED_TOPIC=${ITEM_CREATED_TOPIC}
+     # SSL Configuration
+     - SSL_ENABLED=true
+     - SSL_KEYSTORE=/etc/ssl/bidding-service.p12
+     - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+    volumes:
+      - ./infrastructure/certs/generated/bidding-service.p12:/etc/ssl/bidding-service.p12:ro
     depends_on:
       - postgres
       - mazad-gateway
       - kafka-service
-    ports:
-      - "${BIDDING_SERVICE_PORT}:${BIDDING_SERVICE_PORT}"
     networks:
       mazad-network:
     restart: on-failure
@@ -101,12 +141,18 @@ services:
       - AUTH_DB_NAME=${AUTH_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
+      # - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
       - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
       - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
       - USER_SERVICE_URL=${USER_SERVICE_URL}
+      # SSL Configuration
+      - SSL_ENABLED=true
+      - SSL_KEYSTORE=/etc/ssl/auth-service.p12
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+    volumes:
+      - ./infrastructure/certs/generated/auth-service.p12:/etc/ssl/auth-service.p12:ro
     networks:
       mazad-network:
     restart: on-failure
@@ -123,12 +169,18 @@ services:
       - USER_DB_NAME=${USER_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - USER_SERVER_PORT=${USER_SERVER_PORT}
+      # - USER_SERVER_PORT=${USER_SERVER_PORT}
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
       - AVATAR_URL=${AVATAR_URL}
       - AVATAR_THUMBNAIL_URL=${AVATAR_THUMBNAIL_URL}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      # SSL Configuration
+      - SSL_ENABLED=true
+      - SSL_KEYSTORE=/etc/ssl/user-service.p12
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+    volumes:
+      - ./infrastructure/certs/generated/user-service.p12:/etc/ssl/user-service.p12:ro
     networks:
       mazad-network:
     restart: on-failure
@@ -182,10 +234,13 @@ services:
       - mazad-network
     volumes:
       - minio_data:/data
+      - ./infrastructure/certs/generated/minio.crt:/root/.minio/certs/public.crt:ro
+      - ./infrastructure/certs/generated/minio.key:/root/.minio/certs/private.key:ro
+      # - ./infrastructure/certs/generated/mazad-root-ca.crt:/root/.minio/certs/CAs/mazad-root-ca.crt:ro
     command: server /data --console-address ":9001"
 
     healthcheck:
-          test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+          test: ["CMD", "curl", "-fk", "https://localhost:9000/minio/health/live"]
           interval: 7s
           timeout: 6s
           retries: 10
@@ -228,8 +283,12 @@ services:
       - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
       # KAFKA ENV VARS
       - "KAFKA_SERVICE_PORT=${KAFKA_SERVICE_PORT}"
-    ports:
-      - "${CHAT_SERVICE_PORT}:8080"
+      # SSL Configuration
+      - SSL_ENABLED=true
+      - SSL_KEYSTORE=/etc/ssl/chat-service.p12
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+    volumes:
+      - ./infrastructure/certs/generated/chat-service.p12:/etc/ssl/chat-service.p12:ro
     networks:
       - mazad-network
       
@@ -244,13 +303,21 @@ services:
       MINIO_PASSWORD: ${MINIO_PASSWORD}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
       MINIO_PUB_URL: ${MINIO_PUB_URL}
-    ports:
-      - "${UPLOAD_PORT}:8080"
+      MINIO_URL: https://mazad-minio:9000
+      # SSL Configuration
+      SSL_ENABLED: "true"
+      SSL_KEYSTORE: /etc/ssl/upload-service.p12
+      SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
+      SSL_TRUST_CERT: /etc/ssl/mazad-root-ca.crt
+    volumes:
+      - ./infrastructure/certs/generated/upload-service.p12:/etc/ssl/upload-service.p12:ro
+      - ./infrastructure/certs/generated/mazad-root-ca.crt:/etc/ssl/mazad-root-ca.crt:ro
     networks:
       - mazad-network
     depends_on:
       minio-setup:
         condition: service_completed_successfully
+
   notification-service:
     build: ./backend/notification-service
     container_name: notification-service-c
@@ -261,8 +328,12 @@ services:
       - NOTIFICATION_DB_NAME=${NOTIFICATION_DB_NAME}
       - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
       - DB_URL=${DB_URL}
-    ports:
-      - "${NOTIFICATION_PORT}:8080"
+      # SSL Configuration
+      - SSL_ENABLED=true
+      - SSL_KEYSTORE=/etc/ssl/notification-service.p12
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+    volumes:
+      - ./infrastructure/certs/generated/notification-service.p12:/etc/ssl/notification-service.p12:ro
     networks:
       - mazad-network
     depends_on:
