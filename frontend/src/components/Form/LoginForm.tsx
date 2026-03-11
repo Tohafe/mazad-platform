@@ -9,6 +9,7 @@ import Button from "../Button/Button";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthProvider";
 import type User from "../../types/user";
+import useUserApi from "../../hooks/useUserApi";
 
 import DEFAULT_AVATAR from '../../../../resources/images/avatar.jpg'
 import DEFAULT_THUMB from '../../../../resources/images/avatar_thumb.jpg'
@@ -37,6 +38,7 @@ export default function Login(){
     const {setAccessToken, setUser, isAuthenticated} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const {getPrivateProfle} = useUserApi();
     const from = location.state?.from;
 
     
@@ -52,15 +54,16 @@ const onSubmit = async (data: LoginData) => {
     try{
         const login = await api.post('/auth/login', data);
         setAccessToken(login.data?.accessToken);
-        try{
-            const user: User = (await api.get('/profile')).data;
-            setUser(user);
-        }catch(errors: any){
-            const user : User = login.data?.user;
-            user.avatarUrl = DEFAULT_AVATAR;
-            user.avatarThumbnailUrl = DEFAULT_THUMB;
-            setUser(login.data?.user);
-        }
+        getPrivateProfle(login.data?.accessToken)
+            .then((user: User) => setUser(user))
+            .catch (() => {
+                const updatedUser: User = {
+                    ...login.data?.user,
+                    avatarUrl: DEFAULT_AVATAR,
+                    avatarThumbnailUrl: DEFAULT_THUMB
+                }
+                setUser(updatedUser);
+            })
         navigate(from?.pathname || '/');
     }catch(errors: any){
         setAccessToken(null);
@@ -84,8 +87,8 @@ const onSubmit = async (data: LoginData) => {
                 ></Input>
 
                 <Input {...register("password")}
-                    type='password'
                     label="Password"
+                    isPass={true}
                 ></Input>
 
                {(errors.email || errors.password || errors.root) &&

@@ -20,7 +20,10 @@
     border-radius: 0;
 }
 
-
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
 
 
 
