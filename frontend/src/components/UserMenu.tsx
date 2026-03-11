@@ -44,7 +44,7 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
             <MenuItem onClick={() => setOpen(false)} link={"/inbox"}>Messages</MenuItem>
             <MenuSection>SELLING</MenuSection>
             <MenuItem  onClick={() => setOpen(false)} link={"/dashboard"}>My auctions</MenuItem>
-            <MenuItem  onClick={() => setOpen(false)} link={"/create"}>List an item</MenuItem>
+            <MenuItem  onClick={() => setOpen(false)} link={"/listing"}>List an item</MenuItem>
             <TextButton onClick={() => mutation.mutate()} className="pt-3">Sign out</TextButton>
         </Dropdown>
     </div>

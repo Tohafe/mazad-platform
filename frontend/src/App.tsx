@@ -69,7 +69,7 @@ export const router = createBrowserRouter([
                                 element: <Settings/>,
                             },
                             {
-                                path: '/create',
+                                path: '/listing',
                                 element: <CreateAuction/>
                             },
                             {

@@ -28,7 +28,7 @@ const tables: TableData[] = [
         title: "Account",
         rows: [
             {title: "My Listing", url: "/dashboard"},
-            {title: "List an item", url: "/create"},
+            {title: "List an item", url: "/listing"},
             {title: "Conversations", url: "/inbox"},
             {title: "Settings", url: "/settings"},
         ]
@@ -48,20 +48,12 @@ export type FooterElement = {
     title: string, url: string, external?: boolean
 }
 
-const footerElements: FooterElement[] = [
-    {title: "Privacy Policy", url: "/privacy-policy"},
-    {title: "Terms of Service", url: "/terms-of-service"},
-    {title: "Cookie Policy", url: "/"},
-    {title: "Licenses", url: "/"},
-]
-
 interface FooterProps {
     className?: string
 }
 
 const Footer = ({className = ""}: FooterProps) => {
     const {isAuthenticated} = useAuth();
-    const scrollUp = () => window.scroll({top: 0, behavior: "smooth"});
 
     return <div className={cn("flex flex-col gap-4 py-12", className)}>
         {!isAuthenticated && <Divider/>}
@@ -71,8 +63,8 @@ const Footer = ({className = ""}: FooterProps) => {
         <Divider/>
         <div className="flex gap-4 items-center justify-between w-full">
             <div className="flex justify-end items-center gap-4">
-                <a href="http://localhost:8080/docs/index.html"><img src={logo} alt="Logo" className="w-12 cursor-pointer"/></a>
-                <a href="/auction/100"><FaFacebook size={24} className="text-muted"/></a>
+                <a href="/"><img src={logo} alt="Logo" className="w-12 cursor-pointer"/></a>
+                <a href="/"><FaFacebook size={24} className="text-muted"/></a>
                 <a href="/"><FaInstagram size={24} className="text-muted"/></a>
             </div>
 
