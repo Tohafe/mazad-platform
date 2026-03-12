@@ -1,4 +1,3 @@
-# auction-platform
 *This project has been created as part of the 42 curriculum by helarras, nhimad, haouky, arekoune, and ajbari*
 
 # Mazad
@@ -57,20 +56,17 @@ All architecture, implementation, integration, and final technical decisions wer
 
 ## Team Information
 
-### <login1!> - <Role1!>
-**Responsibilities:** Briefly describe this member’s main responsibilities in the project, such as planning, coordination, backend development, frontend development, testing, or deployment.
+### nhimad – Product Owner (PO)
+Responsibilities: Defines the main idea of the product and decides what features it should have. Manages the product backlog and sets the priorities for the team. Makes sure the product meets the users’ needs.
 
-### <login2!> - <Role2!>
-**Responsibilities:** Briefly describe this member’s main responsibilities in the project, such as feature development, debugging, UI integration, database work, or service implementation.
+### ajbari – Project Manager (PM)
+Responsibilities: Organizes and plans the work of the team. Follows the progress of the project and makes sure tasks are finished on time. Helps the team communicate and solve problems.
 
-### <login3!> - <Role3!>
-**Responsibilities:** Briefly describe this member’s main responsibilities in the project, such as architecture decisions, code review, API design, infrastructure setup, or documentation.
+### helarras – Tech Lead
+Responsibilities: Makes the main technical decisions for the project. Designs the system structure, reviews the code, and helps developers when they have technical issues.
 
-### <login4!> - <Role4!>
-**Responsibilities:** Briefly describe this member’s main responsibilities in the project, such as architecture decisions, code review, API design, infrastructure setup, or documentation.
-
-### <login5!> - <Role5!>
-**Responsibilities:** Briefly describe this member’s main responsibilities in the project, such as architecture decisions, code review, API design, infrastructure setup, or documentation.
+### haouky, arekoune – Developers
+Responsibilities: Develops features of the application. Writes code, tests the functionality, and fixes bugs during development.
 
 ## Project Management
 
@@ -123,59 +119,66 @@ The project uses a modern full-stack architecture to simulate a real auction pla
 
 ## Database Schema
 
-### Overview
-Mazad uses a relational database structure centered around the main auction platform entities: users, items, bids, messages, and notifications. The data model was designed to support account management, auction creation, bidding activity, and user interaction.
+Mazad uses a **microservices database-per-service architecture**.  
+Each service owns its own tables, and services communicate using shared IDs and events instead of direct cross-database foreign keys.
 
-### Main Tables and Relationships
-- **users**
-    - Stores user account and profile information
-    - A user can create many auction items
-    - A user can place many bids
-    - A user can send and receive messages
+### Visual Representation
 
-- **items**
-    - Stores auction listings created by users
-    - Each item belongs to one seller
-    - One item can receive many bids
+- **Auth Service** → `users`, `refresh_token`
+- **User Service** → `user_profile`, `friendships`
+- **Item Service** → `categories`, `items`, `item_images`
+- **Bidding Service** → `auctions`, `bids`
+- **Chat Service** → `messages`
+- **Notification Service** → `notifications`
 
-- **bids**
-    - Stores bid history for auction items
-    - Each bid belongs to one item
-    - Each bid belongs to one user
+Main links between services:
+- `user_id` connects auth-related data with profiles, items, messages, and notifications
+- `auction_id` / `item_id` connects items with bidding
 
-- **messages / chats**
-    - Stores communication between users
-    - Linked to users participating in conversations
+### Tables and Relationships
 
-- **notifications**
-    - Stores user notifications related to auction activity and platform events
-    - Each notification belongs to one user
+- **Auth Service**
+  - Tables: `users`, `refresh_token`
+  - Relationship: one user can have many refresh tokens
 
-### Typical Relationships
-- One **user** → many **items**
-- One **user** → many **bids**
-- One **item** → many **bids**
-- One **user** → many **notifications**
-- Users can participate in many **messages/chats**
+- **User Service**
+  - Tables: `user_profile`, `friendships`
+  - Relationship: friendships connect one user profile to another user profile
+
+- **Item Service**
+  - Tables: `categories`, `items`, `item_images`
+  - Relationships:
+    - one category can contain many items
+    - one item can have many images
+    - each item stores a `seller_id` that refers to a user
+
+- **Bidding Service**
+  - Tables: `auctions`, `bids`
+  - Relationship: one auction can have many bids
+
+- **Chat Service**
+  - Table: `messages`
+  - Relationship: each message has a sender and a receiver
+
+- **Notification Service**
+  - Table: `notifications`
+  - Relationship: one user can have many notifications
 
 ### Key Fields and Data Types
-Examples of important fields used in the database include:
-- `id` — integer / bigint / UUID
-- `username` — string / varchar
-- `email` — string / varchar
-- `password` — string / varchar
-- `title` — string / varchar
-- `description` — text
-- `starting_price` — decimal / numeric
-- `current_bid` — decimal / numeric
-- `created_at` — timestamp
-- `ends_at` — timestamp
-- `status` — string / enum
-- `user_id` — foreign key
-- `item_id` — foreign key
 
-### Schema Notes
-The database structure was chosen to keep auction-related data clear and relational. This makes it easier to manage ownership, bid history, user actions, and platform interactions in a consistent way.
+- `id`, `user_id`, `seller_id`, `bidder_id` → `UUID`
+- `auction_id`, `category_id` → `BIGINT`
+- `title`, `username`, `email`, `status` → `VARCHAR`
+- `description`, `content`, `message`, `shipping_info` → `TEXT`
+- `starting_price`, `current_bid`, `amount` → `BIGINT`
+- `created_at`, `updated_at`, `ends_at`, `timestamp` → `TIMESTAMP` / `TIMESTAMPTZ`
+- `is_read`, `is_verified`, `is_complete`, `active` → `BOOLEAN`
+- `specs` in `items` → `JSONB`
+
+### Notes
+
+Inside each service, normal SQL relationships are used.  
+Between services, the platform links data using shared identifiers such as user IDs and auction/item IDs.
 
 ## Features List
 
@@ -243,35 +246,51 @@ The platform supports file or image handling for user and auction content.
 
 ### Selected Modules and Points
 
-| Module | Points | Justification | Implementation | Team Member(s)     |
-|--------|--------|---------------|----------------|--------------------|
-| Use a frontend framework | 1 | A frontend framework was necessary to build a responsive and maintainable user interface for browsing auctions, bidding, and managing accounts. | Implemented with **React**, **TypeScript**, and **Vite**, using reusable components and client-side routing. | `All Team Members` |
-| Use a backend framework | 1 | A backend framework was needed to structure APIs, business logic, and service communication. | Implemented with **Java**, **Spring Boot**, **Spring Data JPA**, and **Spring Cloud Gateway** in a microservices architecture. | `All Team Members` |
-| Implement real-time features | 2 | Real-time behavior is important in an auction platform for updates such as bidding activity, chat, and live notifications. | Implemented through real-time communication between services and live updates for user-facing features. | `nhimad, haouky`   |
-| Allow users to interact with other users | 2 | User-to-user interaction makes the platform more realistic and useful, especially in an auction context. | Implemented through chat/messaging and other user interaction features inside the platform. | `ajbari, arekoune` |
-| Public API | 2 | A public API makes auction data accessible in a structured way and improves the technical value of the project. | Implemented through public endpoints exposed by the backend gateway and item-related services. | `helarras`         |
-| Use an ORM | 1 | An ORM simplifies database access, entity management, and query handling in backend services. | Implemented with **Spring Data JPA** to map application entities to relational database tables. | `All Team Members` |
-| Notification system | 1 | Notifications improve user awareness of auction events and platform activity. | Implemented as a dedicated notification feature/service for platform updates and user events. | `haouky`           |
-| File upload and management | 1 | Auctions require media support for item images and user-related content. | Implemented with upload handling and object storage for managing files and images. | `haouky`           |
-| Standard user management | 2 | User management is essential for authentication, profiles, and access control. | Implemented through registration, login, protected routes, profile handling, and account-related features. | `arekoune`         |
-| Advanced search functionality | 1 | Search is a key feature in an auction platform and helps users quickly find relevant listings. | Implemented with item search, filtering, and result browsing features. | `helarras`         |
-| Support for additional browsers | 1 | Cross-browser support improves accessibility and usability for different users. | The frontend was developed and tested to work correctly on more than one modern browser. | `All Team Members` |
+| Module                                                                                                             | Points | Justification                                                                                                                                                      | Implementation                                                                                                                                                                                                                   | Team Member(s)     |
+|--------------------------------------------------------------------------------------------------------------------|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| Major: Use a framework for both the frontend and backend                                                           | 2      | A full-stack framework-based approach was necessary to build a responsive user interface and a structured backend with clear APIs and maintainable business logic. | Implemented with **React**, **TypeScript**, and **Vite** on the frontend, and **Java**, **Spring Boot**, **Spring Data JPA**, and **Spring Cloud Gateway** on the backend.                                                       | `All Team Members` |
+| Major: Backend as microservices                                                                                    | 2      | The platform required loosely-coupled services with clear responsibilities for authentication, profiles, items, bidding, chat, notifications, and uploads.         | Implemented as separate backend services (`auth-service`, `user-service`, `item-service`, `bidding-service`, `chat-service`, `notification-service`, `upload-service`) communicating through **REST APIs** and **Kafka** events. | `All Team Members` |
+| Implement real-time features                                                                                       | 2      | Real-time behavior is important in an auction platform for updates such as bidding activity, chat, and live notifications.                                         | Implemented through real-time communication between services and live updates for user-facing features.                                                                                                                          | `nhimad, haouky`   |
+| Allow users to interact with other users                                                                           | 2      | User-to-user interaction makes the platform more realistic and useful, especially in an auction context.                                                           | Implemented through chat/messaging and other user interaction features inside the platform.                                                                                                                                      | `ajbari, arekoune` |
+| Public API                                                                                                         | 2      | A public API makes auction data accessible in a structured way and improves the technical value of the project.                                                    | Implemented through public endpoints exposed by the backend gateway and item-related services.                                                                                                                                   | `helarras`         |
+| Use an ORM                                                                                                         | 1      | An ORM simplifies database access, entity management, and query handling in backend services.                                                                      | Implemented with **Spring Data JPA** to map application entities to relational database tables.                                                                                                                                  | `All Team Members` |
+| Notification system                                                                                                | 1      | Notifications improve user awareness of auction events and platform activity.                                                                                      | Implemented as a dedicated notification feature/service for platform updates and user events.                                                                                                                                    | `haouky`           |
+| File upload and management                                                                                         | 1      | Auctions require media support for item images and user-related content.                                                                                           | Implemented with upload handling and object storage for managing files and images.                                                                                                                                               | `haouky`           |
+| Standard user management                                                                                           | 2      | User management is essential for authentication, profiles, and access control.                                                                                     | Implemented through registration, login, protected routes, profile handling, and account-related features.                                                                                                                       | `arekoune`         |
+| Advanced search functionality                                                                                      | 1      | Search is a key feature in an auction platform and helps users quickly find relevant listings.                                                                     | Implemented with item search, filtering, and result browsing features.                                                                                                                                                           | `helarras`         |
+| Support for additional browsers                                                                                    | 1      | Cross-browser support improves accessibility and usability for different users.                                                                                    | The frontend was developed and tested to work correctly on more than one modern browser.                                                                                                                                         | `All Team Members` |
+| Minor: Custom-made design system with reusable components, including a proper color palette, typography, and icons | 1      | A consistent design system improves usability, maintainability, and visual coherence across the platform.                                                          | Implemented through a custom UI layer with reusable components such as buttons, inputs, cards, dialogs, grids, tables, pagination, dropdowns, checkboxes, icons, and layout elements used across the frontend.                   | `All Team Members` |
 
-**Total Points: 15**
+**Total Points: 18**
 
 ## Individual Contributions
 
-### <login1>
-- Worked on the planning and implementation of key parts of the project
-- Contributed to feature development, debugging, and integration
-- Faced challenges related to coordination and technical integration, which were solved through team discussion and iterative testing
+### helarras
+- Worked on auction browsing, search/filtering, dashboard, and public API related work.
+- Also contributed to reusable frontend components and project structure.
+- Challenge: keeping the UI consistent and connecting frontend filters with backend data.
+- Solution: reused shared components and standardized API usage.
 
-### <login2>
-- Worked on backend or frontend development depending on assigned tasks
-- Contributed to core features, project structure, and implementation work
-- Faced challenges related to feature complexity and resolved them through testing and refactoring
+### nhimad
+- Worked on the bidding system and auction details page.
+- Contributed to real-time auction updates.
+- Challenge: handling bid flow and auction timing correctly.
+- Solution: added validation and tested different bidding scenarios.
 
-### <login3>
-- Worked on development, fixes, and support tasks across the project
-- Contributed to implementation, improvements, and project completion
-- Faced challenges related to integration and solved them through collaboration and debugging
+### haouky
+- Worked on notifications, file/image upload, and related integrations.
+- Contributed to real-time user-facing updates.
+- Challenge: making uploads and notifications work reliably with the platform.
+- Solution: separated responsibilities clearly and improved integration testing.
+
+### arekoune
+- Worked on authentication, profile management, and user-related features.
+- Contributed to protected routes and account handling.
+- Challenge: keeping authentication and profile data consistent.
+- Solution: used clear service boundaries and validation checks.
+
+### ajbari
+- Worked on messaging/chat and user interaction features.
+- Contributed to conversation handling between users.
+- Challenge: managing message flow and integrating chat with the platform.
+- Solution: organized chat logic clearly and tested communication scenarios.

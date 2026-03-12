@@ -122,5 +122,10 @@ public final class ItemBusinessValidator {
             throw new AuthorizationException("You don't have permission to perform this action.");
         if (entity.getStatus() != AuctionStatus.ACTIVE)
             throw new ValidationException("Item already closed");
+        if (entity.getCurrentBid() != null && entity.getCurrentBid() > 0)
+            throw new ItemNotEditableException("Item cannot be cancelled because it already has bids.");
+        if (entity.getEndsAt().isBefore(Instant.now())) {
+            throw new ValidationException("Item has already ended and cannot be cancelled.");
+        }
     }
 }

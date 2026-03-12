@@ -48,6 +48,8 @@ public class ItemEntity {
     @Column(nullable = false)
     private String thumbnail;
 
+    private String document;
+
     @Builder.Default
     @Column(name = "image_url")
     @ElementCollection(fetch = FetchType.EAGER)

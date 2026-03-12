@@ -17,6 +17,7 @@ public class ItemMapper {
                 .title(itemRequestDto.title())
                 .description(itemRequestDto.description())
                 .thumbnail(itemRequestDto.thumbnail())
+                .document(itemRequestDto.document())
                 .shippingInfo(itemRequestDto.shippingInfo())
                 .startingPrice(itemRequestDto.startingPrice())
                 .endsAt(itemRequestDto.endsAt());
@@ -39,6 +40,7 @@ public class ItemMapper {
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .thumbnail(entity.getThumbnail())
+                .document(entity.getDocument())
                 .status(entity.getStatus())
                 .images(entity.getImages())
                 .specs(entity.getSpecs())
@@ -60,6 +62,7 @@ public class ItemMapper {
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .thumbnail(entity.getThumbnail())
+                .document(entity.getDocument())
                 .startingPrice(entity.getStartingPrice())
                 .endsAt(entity.getEndsAt())
                 .build();
