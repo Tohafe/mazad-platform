@@ -7,6 +7,11 @@ spring:
     password: ${NOTIFICATION_DB_PASSWORD}
   jpa:
     show-sql: true
+    properties:
+      hibernate:
+        order_inserts: true
+        jdbc:
+          batch_size: 100
     hibernate:
       ddl-auto: validate
   flyway:
