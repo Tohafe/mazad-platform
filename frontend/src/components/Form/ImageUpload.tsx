@@ -46,7 +46,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     <h3 className="text-lg font-semibold text-gray-700 mb-4">
                         Selected Files ({files.length} / {requiredCount})
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 min-w-0">
                         {files.map((fileObj, index) => (
                             <FilePreview
                                 key={fileObj.localId}
@@ -70,7 +70,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     <Dropzone
                         multiple={false} 
                         maxSizeMB={50} 
-                        acceptedTypes="application/pdf, video/mp4, video/quicktime"
+                        acceptedTypes="application/pdf, video/mp4"
                         onFilesSelected={onAdditionalMediaSelected}
                     />
                 ) : (
