@@ -118,6 +118,7 @@ services:
     depends_on:
       - postgres
       - mazad-gateway
+      - kafka-service
     environment:
       - DB_URL=${DB_URL}
       - USER_DB_NAME=${USER_DB_NAME}
@@ -129,6 +130,11 @@ services:
       - AVATAR_THUMBNAIL_URL=${AVATAR_THUMBNAIL_URL}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - ITEM_CREATED_TOPIC=${ITEM_CREATED_TOPIC}
+      - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC}
+      - NOTIFY_FRIENDS_TOPIC=${NOTIFY_FRIENDS_TOPIC}
+      - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
+      - KAFKA_BOOTSTRAP_SERVERS=kafka-service:9093
     networks:
       mazad-network:
     restart: on-failure

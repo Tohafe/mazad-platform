@@ -1,18 +1,37 @@
-{
-  "properties": [
-    {
-      "name": "auth-user.sync.key",
-      "type": "java.lang.String",
-      "description": "The key used to sync with auth"
-    },
-    {
-      "name": "user.default.avatar",
-      "type": "java.lang.String",
-      "description": "user default avatar url"
-    },
-    {
-      "name": "user.default.thumbnail",
-      "type": "java.lang.String",
-      "description": "user default avatar thumbnail url"
-    }
-  ] }
+{"properties": [
+  {
+    "name": "auth-user.sync.key",
+    "type": "java.lang.String",
+    "description": "The key used to sync with auth"
+  },
+  {
+    "name": "user.default.avatar",
+    "type": "java.lang.String",
+    "description": "user default avatar url"
+  },
+  {
+    "name": "user.default.thumbnail",
+    "type": "java.lang.String",
+    "description": "user default avatar thumbnail url"
+  },
+  {
+    "name": "item.updated.topic",
+    "type": "java.lang.String",
+    "description": "A description for 'item.updated.topic'"
+  },
+  {
+    "name": "item.created.topic",
+    "type": "java.lang.String",
+    "description": "A description for 'item.created.topic'"
+  },
+  {
+    "name": "notify.friends.topic",
+    "type": "java.lang.String",
+    "description": "A description for 'notify.friends.topic'"
+  },
+  {
+    "name": "friend.request.topic",
+    "type": "java.lang.String",
+    "description": "A description for 'friend.request.topic'"
+  }
+]}
