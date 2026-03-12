@@ -2,11 +2,12 @@ import {  useEffect, useRef, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
-import { string } from "zod";
+import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid'
 
 
 
-function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessageSent: (msg: string) => void }>, ){
+function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string, onMessageSent: (msg: string) => void, onBack: () => void }>, ){
 
     const apiPrivate = useApiPrivate();
 
@@ -36,7 +37,7 @@ function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessa
         if (inputText.trim() === "")
             return ;
         const newMessage = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             text: inputText,
             sender: "me"
         };
@@ -84,11 +85,19 @@ function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessa
     // SUBSCRIBING TO THE WEBSOCKET 
     const {stompClient, isConnected } = useWebSocket();
     useEffect(() => {
-        if (!stompClient || !isConnected || !chatId) return;
+        if (!stompClient || !isConnected || !chatId) {
+            if (stompClient && !isConnected){
+                console.log("waiting for websocket connection in chatWindow...");
+            }
+            return ;
+        }
+        console.log("Subscribing to real-time chat updates in chatWindow...");
+
         const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
             const incomingMsg = JSON.parse(message.body);
-
-            const isRelevent  = incomingMsg.senderId === chatId || incomingMsg.receiverId === chatId;
+            console.log(incomingMsg);
+            const isRelevent  = incomingMsg.senderId.toLowerCase() === chatId.toLowerCase() || incomingMsg.receiverId.toLowerCase() === chatId.toLowerCase();
+            console.log("chatID:", chatId);
             if (isRelevent){
                 setMessages((prev) => {
                     return [...prev, {
@@ -99,8 +108,13 @@ function ChatWindow({ chatId , onMessageSent} : Readonly<{chatId:string, onMessa
                 });
             }
         });
-        return (() => subscription.unsubscribe());
-    }, [stompClient, isConnected, chatId, user?.id]);
+        return (() =>{
+            if (stompClient && stompClient.connected && subscription){
+                subscription.unsubscribe();
+                console.log("Unsubscribing from chat updates");
+            }
+        });
+    }, [stompClient, isConnected, chatId]);
 
 
     const [otherUser, setOtherUser] = useState<{username:string, avatar?:string} | null>(null);
@@ -124,6 +138,15 @@ console.log('haha');
         <div className="flex flex-col w-full h-full bg-white">
             {/* // HEADER */}
             <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white">
+                <button
+                    onClick={onBack}
+                    className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                    title="Back to messages"
+                >
+                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
                 {/* AVATAR */}
                 <div className="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-full font-bold text-blue-600">
                     {otherUser?.avatar ? (
@@ -137,7 +160,9 @@ console.log('haha');
                     )}
                 </div>
                 <div>
-                    <h3 className="font-semibold text-gray-800"> {otherUser ? otherUser.username : "Loading.." }</h3>
+                    <Link to={`/profile/${otherUser?.username}`}>
+                        <h3 className="font-semibold text-gray-800"> {otherUser ? otherUser.username : "Loading.." }</h3>
+                    </Link>
                 </div>
             </div>
 
