@@ -149,14 +149,14 @@ function Inbox(){
                     subscription.unsubscribe();
                 }
             });
-        }, [stompClient, isConnected]
+        }, [stompClient, isConnected, user?.id, activeChatId]
     );
 
     // a hook for send button to move chat to top
     const moveChatToTop = (chatId: string, lastMessage: string) => {
         setChats((prevChats) => {
             const updatedChats = [...prevChats];
-            const index = updatedChats.findIndex(c => c.id === chatId);
+            const index = updatedChats.findIndex(c => c.id.toLowerCase() === chatId.toLowerCase());
 
             if (index === -1) {
                 updatedChats.unshift({
