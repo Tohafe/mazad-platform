@@ -46,7 +46,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, onSetMain
                 &times;
             </button>
 
-         <div className="w-full h-28 relative bg-gray-100 rounded mb-2 overflow-hidden shrink-0 flex justify-center items-center">
+         <div className="w-full h-40 relative bg-gray-100 rounded mb-3 overflow-hidden shrink-0 flex justify-center items-center">
                 
                 {isImage ? (
                     <img
@@ -79,7 +79,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, onSetMain
                 )}
                 </div>
 
-                <div className="w-full text-center select-none min-w-0 mt-auto">
+                <div className="w-full text-center select-none mt-auto overflow-hidden px-1">
                     <p
                         className="text-sm font-medium text-gray-700 truncate w-full block"
                         title={fileData.file.name}
