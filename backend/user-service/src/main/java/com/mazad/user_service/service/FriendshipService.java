@@ -73,14 +73,12 @@ public class FriendshipService {
             status = FriendshipStatus.PENDDING;
         }
 
-        if (status != FriendshipStatus.DELETED){
-            FriendRequestEvent event = FriendRequestEvent.builder()
-                .targetId(receiver.getUserId())
-                .username(requester.getUsername())
-                .status(status)
-                .build();
-            kafkaProducer.produce(friendRequestTopic, event);
-        }
+        FriendRequestEvent event = FriendRequestEvent.builder()
+            .targetId(receiver.getUserId())
+            .username(requester.getUsername())
+            .status(status)
+            .build();
+        kafkaProducer.produce(friendRequestTopic, event);
         return status;
     }
 
