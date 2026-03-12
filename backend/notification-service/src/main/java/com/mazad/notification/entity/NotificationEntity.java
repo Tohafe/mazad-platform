@@ -17,7 +17,12 @@ import lombok.*;
 @Builder
 public class NotificationEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "notification_seq_gen")
+    @SequenceGenerator(
+        name = "notification_seq_gen", 
+        sequenceName = "notification_id_seq", 
+        allocationSize = 100                  
+    )
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
 
