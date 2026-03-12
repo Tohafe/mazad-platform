@@ -10,7 +10,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
-import com.mazad.user_service.dto.event.ItemCreatedEvent;
+import com.mazad.user_service.dto.event.ItemEvent;
 import com.mazad.user_service.dto.event.NotifyFriendsEvent;
 import com.mazad.user_service.enums.FriendshipStatus;
 
@@ -43,8 +43,8 @@ public class KafkaConsumerService {
         if (topic.equals(itemCreatedTopic))
             isDelete = false;
         try{
-            ItemCreatedEvent itemEvent = jsonMapper
-                        .readerFor(ItemCreatedEvent.class)
+            ItemEvent itemEvent = jsonMapper
+                        .readerFor(ItemEvent.class)
                         .readValue(event);
             List<UUID> friendIds = friendService
                     .getFriendByStatus(itemEvent.sellerId(), FriendshipStatus.ACCEPTED)
