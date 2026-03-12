@@ -127,7 +127,7 @@ spring:
                 - StripPrefix=2
 
             - id: minio-route
-              uri: http://mazad-minio:9000
+              uri: ${MAZD_MINIO_URL:https://mazad-minio:9000}
               predicates:
                 - Path=/api/upload/minio/**
               filters:

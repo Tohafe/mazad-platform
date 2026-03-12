@@ -146,13 +146,14 @@ services:
       - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
       - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
       - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
-      - USER_SERVICE_URL=${USER_SERVICE_URL}
+      # - USER_SERVICE_URL=${USER_SERVICE_URL}
       # SSL Configuration
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/auth-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
     volumes:
       - ./infrastructure/certs/generated/auth-service.p12:/etc/ssl/auth-service.p12:ro
+      - ./infrastructure/certs/generated/mazad-root-ca.crt:/usr/local/share/ca-certificates/mazad-root-ca.crt
     networks:
       mazad-network:
     restart: on-failure
@@ -262,6 +263,7 @@ services:
         condition: service_healthy
     volumes:
       - ./infrastructure/minio-service/init-minio.sh:/usr/bin/init-minio.sh
+      - ./infrastructure/certs/generated/mazad-root-ca.crt:/root/.mc/certs/CAs/public.crt
       - ${AVATAR_PATH}:/default-images
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
@@ -353,3 +355,7 @@ volumes:
 
 
 
+
+# keytool -import -alias mazad-ca \
+#     -file /usr/local/share/ca-certificates/mazad-root-ca.crt \
+#     -cacerts -storepass changeit -noprompt
