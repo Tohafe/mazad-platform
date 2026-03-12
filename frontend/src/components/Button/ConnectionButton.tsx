@@ -35,7 +35,6 @@ import type { ConnectionStatus } from "../../types/connectionStatus";
                     }
                 }
                 else if (res.status === 'ACCEPTED'){
-                    console.log(`ana inside accepted condition`);
                     text = 'Disconnect';
                     setVariant("secondary");
                 }
