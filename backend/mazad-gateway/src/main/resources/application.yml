@@ -24,8 +24,8 @@ spring:
     gateway:
       server:
         webflux:
-          httpclient:
-           ssl:
+          # httpclient:
+          #  ssl:
           # This tells the gateway to trust your root CA file
             # trusted-x509-certificates: 
             #   - ${SSL_TRUSTSTORE_CERT:/etc/ssl/mazad-root-ca.crt}
@@ -33,7 +33,7 @@ spring:
           # Configure httpclient SSL - use insecure trust manager to verify routing works
           # httpclient:
           #   ssl:
-              use-insecure-trust-manager: true
+              # use-insecure-trust-manager: true
 
           default-filters:
             - AddRequestHeader=X-Source, Mazad-Gateway

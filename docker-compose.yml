@@ -66,9 +66,14 @@ services:
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/gateway.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+      
+      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
+        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
+        -Djavax.net.ssl.trustStoreType=PKCS12
+
     volumes:
       - ./infrastructure/certs/generated/gateway.p12:/etc/ssl/gateway.p12:ro
-      - ./infrastructure/certs/generated/mazad-root-ca.crt:/etc/ssl/mazad-root-ca.crt:ro
+      - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
     ports:
       - "8443:8443"
     networks:
@@ -151,9 +156,16 @@ services:
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/auth-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+
+      # - JAVA_TOOL_OPTIONS="-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 -Djavax.net.ssl.trustStorePassword=mazad-ssl-password -Djavax.net.ssl.trustStoreType=PKCS12"
+      # --- OUTBOUND: The Truststore (VIP List) ---
+      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
+        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
+        -Djavax.net.ssl.trustStoreType=PKCS12
+
     volumes:
       - ./infrastructure/certs/generated/auth-service.p12:/etc/ssl/auth-service.p12:ro
-      - ./infrastructure/certs/generated/mazad-root-ca.crt:/usr/local/share/ca-certificates/mazad-root-ca.crt
+      - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
     networks:
       mazad-network:
     restart: on-failure
@@ -310,10 +322,13 @@ services:
       SSL_ENABLED: "true"
       SSL_KEYSTORE: /etc/ssl/upload-service.p12
       SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
-      SSL_TRUST_CERT: /etc/ssl/mazad-root-ca.crt
+      # SSL_TRUST_CERT: /etc/ssl/mazad-root-ca.crt
+      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
+        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
+        -Djavax.net.ssl.trustStoreType=PKCS12
     volumes:
       - ./infrastructure/certs/generated/upload-service.p12:/etc/ssl/upload-service.p12:ro
-      - ./infrastructure/certs/generated/mazad-root-ca.crt:/etc/ssl/mazad-root-ca.crt:ro
+      - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
     networks:
       - mazad-network
     depends_on:
