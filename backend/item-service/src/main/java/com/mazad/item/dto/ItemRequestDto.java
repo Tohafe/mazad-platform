@@ -16,6 +16,7 @@ public record ItemRequestDto(
         String description,
         @NotNull(message = "Thumbnail is required")
         String thumbnail,
+        String document,
         List<String> images,
         Map<String, String> specs,
         String shippingInfo,

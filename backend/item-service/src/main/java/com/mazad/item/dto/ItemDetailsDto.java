@@ -17,6 +17,7 @@ public record ItemDetailsDto(
         String title,
         String description,
         String thumbnail,
+        String document,
         AuctionStatus status,
         List<String> images,
         Map<String, String> specs,
