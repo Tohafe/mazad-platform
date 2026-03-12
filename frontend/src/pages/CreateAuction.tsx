@@ -235,7 +235,7 @@ const CreateAuction = () => {
 
         console.log("All images secured! Stitching final DTO payload...");
 
-        let finalDocumentUrl = additionalMedia?.data?.url || null; 
+        let documentUrl = additionalMedia?.data?.url || null; 
         if (additionalMedia && additionalMedia.status !== 'SUCCESS') {
             console.log(`Uploading supporting document: ${additionalMedia.file.name}...`);
             
@@ -252,7 +252,7 @@ const CreateAuction = () => {
                     }
                 );
                 
-                finalDocumentUrl = docResponse.url;
+                documentUrl = docResponse.url;
                 
                 setAdditionalMedia(prev => prev ? { ...prev, status: 'SUCCESS', data: docResponse } : null);
 
@@ -292,7 +292,8 @@ const CreateAuction = () => {
             shippingInfo: auctionTextData.shippingInfo, 
             startingPrice: auctionTextData.startingPrice,
             endsAt: new Date(auctionTextData.endDate).toISOString(),       
-            thumbnail: thumbnailString,       
+            thumbnail: thumbnailString,
+            document: documentUrl,       
             images: finalImageUrls            
         };
 
