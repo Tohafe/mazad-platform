@@ -183,9 +183,9 @@ function Inbox(){
         // PAGE WRAPPER 
         <div className="flex justify-center items-start pt-6  w-full  font-sans px-4">
             {/* MAIN INBOX CONTAINER */}
-            <div className="flex w-full max-w-7xl  min-h-150 bg-white border h-[calc(100vh-180px)]  border-gray-300  overflow-y-hidden ">
+            <div className="flex w-full max-w-7xl  min-h-150 bg-white border h-[75vh]  border-gray-300  overflow-hidden ">
                 {/* Left panel */}
-                <div className={`${activeChatId ? 'hidden md:flex' : 'flex'} w-full md:w-96 flex-col border-r border-gray-300 shrink-0 min-h-0`}>
+                <div className={`${activeChatId ? 'hidden md:flex' : 'flex'} w-full md:w-1/3 md:max-w-87.5 md:min-w-70 flex-col border-r border-gray-300 shrink-0 min-h-0`}>
                     {/* header area for the left panel */}
                     <div className=" p-6 border-b border-gray-300">
                         <h2 className="text-2xl font-bold mb-4">Messages</h2>
