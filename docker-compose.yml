@@ -10,7 +10,7 @@ services:
     container_name: frontend-c
     image: mazad-frontend
     ports:
-      - "80:80"
+      # - "80:80"
       - "443:443"
     volumes:
       - ./infrastructure/certs/generated/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
@@ -29,8 +29,8 @@ services:
     volumes:
       - postgres-v:${PGDATA}
       - ./infrastructure/postgres/init-scripts:/docker-entrypoint-initdb.d/
-    ports:
-      - "5000:5432"
+    # ports:
+    #   - "5000:5432"
     networks:
       mazad-network:
     restart: unless-stopped
@@ -39,8 +39,8 @@ services:
   redis:
     container_name: redis-c
     image: redis:8.4.0-bookworm
-    ports:
-      - "6379"
+    # ports:
+    #   - "6379"
     networks:
       mazad-network:
     restart: unless-stopped
@@ -74,8 +74,8 @@ services:
     volumes:
       - ./infrastructure/certs/generated/gateway.p12:/etc/ssl/gateway.p12:ro
       - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
-    ports:
-      - "8443:8443"
+    # ports:
+    #   - "8443:8443"
     networks:
       mazad-network:
     restart: on-failure
@@ -210,8 +210,8 @@ services:
   kafka-service:
     container_name: kafka-c
     image: apache/kafka:latest
-    ports:
-      - "${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}"
+    # ports:
+    #   - "${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}"
     environment:
       KAFKA_NODE_ID: 1 # unique id for this kafka node
 
@@ -245,9 +245,9 @@ services:
   minio:
     image: minio/minio:latest
     container_name: mazad-minio
-    ports:
-      - "${MINIO_API_PORT}:9000"
-      - "${MINIO_CONSOLE_PORT}:9001"
+    # ports:
+    #   - "${MINIO_API_PORT}:9000"
+    #   - "${MINIO_CONSOLE_PORT}:9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
