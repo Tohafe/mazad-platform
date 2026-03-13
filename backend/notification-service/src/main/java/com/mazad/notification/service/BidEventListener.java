@@ -1,11 +1,10 @@
 package com.mazad.notification.service;
 
 import org.springframework.kafka.annotation.KafkaListener;
+import com.mazad.notification.entity.NotificationEntity;
 import org.springframework.stereotype.Component;
 import com.mazad.notification.dto.AuctionStatus;
 import com.mazad.notification.dto.BidEvent;
-import com.mazad.notification.entity.NotificationEntity;
-
 import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,7 @@ public class BidEventListener {
             {
                 NotificationEntity entity = NotificationEntity.builder()
                         .userId(bidEvent.getPreviousBidderId())
-                        .message("You have been outbid on auction the new bid is: " + bidEvent.getCurrentHighestBid())
+                        .message("You have been outbid on auction, Check it out")
                         .targetUrl("/auction/" + bidEvent.getAuctionId())
                         .build();
                 webSocketService.sendPrivateMessage(bidEvent.getPreviousBidderId(), "/queue/notification",
@@ -51,7 +50,8 @@ public class BidEventListener {
             {
                 NotificationEntity entity = NotificationEntity.builder()
                         .userId(bidEvent.getLastBidderId())
-                        .message("Congratulations! You won the auction. Your winning bid is: " + bidEvent.getCurrentHighestBid())
+                        .message("Congratulations! You won the auction. Your winning bid is: " + bidEvent.getCurrentHighestBid() 
+                                    + ", Check it out")
                         .targetUrl("/auction/" + bidEvent.getAuctionId())
                         .build();
                 webSocketService.sendPrivateMessage(bidEvent.getLastBidderId(), "/queue/notification",
