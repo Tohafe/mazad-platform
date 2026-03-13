@@ -29,8 +29,10 @@ public class ProfileMapper {
     }
 
     public PrivateResponseDto toPrivateResponseDto(ProfileEntity entity){
-        if (entity.getAvatarUrl() == null){
+        if (entity.getAvatarUrl() == null || entity.getAvatarUrl().isBlank()){
             entity.setAvatarUrl(defaultAvatar);
+        }
+        if (entity.getAvatarThumbnailUrl() == null || entity.getAvatarThumbnailUrl().isBlank()){
             entity.setAvatarThumbnailUrl(defaultThumbnail);
         }
         return PrivateResponseDto
@@ -43,6 +45,7 @@ public class ProfileMapper {
                     .bio(entity.getBio())
                     .avatarUrl(entity.getAvatarUrl())
                     .avatarThumbnailUrl(entity.getAvatarThumbnailUrl())
+                    .avatarImageId(entity.getAvatarImageId())
                     .phoneNumber(entity.getPhoneNumber())
                     .address(entity.getAddress())
                     .city(entity.getCity())

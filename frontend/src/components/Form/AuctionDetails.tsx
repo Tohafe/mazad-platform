@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCategories } from '../../hooks/useCategories';
+import { FiLoader } from 'react-icons/fi';
 
 export interface AuctionDetailsData {
     categoryId: number;
@@ -333,13 +334,13 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                         ${isSubmitting 
                             ? 'bg-gray-400 cursor-not-allowed' 
                             : hasFailedUploads 
-                                ? 'bg-orange-500 hover:bg-orange-600 shadow-none' 
+                                ? 'bg-red-700 hover:bg-red-600 shadow-none' 
                                 : 'bg-green-600 hover:bg-green-700 shadow-none'}`} 
                 >
                     {isSubmitting 
-                        ? 'Processing Network Payload...' 
+                        ? <FiLoader className="animate-spin h-6 w-6" /> 
                         : hasFailedUploads 
-                            ? 'Retry Failed Uploads 🔄' 
+                            ? 'Retry The Upload' 
                             : 'Launch Auction'}
                 </button>
             </div>

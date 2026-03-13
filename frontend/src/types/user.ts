@@ -7,6 +7,7 @@ export default interface User{
     bio: string | null;
     avatarUrl: string | null;
     avatarThumbnailUrl: string | null;
+    avatarImageId: string | null;
     phoneNumber: string | null;
     address: string | null;
     city: string | null;

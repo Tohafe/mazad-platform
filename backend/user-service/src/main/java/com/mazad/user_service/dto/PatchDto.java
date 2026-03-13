@@ -41,8 +41,4 @@ public class PatchDto {
 
     @Size(max=500, message="must be less than 500 characters")
     String bio;
-
-    String avatarImageId;
-    String avatarUrl;
-    String avatarThumbnailUrl;
 }

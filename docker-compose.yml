@@ -177,6 +177,7 @@ services:
     depends_on:
       - postgres
       - mazad-gateway
+      - kafka-service
     environment:
       - DB_URL=${DB_URL}
       - USER_DB_NAME=${USER_DB_NAME}
@@ -188,12 +189,19 @@ services:
       - AVATAR_THUMBNAIL_URL=${AVATAR_THUMBNAIL_URL}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      # kafka env
+      - ITEM_CREATED_TOPIC=${ITEM_CREATED_TOPIC}
+      - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC}
+      - NOTIFY_FRIENDS_TOPIC=${NOTIFY_FRIENDS_TOPIC}
+      - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
+      - KAFKA_BOOTSTRAP_SERVERS=kafka-service:9093
       # SSL Configuration
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/user-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
     volumes:
       - ./infrastructure/certs/generated/user-service.p12:/etc/ssl/user-service.p12:ro
+     
     networks:
       mazad-network:
     restart: on-failure

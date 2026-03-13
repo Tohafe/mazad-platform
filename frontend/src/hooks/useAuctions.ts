@@ -9,7 +9,7 @@ import {
 } from "../api/auctions";
 import type {AuctionFilters} from "../types/item.ts";
 import useApiPrivate from "./useApiPrivate.ts";
-import {useAuth} from "../context/AuthProvider.tsx";
+import { useAuth } from "../context/AuthProvider.tsx";
 
 
 export const useAuctions = (filters: AuctionFilters) => {
@@ -55,11 +55,14 @@ export const useCancelAuction = () => {
 
 export const useSignOut = () => {
     const api = useApiPrivate();
-    const {setAccessToken} = useAuth();
+    const {setUser, setAccessToken} = useAuth();
+    
     return useMutation({
-        mutationFn: () => {
-            setAccessToken(null);
-            return signOut(api)
+        mutationFn: async () => {
+                signOut(api).then(() => {
+                    setUser(null);
+                    setAccessToken(null);
+                });
         }
     })
 }

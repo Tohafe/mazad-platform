@@ -46,7 +46,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, onSetMain
                 &times;
             </button>
 
-         <div className="w-full h-28 relative bg-gray-100 rounded mb-2 overflow-hidden shrink-0 flex justify-center items-center">
+         <div className="w-full h-40 relative bg-gray-100 rounded mb-3 overflow-hidden shrink-0 flex justify-center items-center">
                 
                 {isImage ? (
                     <img
@@ -79,7 +79,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, onSetMain
                 )}
                 </div>
 
-                <div className="w-full text-center select-none min-w-0 mt-auto">
+                <div className="w-full text-center select-none mt-auto overflow-hidden px-1">
                     <p
                         className="text-sm font-medium text-gray-700 truncate w-full block"
                         title={fileData.file.name}
@@ -92,20 +92,24 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, onSetMain
                 </div>
 
                 {fileData.status === 'FAILED' && (
-                    <div className="absolute inset-2  bg-red-900/75 flex flex-col items-center justify-center p-3 z-20 text-center animate-fadeIn">
-                        <span
-                            className="text-red-900 mb-1 drop-shadow-md text-2xl leading-none"
-                            aria-hidden="true"
-                        >
-                            ⚠️
-                        </span>
-                        <span className="text-red-600 font-bold text-sm mb-1 drop-shadow-md">Upload Failed</span>
-
-                        <span className="text-gray-400 text-xs font-medium line-clamp-2 px-2">
-                            {fileData.errorMessage || "Network connection failed."}
-                        </span>
+                    <div className="absolute inset-2 bg-white/35 backdrop-blur-[2px] flex flex-col items-center p-3 z-20 rounded-lg animate-fadeIn">
+                        <div className="flex flex-col items-center gap-1 shrink-0 pt-2">
+                            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                            <span className="text-red-600 font-semibold text-xs">Upload Failed</span>
+                        </div>
+                        <div className="w-full mt-auto border-t border-gray-400 pt-1 overflow-hidden">
+                            <p className="text-gray-900 text-[10px] text-center wrap-break-word leading-tight line-clamp-2"
+                               title={fileData.errorMessage || "Network connection failed."}
+                            >
+                                {fileData.errorMessage || "Network connection failed."}
+                            </p>
+                        </div>
                     </div>
-                    )}
+                )}
 
         </div>
     );

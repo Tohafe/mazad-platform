@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mazad.user_service.dto.FriendDto;
 import com.mazad.user_service.dto.FriendResponseDto;
+import com.mazad.user_service.dto.event.FriendRequestEvent;
 import com.mazad.user_service.entity.FriendshipEntity;
 import com.mazad.user_service.entity.ProfileEntity;
 import com.mazad.user_service.enums.FriendshipStatus;
@@ -29,6 +31,10 @@ public class FriendshipService {
     private final ProfileRepo       profileRepo;
     private final FriendshipMapper  mapper;
     private final StringRedisTemplate redisTemplate;
+    private final KafkaProducerService kafkaProducer;
+
+    @Value("${friend.request.topic}")
+    String friendRequestTopic;
 
     @Transactional
     public FriendshipStatus addOrUnFriendUser(UUID requesterId, String username) {
@@ -66,6 +72,13 @@ public class FriendshipService {
             friendRepo.save(entity);
             status = FriendshipStatus.PENDDING;
         }
+
+        FriendRequestEvent event = FriendRequestEvent.builder()
+            .targetId(receiver.getUserId())
+            .username(requester.getUsername())
+            .status(status)
+            .build();
+        kafkaProducer.produce(friendRequestTopic, event);
         return status;
     }
 

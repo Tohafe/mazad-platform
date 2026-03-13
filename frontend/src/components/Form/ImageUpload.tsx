@@ -10,6 +10,9 @@ interface ImageUploadProps {
     onSetMainFile: (idToMakeMain: string) => void;
     onNextStep: () => void; 
     requiredCount: number;
+    additionalMedia: UploadableFile | null;
+    onAdditionalMediaSelected: (newFiles: File[]) => void;
+    onRemoveAdditionalMedia: () => void;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -18,7 +21,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     onRemoveFile,
     onSetMainFile,
     onNextStep,
-    requiredCount
+    requiredCount,
+    additionalMedia,
+    onAdditionalMediaSelected,
+    onRemoveAdditionalMedia
 }) => {
     return (
         <div className="space-y-8 animate-fadeIn">
@@ -30,7 +36,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
                 <Dropzone
                     multiple={true}
-                    maxSizeMB={200}
+                    maxSizeMB={15}
                     onFilesSelected={onFilesSelected}
                 />
             </div>
@@ -40,7 +46,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     <h3 className="text-lg font-semibold text-gray-700 mb-4">
                         Selected Files ({files.length} / {requiredCount})
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 min-w-0">
                         {files.map((fileObj, index) => (
                             <FilePreview
                                 key={fileObj.localId}
@@ -53,6 +59,31 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     </div>
                 </div>
             )}
+
+            <div className="mt-12 pt-8 border-t border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800 mb-2">Supporting Document (Optional)</h2>
+                <p className="text-gray-600 mb-6">
+                    Upload a certificate of authenticity, a receipt, or a short video of the item.
+                </p>
+
+                {!additionalMedia ? (
+                    <Dropzone
+                        multiple={false} 
+                        maxSizeMB={50} 
+                        acceptedTypes="application/pdf, video/mp4"
+                        onFilesSelected={onAdditionalMediaSelected}
+                    />
+                ) : (
+                    <div className="w-64"> 
+                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Attached File:</h3>
+                        <FilePreview 
+                            fileData={additionalMedia} 
+                            onRemove={onRemoveAdditionalMedia}
+                            onSetMain={() => {}} 
+                        />
+                    </div>
+                )}
+            </div>
 
             <div className="flex justify-end pt-6  mt-8">
                 <button

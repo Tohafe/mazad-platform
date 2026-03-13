@@ -10,6 +10,7 @@ const useRefreshToken = () => {
             setAccessToken(response.data?.accessToken);
             return (response.data);
         }catch(err){
+            setAccessToken(null);
             throw err;
         }
     }

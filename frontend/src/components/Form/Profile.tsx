@@ -5,12 +5,19 @@ import Input from "../Input/Input";
 import { useForm } from "react-hook-form";
 import z from 'zod'
 import Select from "../Input/Select";
-import useApiPrivate from "../../hooks/useApiPrivate";
 import type User from "../../types/user";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CgSpinner } from "react-icons/cg";
-import { AiOutlineEdit } from "react-icons/ai";
+import { IoMdMore } from "react-icons/io";
 import IconButton from "../Button/IconButton";
+import type AvatarData from "../../types/AvatarData";
+import { useFileUpload } from "../../hooks/useFileUpload";
+import useUserApi from "../../hooks/useUserApi";
+import Dropdown from "../Dropdown";
+import Dropzone from "./DropZone";
+import TextButton from "../Button/TextButton";
+import { useOnClickOutside } from "../Notification/NotificationBell";
+import ConfirmDialog from "../Dialog/ConfirmDialog";
 
 const countries = ["Morocco"];
 
@@ -41,12 +48,15 @@ const schema = z.object({
         .max(200, "must be less than 200 characters"),
 })
 
-type ProfileData = z.infer<typeof schema>;
+export type ProfileData = z.infer<typeof schema>;
 
 export default function Profile(){
     const {user, setUser} = useAuth();
-    const api = useApiPrivate();
     const [success, setSuccess] = useState(false);
+    const [more, setMore] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const {saveFile, deleteFile} = useFileUpload();
+    const {editAvatar, addProfile, editProfile} = useUserApi();
 
 
     const {
@@ -55,8 +65,19 @@ export default function Profile(){
         formState: {errors, isSubmitting},
         setError
     } = useForm<ProfileData>({
-        resolver: zodResolver(schema)
+        resolver: zodResolver(schema),
+        values: {
+            firstName: user?.firstName || '',
+            lastName: user?.lastName || '',
+            phoneNumber: user?.phoneNumber || '',
+            bio: user?.bio || '',
+            country: (user?.country) || 'Morocco',
+            city: user?.city || '',
+            address: user?.address || ''
+        }
     });
+    const moreRef = useRef<HTMLDivElement>(null);
+    useOnClickOutside(moreRef, () => {setMore(false)});
 
 
     const getDiff = (original: User, modified: ProfileData) : Partial<ProfileData> =>{
@@ -72,32 +93,71 @@ export default function Profile(){
 
     const onSubmit = async (data: ProfileData)=> {
         if (!user?.isComplete){
-            try{
-                
-                const profile : User = (await api.post('/profile', data)).data;
-                setUser(profile);
-                setSuccess(true);
-            }catch(errors: any){
-                setSuccess(false);
-                console.log(errors.response.data);
-                setError('root', {message: 'An unexpected error occurred, Please try later.'})
-            }
+            addProfile(data)
+                .then((profile: User) => {
+                    setUser(profile);
+                    setSuccess(true);
+                })
+                .catch(() => {
+                    setSuccess(false);
+                    setError('root', {message: 'An unexpected error occurred, Please try later.'})
+                })
         }
         else{
-            try{
-                const changed = getDiff(user, data);
-                if (Object.keys(changed).length === 0)
-                    return;
-                const profile : User = (await api.patch('/profile', data)).data;
-                setUser(profile);
-                setSuccess(true);
-            }catch(errors: any){
-                setSuccess(false);
-                setError('root', {message: 'An unexpected error occurred, Please try again.'})
-                console.log(errors.response);
-            }
+            const changed = getDiff(user, data);
+            if (Object.keys(changed).length === 0)
+                return;
+
+            editProfile(data)
+                .then((profile: User) => {
+                    setUser(profile);
+                    setSuccess(true);
+                })
+                .catch(() => {
+                    setSuccess(false);
+                    setError('root', {message: 'An unexpected error occurred, Please try again.'})
+                })
         }
     }
+
+    const uploadAvatar = async (files: File[]) => {
+        setMore(false);
+        try{
+            const response = await saveFile(files[0], user?.avatarImageId, "400", "400");
+            const avatarData: AvatarData ={
+                avatarImageId: response.id,
+                avatarUrl: response.url,
+                avatarThumbnailUrl: response.thumbnailUrl
+            }
+            if (user?.avatarImageId == null)
+                editAvatar(avatarData)
+                    .then((user: User) => setUser(user));
+            else{
+                const updatedUser = {
+                    ...user, 
+                    avatarThumbnailUrl: avatarData.avatarThumbnailUrl,
+                    avatarUrl: avatarData.avatarUrl
+                };
+                setUser(updatedUser);
+            }
+        }catch (err: any){
+            console.log("Error on uploadAvatar = ", err);
+        }
+    }
+    
+    const deleteAvatar = async () => {
+        setShowConfirm(false)
+        try{
+            if (user?.avatarImageId != null){
+                deleteFile(user.avatarImageId);
+                editAvatar({avatarImageId: null, avatarUrl: null, avatarThumbnailUrl: null})
+                .then((user: User) => setUser(user));
+            }
+        }catch (err: any){
+            console.log("Error on deleteAvatar = ", err);
+        }
+    }
+
 
     return (
         <div className="flex flex-col justify-center w-full space-y-5 max-w-200">
@@ -105,42 +165,62 @@ export default function Profile(){
             <div className="w-full h-[0.5px] bg-border my-6"></div>
             <div className="flex justify-center">
                 <div className="relative w-40 h-40">
-                    <img src={user?.avatarUrl || ''} className="w-full h-full rounded-full shadow-2xl"/>
-                    <IconButton size={"xlg"} icon={AiOutlineEdit} className="absolute -bottom-2 left-30 text-brand"></IconButton>
+                    <img src={user?.avatarUrl || undefined} className="w-full h-full rounded-full shadow-2xl"/>
+                        <IconButton 
+                            size={"xlg"}
+                            icon={IoMdMore}
+                            className="absolute -bottom-2 left-30 text-brand"
+                            onClick={() => setMore(true)}
+                        >
+                        </IconButton>
+                        <div ref={moreRef} className="absolute -right-22 bottom-1 w-22 ">
+                            <Dropdown open={more}>
+                                <Dropzone onFilesSelected={uploadAvatar}  >
+                                    <TextButton className="hover:bg-gray-100 cursor-pointer w-full">Update</TextButton>
+                                </Dropzone>
+                                <div className="w-full h-[0.5px] bg-border "></div>
+                                {user?.avatarImageId
+                                    && <TextButton onClick={() => {setMore(!more); setShowConfirm(!showConfirm)}} className="hover:bg-gray-100 cursor-pointer w-full">Delete</TextButton>}
+                            </Dropdown>
+                        </div>
+                        <ConfirmDialog 
+                            open={showConfirm}
+                            onConfirm={deleteAvatar}
+                            onClose={() => {setShowConfirm(false)}}
+                            dialogInfo={{
+                                title: "Delete Profile Picture",
+                                message: "Are you sure you want to delete your profile avatar?",
+                                note: " "
+                            }}
+                        ></ConfirmDialog>
                 </div>
             </div>
             <form className="space-y-3">
                 <div className="grid grid-cols-2 gap-4">
                     <Input  label="First name"
-                            defaultValue={user?.firstName ? user.firstName : ''}
                             {...register('firstName')}
                             error={errors.firstName?.message}
                     >
                     </Input>
                     <Input  label="Last name"
-                            defaultValue={user?.lastName ? user?.lastName : ''}
                             {...register('lastName')}
                             error={errors.lastName?.message}
                     ></Input>
                 </div>
                 <Input  label="Phone number"
-                        defaultValue={user?.phoneNumber ? user.phoneNumber : ''}
                         {...register('phoneNumber')}
                         error={errors.phoneNumber?.message}
                 ></Input>
                 <Input  label="Bio"
-                        defaultValue={user?.bio ? user.bio : ''}
                         {...register('bio')}
                         error={errors.bio?.message}
                 ></Input>
                 <div className="grid grid-cols-2 gap-4">
                     <Select options={countries}
                          {...register('country')}
-                         defaultValue={user?.country || ''}
                          label="Country"
                     ></Select>
                     <Input  label="City"
-                            defaultValue={user?.city ? user.city : ''}
                             {...register('city')}
                             error={errors.city?.message}
                     ></Input>
@@ -150,7 +230,6 @@ export default function Profile(){
                 <label className=" text-secondary text-xs ml-3 ">Currently, we only support countries shown here.</label>
                 </div>
                 <Input  label="Address"
-                        defaultValue={user?.address ? user.address : ''}
                         {...register('address')}
                         error={errors.address?.message}
                 ></Input>

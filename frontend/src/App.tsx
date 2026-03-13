@@ -17,6 +17,9 @@ import NotFoundPage from "./pages/NotFoundPage.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Home from "./pages/Home.tsx";
+import AboutPage from "./pages/footer/About.tsx";
+import HowItWorksPage from "./pages/footer/HowItWorks.tsx";
+import TechnologiesPage from "./pages/footer/Technologies.tsx";
 
 
 export const router = createBrowserRouter([
@@ -66,7 +69,7 @@ export const router = createBrowserRouter([
                                 element: <Settings/>,
                             },
                             {
-                                path: '/create',
+                                path: '/listing',
                                 element: <CreateAuction/>
                             },
                             {
@@ -76,29 +79,32 @@ export const router = createBrowserRouter([
                         ]
                     },
                     {
+                        path:'/register',
+                        element: <Register/>
+                    },
+                    {
+                        path: '/login',
+                        element: <Login/>
+                    },
+                    {
                         path: '*',
                         element: <NotFoundPage/>
-                    }
+                    },
                 ]
             },
             {
-                path:'/register',
-                element: <Register/>
+                path: '/about',
+                element: <AboutPage/>
             },
             {
-                path: '/login',
-                element: <Login/>
-    },
-
+                path: '/how-it-works',
+                element: <HowItWorksPage/>
+            },
+            {
+                path: '/technologies',
+                element: <TechnologiesPage/>
+            }
     ]
-    },
-    {
-        path:'/register',
-        element: <Register/>
-    },
-    {
-        path: '/login',
-        element: <Login/>
     },
 ]);
 

@@ -56,7 +56,7 @@ export default function ResetEmailForm({setShowEmailEdit} : Props){
             <h2 className="text-center text-xl">Change email address</h2>
             <div className="w-full h-[0.5px] bg-border my-5"></div>
             <Input {...register('email')} error={errors.email?.message} label="New email"></Input>
-            <Input {...register('password')} error={errors.password?.message} type='password' label="Password"></Input>
+            <Input {...register('password')} error={errors.password?.message} isPass={true} label="Password"></Input>
             {errors.root && 
                 <span className="text-red-600 text-sm">{errors.root.message } </span>}
             <Button type="submit" className="w-full mt-3" disabled={isSubmitting}>

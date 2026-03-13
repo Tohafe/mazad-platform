@@ -54,28 +54,28 @@ function Inbox(){
         }
 
     }
+    const fetchInbox = async () => {
+        try{
+
+            const response = await apiPrivate.get(`/chat/inbox`);
+            const rawChats = response.data.content;
+            const formattedChats = rawChats.map((dto:any) => ({
+                id: dto.otherUserId,
+                name: `User ${dto.otherUserId.substring(0, 4)}..`,
+                lastMessage: dto.lastMessage,
+                hasUnreadMessages: dto.hasUnreadMessages
+            }));
+            setChats(formattedChats);
+
+            formattedChats.forEach( (chat: Chat) => {
+                fetchUserDetails(chat.id);
+            })
+        }catch(error){
+            console.error("Failed to fetch inbox:", error);
+        }
+    }
     const [chats, setChats] = useState<Chat[]>([]);
     useEffect(()=>{
-        const fetchInbox = async () => {
-            try{
-
-                const response = await apiPrivate.get(`/chat/inbox`);
-                const rawChats = response.data.content;
-                const formattedChats = rawChats.map((dto:any) => ({
-                    id: dto.otherUserId,
-                    name: `User ${dto.otherUserId.substring(0, 4)}..`,
-                    lastMessage: dto.lastMessage,
-                    hasUnreadMessages: dto.hasUnreadMessages
-                }));
-                setChats(formattedChats);
-
-                formattedChats.forEach( (chat: Chat) => {
-                    fetchUserDetails(chat.id);
-                })
-            }catch(error){
-                console.error("Failed to fetch inbox:", error);
-            }
-        }
         fetchInbox();
     }, [apiPrivate]);
 
@@ -100,6 +100,12 @@ function Inbox(){
     const { stompClient, isConnected } = useWebSocket();
     const { user } = useAuth();
     useEffect(() => {
+            console.log("status check", {
+                hasStompClient: !!stompClient,
+                userId: user?.id,
+                isConnected: isConnected,
+                fullUserObject: user
+            });
             if (!stompClient || !isConnected || !user?.id){
                 if (stompClient && !isConnected){
 
@@ -138,27 +144,38 @@ function Inbox(){
                 });
             });
             return (() => {
-                console.log("Unsubscribing from chat updates");
-                subscription.unsubscribe();
+                if (stompClient && stompClient.connected && subscription) {
+                    console.log("Unsubscribing from chat updates");
+                    subscription.unsubscribe();
+                }
             });
-        }, [stompClient, isConnected, user?.id, activeChatId]
+        }, [stompClient, isConnected, activeChatId, user?.id]
     );
 
     // a hook for send button to move chat to top
     const moveChatToTop = (chatId: string, lastMessage: string) => {
         setChats((prevChats) => {
             const updatedChats = [...prevChats];
-            const index = updatedChats.findIndex(c => c.id === chatId);
+            const index = updatedChats.findIndex(c => c.id.toLowerCase() === chatId.toLowerCase());
 
-            if (index !== -1) {
+            if (index === -1) {
+                updatedChats.unshift({
+                    id: chatId,
+                    name: "Loading ...",
+                    lastMessage: lastMessage,
+                    hasUnreadMessages: false
+                });
+                fetchUserDetails(chatId);
+            }else {
                 const targetChat = updatedChats[index]; 
                 updatedChats.splice(index, 1);
                 updatedChats.unshift({
                     ...targetChat, 
                     lastMessage: lastMessage,
                     hasUnreadMessages: false
-                });
+                }); 
             }
+
             return updatedChats;
         });
     }
@@ -182,9 +199,9 @@ function Inbox(){
         // PAGE WRAPPER 
         <div className="flex justify-center items-start pt-6  w-full  font-sans px-4">
             {/* MAIN INBOX CONTAINER */}
-            <div className="flex w-full max-w-7xl h-[calc(100vh-220px)] min-h-150 bg-white border  border-gray-300  overflow-y-hidden ">
+            <div className="flex w-full max-w-7xl  min-h-150 bg-white border h-[calc(100vh-180px)]  border-gray-300  overflow-y-hidden ">
                 {/* Left panel */}
-                <div className="w-96  flex flex-col border-r border-gray-300">
+                <div className={`${activeChatId ? 'hidden md:flex' : 'flex'} w-full md:w-96 flex-col border-r border-gray-300 shrink-0 min-h-0`}>
                     {/* header area for the left panel */}
                     <div className=" p-6 border-b border-gray-300">
                         <h2 className="text-2xl font-bold mb-4">Messages</h2>
@@ -233,17 +250,14 @@ function Inbox(){
                         <FriendRequestsList
                         />
                     )}
-
-
-
-
                 </div>
                 {/* Right Panel */}
-                <div className="flex-1 flex flex-col bg-white">
+                <div className={`${!activeChatId ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-white w-full min-w-0 min-h-0`}>
                     {(activeChatId) ? (
                         <ChatWindow 
                         chatId={activeChatId}
-                        onMessageSent={(msg) => moveChatToTop(activeChatId, msg)}           
+                        onMessageSent={(msg) => moveChatToTop(activeChatId, msg)}       
+                        onBack={() => setActiveChatId(null)}    
                          />
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center text-gray-500 gap-4">
@@ -256,8 +270,6 @@ function Inbox(){
                             <p className="text-sm">Select a chat on the left to see your messages here.</p>
                         </div>
                     )}
-
-
 
                 </div>
 

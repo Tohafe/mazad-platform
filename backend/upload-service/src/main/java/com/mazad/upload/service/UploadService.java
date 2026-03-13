@@ -33,12 +33,18 @@ public class UploadService {
 	
 	private Tika tika = new Tika();
 
-	private static final List<String> ALLOWED_CONTENT_TYPES = Arrays.asList(
+	private static final List<String> ALLOWED_IMAGES = Arrays.asList(
 		"image/jpeg",
-		"image/png",
+		"image/png"
+	);
+
+	private static final List<String> ALLOWED_VIDEOS = Arrays.asList(
 		"video/mp4",
-		"video/webm",
-		"application/pdf"	
+		"video/webm"
+	);
+
+	private static final List<String> ALLOWED_DOCS = Arrays.asList(
+		"application/pdf"
 	);
 
 	
@@ -96,10 +102,36 @@ public class UploadService {
                 throw new IllegalArgumentException("Cannot upload empty file");
             }
 
-            String detectedType = tika.detect(file.getInputStream());
-	
-			if (!ALLOWED_CONTENT_TYPES.contains(detectedType)) 
-                throw new IllegalArgumentException("Invalid file type: " + detectedType + ". Only JPG, PNG, MP4, WEBM or PDF allowed.");
+			String detectedType = tika.detect(file.getInputStream());
+            String detectedCategory = detectedType.split("/")[0];
+
+            if (detectedCategory.equals("image")) {
+                if (!ALLOWED_IMAGES.contains(detectedType)) {
+                    throw new IllegalArgumentException("Unsupported image format: " + detectedType + ". Only JPG and PNG are allowed.");
+                }
+            } else if (detectedCategory.equals("video")) {
+                if (!ALLOWED_VIDEOS.contains(detectedType)) {
+                    throw new IllegalArgumentException("Unsupported video format: " + detectedType + ". Only MP4 and WEBM are allowed.");
+                }
+            } else if (detectedCategory.equals("application") || detectedCategory.equals("text")) {
+                if (!ALLOWED_DOCS.contains(detectedType)) {
+                    throw new IllegalArgumentException("Unsupported document format: " + detectedType + ". Only PDF is allowed.");
+                }
+            } else {
+                 throw new IllegalArgumentException("Unrecognized file category: " + detectedCategory + ". Please upload a valid image, video, or document.");
+            }
+
+            String claimedType = file.getContentType();
+            if (claimedType != null) {
+                String claimedCategory = claimedType.split("/")[0];
+                if (!claimedCategory.equals(detectedCategory)) {
+                    throw new IllegalArgumentException(
+                        "MIME type spoofing detected. Claimed category: '" + claimedCategory + 
+                        "', but binary signature is: '" + detectedCategory + "'."
+                    );
+                }
+            }
+
         } catch (IOException e) {
             throw new RuntimeException("Failed to validate file content", e);
         }

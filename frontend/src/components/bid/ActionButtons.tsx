@@ -1,3 +1,5 @@
+import Button from "../Button/Button";
+
 interface ActionButtonsProps {
   onPlaceBid?: () => void;
   onSetMaxBid?: () => void;
@@ -7,22 +9,21 @@ interface ActionButtonsProps {
 export function ActionButtons({ onPlaceBid, onSetMaxBid, isLoading }: ActionButtonsProps) {
   return (
     <div className="flex gap-2 mb-4">
-      <button
-        type="button"
+      <Button
         onClick={onPlaceBid}
         disabled={isLoading}
-        className="flex-1 py-3 px-4 text-sm font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        variant="secondary"
+        className="flex-1 text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? 'Placing…' : 'Place bid'}
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
         onClick={onSetMaxBid}
         disabled={isLoading}
-        className="flex-1 py-3 px-4 text-sm font-semibold text-white bg-blue-700 hover:bg-blue-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-1 text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Set max bid
-      </button>
+      </Button>
     </div>
   );
 }

@@ -19,12 +19,14 @@ export const useFileUpload = () => {
     const uploadSingleFile = async (
         file: File, 
         targetWidth: string = '0', 
+        targetheight: string = '300', 
         onProgress?: (progress: number) => void
     ): Promise<FileResponse> => {
         
         const formData = new FormData();
         formData.append('file', file);
         formData.append('width', targetWidth);
+        formData.append('height', targetheight);
 
         const response = await apiPrivate.post<FileResponse>('/api/media', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
@@ -53,11 +55,11 @@ export const useFileUpload = () => {
                     const data = await uploadSingleFile(
                         fileObj.file, 
                         fileObj.targetWidth || '0', 
+                        fileObj.targetheight || '300', 
                         (progress) => onProgressUpdate(fileObj.localId, progress)
                     );
                     return { localId: fileObj.localId, data, success: true };
                 } catch (error: any) {
-                    // THE EXTRACTION: Dig into the Axios error to find what Spring Boot said!
                     const backendMessage = 
                         error.response?.data?.message || 
                         error.response?.data?.error || 
@@ -71,7 +73,6 @@ export const useFileUpload = () => {
 
             const successfulUploads: { localId: string; data: FileResponse }[] = [];
             
-            // We change this from an array of strings to an array of objects so it can hold the message!
             const failedUploads: { localId: string; errorMessage: string }[] = [];
 
             results.forEach(result => {
@@ -79,7 +80,6 @@ export const useFileUpload = () => {
                     if (result.value.success && result.value.data) {
                         successfulUploads.push({ localId: result.value.localId, data: result.value.data });
                     } else {
-                        // Pass the extracted message into the failed list!
                         failedUploads.push({ 
                             localId: result.value.localId, 
                             errorMessage: result.value.errorMessage || "Unknown error" 
@@ -98,9 +98,75 @@ export const useFileUpload = () => {
         }
     };
 
+    const deleteFile = async (fileId: string): Promise<boolean> => {
+        try {
+            await apiPrivate.delete(`/api/media/${fileId}`);
+            console.log(`Backend confirmed: File ${fileId} securely deleted.`);
+            return true; 
+        } catch (error) {
+            console.error(`Failed to delete file ${fileId}:`, error);
+            return false; 
+        }
+    };
+
+    const updateFile = async (
+        fileId: string, 
+        newFile: File, 
+        targetWidth: string = '0', 
+        targetheight: string = '300',
+        onProgress?: (progress: number) => void
+    ): Promise<FileResponse> => {
+        
+        const formData = new FormData();
+        formData.append('file', newFile);
+        formData.append('width', targetWidth);
+        formData.append('height', targetheight);
+
+        const response = await apiPrivate.put<FileResponse>(`/api/media/${fileId}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            onUploadProgress: (progressEvent) => {
+                if (progressEvent.total && onProgress) {
+                    const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onProgress(percent); 
+                }
+            }
+        });
+
+        const timestamp = new Date().getTime(); 
+        
+        if (response.data.url) {
+            response.data.url = `${response.data.url}?t=${timestamp}`;
+        }
+        if (response.data.thumbnailUrl) {
+            response.data.thumbnailUrl = `${response.data.thumbnailUrl}?t=${timestamp}`;
+        }
+
+        console.log(`Backend confirmed: File ${fileId} successfully replaced.`);
+        return response.data;
+    };
+
+
+    const saveFile = async (
+        file: File, 
+        fileId?: string | null,
+        targetWidth: string = '0', 
+        targetheight: string = '300', 
+        onProgress?: (progress: number) => void
+    ): Promise<FileResponse> => {
+        
+        if (fileId) {
+            return await updateFile(fileId, file, targetWidth, targetheight, onProgress);
+        } else {
+            return await uploadSingleFile(file, targetWidth, targetheight, onProgress);
+        }
+    };
+
     return {
         isUploading,
         uploadSingleFile,
-        uploadMultipleFiles
+        uploadMultipleFiles,
+        deleteFile,
+        saveFile,
+        updateFile
     };
 };
