@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS items
     title          VARCHAR(255)                      NOT NULL,
     description    TEXT,
     thumbnail      TEXT                              NOT NULL,
+    document       TEXT,
 
     starting_price BIGINT                            NOT NULL,
     current_bid    BIGINT                            NOT NULL DEFAULT 0,
@@ -101,12 +102,13 @@ VALUES ('Watches', 'watches', 'Luxury and collectible watches',
 
 
 INSERT INTO items
-(title, description, thumbnail, starting_price, current_bid,
+(title, description, thumbnail, document, starting_price, current_bid,
  starts_at, ends_at, status, specs, shipping_info,
  seller_id, category_id, created_at, updated_at)
 SELECT 'Auction Item #' || gs,
        'High quality collectible item number ' || gs,
        'https://picsum.photos/seed/thumb' || gs || '/600/450',
+       'https://cdn.intra.42.fr/pdf/pdf/201811/en.subject.pdf',
        (random() * 900 + 100)::numeric(10, 2),
        0,
        date_trunc('minute', NOW()) - INTERVAL '1 day',
