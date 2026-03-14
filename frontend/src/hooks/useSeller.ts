@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { useUserApi, type PublicUserProfile } from './useShouldRemove';
+import  useUserApi from './useUserApi';
+import type  PublicUserProfile  from '../types/PublicProfile';
 
 export interface Seller {
   name: string;
@@ -8,11 +9,11 @@ export interface Seller {
 
 /** Hook to fetch seller public profile by userId */
 export function useSeller(sellerId: string | undefined) {
-  const { getPublicProfile } = useUserApi();
+  const { getPublicProfileById } = useUserApi();
 
   return useQuery({
     queryKey: ['seller', sellerId],
-    queryFn: () => getPublicProfile(sellerId!),
+    queryFn: () => getPublicProfileById(sellerId!).then((profile) => profile),
     enabled: !!sellerId,
     select: (data: PublicUserProfile): Seller => ({
       name: data.username ?? 'Unknown Seller',

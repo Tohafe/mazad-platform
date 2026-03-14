@@ -8,21 +8,21 @@ export interface FriendRequest {
     status: string;
 }
 
-const FAKE_REQUESTS: FriendRequest[] = [
-    {
-        username: "abde1",
-        // userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        status: 'PENDING'
-    },
-    {
-        username: "gamil1",
-        // userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-        thumbnail: "",
-        status: "PENDING"
-    }
+// const FAKE_REQUESTS: FriendRequest[] = [
+//     {
+//         username: "abde1",
+//         // userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         status: 'PENDING'
+//     },
+//     {
+//         username: "gamil1",
+//         // userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
+//         thumbnail: "",
+//         status: "PENDING"
+//     }
    
-];
+// ];
 
 function FriendRequestsList() {
     const apiPrivate = useApiPrivate();

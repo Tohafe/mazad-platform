@@ -5,7 +5,7 @@ interface ProductDescriptionProps {
 }
 
 export function ProductDescription({ 
-  description,
+  // description,
   showTranslation = true
 }: ProductDescriptionProps) {
   return (

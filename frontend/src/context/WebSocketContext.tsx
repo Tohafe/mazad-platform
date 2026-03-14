@@ -3,7 +3,11 @@ import { useAuth } from './AuthProvider.tsx';
 import { Client } from '@stomp/stompjs'; 
 
 
-const WS_IP = import.meta.env.VITE_WS_IP;
+// Build WebSocket URL dynamically based on current page location
+const getWsUrl = () => {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.host}`;
+};
 
 interface WebSocketContextType {
     stompClient: Client | null;
@@ -33,6 +37,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     const isLoggedIn = !!accessToken;
 
     useEffect(() => {
+        const wsBase = getWsUrl();
 
         const client = new Client({
             reconnectDelay: 5000,
@@ -43,8 +48,8 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
                 const currentToken = tokenRef.current;
                 
                 client.brokerURL = currentToken 
-                    ? `${WS_IP}/ws?token=Bearer ${currentToken}` 
-                    : `${WS_IP}/ws`;
+                    ? `${wsBase}/ws?token=Bearer ${currentToken}` 
+                    : `${wsBase}/ws`;
             },
 
             onConnect: () => {

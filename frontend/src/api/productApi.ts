@@ -2,8 +2,8 @@ import axios from 'axios';
 import type { ApiProduct, ApiResponse } from '../types';
 
 const API_KEY = import.meta.env.VITE_API_KEY;
-const BASE_URL = import.meta.env.VITE_GATEWAY_URL + '/api/v1'
-// Base API configuration - UPDATE THIS URL
+const BASE_URL = '/api/v1'
+
 const api = axios.create({
   baseURL: BASE_URL,
   headers: {

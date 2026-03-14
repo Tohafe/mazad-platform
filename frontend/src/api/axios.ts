@@ -2,7 +2,7 @@ import axios from "axios"
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
-const BASE_URL = import.meta.env.VITE_GATEWAY_URL + '/api/v1'
+const BASE_URL = '/api/v1'
 
 const HEADERS = {
     "Content-Type": "application/json",

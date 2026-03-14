@@ -24,7 +24,7 @@ export function SellerRow({ sellerId }: SellerRowProps) {
     <div className="flex items-center gap-3 py-3">
       <div className="relative">
         <img
-          src={seller?.image || ''}
+          src={seller?.image || undefined}
           alt={seller?.name || 'Seller'}
           className="w-10 h-10 rounded-full object-cover"
           onError={(e) => {

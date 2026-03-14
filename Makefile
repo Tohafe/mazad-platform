@@ -1,11 +1,26 @@
 COMPOSE = docker compose
 SERVICES = postgres redis mazad-gateway items-service auth-service user-service
+CERTS_DIR = infrastructure/certs/generated
 
 up: build
 	$(COMPOSE) up -d
 down:
 	$(COMPOSE) down
-build:
+
+# Generate SSL certificates if they don't exist
+certs:
+	@if [ ! -f $(CERTS_DIR)/nginx.crt ]; then \
+		echo "Generating SSL certificates..."; \
+		./infrastructure/certs/generate-certs.sh; \
+	else \
+		echo "SSL certificates already exist. Skipping generation."; \
+	fi
+
+# Force regenerate all certificates
+certs-force:
+	./infrastructure/certs/generate-certs.sh --force
+
+build: certs
 	$(COMPOSE) build
 
 re: clean-all up
