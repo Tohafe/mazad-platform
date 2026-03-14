@@ -49,7 +49,7 @@ import type { ConnectionStatus } from "../../types/connectionStatus";
                 setButtonText('Connect')
                 setVariant('primary');
             })
-    }, [status]);
+    }, [status, other]);
 
     return <>
         <Button size={'sm'} className='mt-10 -ml-5' variant={variant} onClick={onClick}>{buttonText}</Button>

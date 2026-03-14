@@ -35,6 +35,7 @@ public class FriendsEventListener {
             
         } catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);
+            throw new RuntimeException("Kafka event processing failed ", e);
         }
     }
 
