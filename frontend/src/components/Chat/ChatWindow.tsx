@@ -50,17 +50,15 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
             console.log("message's id:", response.data.id);
         } catch (error){
             console.error("Failed to send message: ",  error);
-            // doing some disign for failed send
+            // TODO: doing some disign for failed send
         }
     };
 
-
+    // FETCH CHAT HISTORY
     const { user } = useAuth();
     useEffect(() => {
-        console.log(user);  
         setInputText("");
         setMessages([]);
-        // TODO: TRIGGER AXIOS FETCH INBOX FOR THE NEW CHATID
         const fetchHistory = async () => {
             try {
                 const response = await getChatHistory(chatId);
@@ -93,9 +91,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
 
         const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
             const incomingMsg = JSON.parse(message.body);
-            console.log(incomingMsg);
             const isRelevent  = incomingMsg.senderId.toLowerCase() === chatId.toLowerCase() || incomingMsg.receiverId.toLowerCase() === chatId.toLowerCase();
-            console.log("chatID:", chatId);
             if (isRelevent){
                 setMessages((prev) => {
                     return [...prev, {
@@ -109,7 +105,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         return (() =>{
             if (stompClient && stompClient.connected && subscription){
                 subscription.unsubscribe();
-                console.log("Unsubscribing from chat updates");
+                console.log("Unsubscribing from chat updates in chatWindow");
             }
         });
     }, [stompClient, isConnected, chatId, user?.id]);
@@ -130,7 +126,6 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         };
         getOtherUserInfo();
     }, [chatId])
-console.log('haha');
 
     return (
         <div className="flex flex-col w-full h-full bg-white">
