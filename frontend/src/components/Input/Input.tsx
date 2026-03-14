@@ -1,8 +1,8 @@
 import { useState, type InputHTMLAttributes } from "react";
 import IconButton from "../Button/IconButton";
 import { MdErrorOutline } from "react-icons/md";
-import { FaRegEyeSlash } from "react-icons/fa";
-import { IoEyeOutline } from "react-icons/io5";
+// import { FaRegEyeSlash } from "react-icons/fa";
+// import { IoEyeOutline } from "react-icons/io5";
 import { VscEyeClosed, VscEye} from "react-icons/vsc";
 
 
