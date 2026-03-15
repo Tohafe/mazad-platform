@@ -3,7 +3,9 @@ package com.mazad.auth.controller;
 import java.time.Duration;
 import java.util.UUID;
 
+import com.mazad.auth.entity.ApiKey;
 import com.mazad.auth.exception.BadRequestException;
+import com.mazad.auth.service.ApiKeyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -11,14 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mazad.auth.dto.AuthResponseDto;
 import com.mazad.auth.dto.EmailResetDto;
@@ -39,6 +34,7 @@ import tools.jackson.databind.JsonNode;
 @Slf4j
 public class UserController {
     public final UserService userService;
+    private final ApiKeyService apiKeyService;
 
     @Value("${auth.refresh-token-validity-days:4}")
     long    refreshValidity;
@@ -136,5 +132,20 @@ public class UserController {
     ){ 
         userService.resetEmail(userId, dto);
         return ResponseEntity.ok("Email changed successfully.");
+    }
+
+    @PostMapping("keys")
+    public ResponseEntity<String> generateApiKey(
+            @RequestHeader(name="X-User-Id") UUID userId
+    ) {
+        ApiKey newKey = apiKeyService.generateAndSaveApiKey(userId);
+        return ResponseEntity.ok(newKey.getApiKey());
+    }
+
+    @GetMapping("key")
+    public ResponseEntity<String> getApiKey(@RequestHeader(name = "X-User-Id") UUID userId) {
+        return apiKeyService.getApiKey(userId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
