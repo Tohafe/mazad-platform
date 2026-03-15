@@ -45,12 +45,6 @@ spring:
               predicates:
                 - Path=/v3/api-docs/**
 
-            # Optional: serve docs UI static files from item-service resources (/docs/index.html)
-            - id: item-service-docs-ui
-              uri: ${ITEMS_SERVICE_URL:https://items-service:8443}
-              predicates:
-                - Path=/docs/**
-
             # Items Public API Route
             - id: item-service-public-route
               uri: ${ITEMS_SERVICE_URL:https://items-service:8443}
@@ -70,8 +64,6 @@ spring:
               uri: ${ITEMS_SERVICE_URL:https://items-service:8443}
               predicates:
                 - Path=/api/v1/items/**, /api/v1/categories/**, /api/v1/catalog/**
-              filters:
-                - name: ApiKeyFilter
 
 
             - id: auth-service-route
