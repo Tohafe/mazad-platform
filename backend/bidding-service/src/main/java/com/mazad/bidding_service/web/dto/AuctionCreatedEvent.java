@@ -1,6 +1,7 @@
 package com.mazad.bidding_service.web.dto;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import com.mazad.bidding_service.domain.auction.AuctionStatus;
 
@@ -15,6 +16,9 @@ public class AuctionCreatedEvent {
     @NotNull
     private Long id;
 
+    @NotNull
+    private UUID sellerId;
+    
     @NotNull
     private AuctionStatus status;
     

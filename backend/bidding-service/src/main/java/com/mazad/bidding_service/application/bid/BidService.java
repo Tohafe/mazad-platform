@@ -1,14 +1,10 @@
 package com.mazad.bidding_service.application.bid;
-
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mazad.bidding_service.domain.auction.Auction;
@@ -37,22 +33,21 @@ public class BidService {
     @Transactional
     public BidResponse placeBid(Long auctionId, UUID userId, Long amount) {
 
-        UUID previousBidderId;
         Auction auction = auctionRepository.findById(auctionId)
-                .orElseThrow(() -> new AuctionNotFoundException());
-
-        BidValidator.validate(auction, amount);
-
+        .orElseThrow(() -> new AuctionNotFoundException());
+        
+        BidValidator.validate(auction, amount, userId);
+        
         // Anti-Sniping Check
         extendAuctionIfNecessary(auction);
-
+        
         Bid bid = new Bid();
         bid.setAmount(amount);
         bid.setBidderId(userId);
         bid.setAuctionId(auction.getAuctionId());
-
+        
+        UUID previousBidderId = auction.getCurrentHighestBidderId();
         auction.setCurrentHighestBid(amount);
-        previousBidderId =auction.getCurrentHighestBidderId();
         auction.setCurrentHighestBidderId(userId);
 
         bidRepository.save(bid);

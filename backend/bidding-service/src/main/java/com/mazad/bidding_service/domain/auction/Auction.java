@@ -1,22 +1,13 @@
 package com.mazad.bidding_service.domain.auction;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-import com.mazad.bidding_service.domain.bid.Bid;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -39,6 +30,9 @@ public class Auction {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length=20)
     private AuctionStatus status;
+
+    @Column(nullable = false)
+    private UUID sellerId;
     
     @Column(name = "starting_price", nullable = false)
     private Long startingPrice;

@@ -1,14 +1,10 @@
 package com.mazad.bidding_service.application.auction;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
-
-import jakarta.validation.constraints.Null;
-
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 

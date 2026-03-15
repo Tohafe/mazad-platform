@@ -2,7 +2,7 @@ package com.mazad.bidding_service.domain.exception;
 
 public class AuctionClosedException extends RuntimeException {
     public AuctionClosedException() {
-        super("Auction is closed");
+        super("Auction is closed, Or Cancelled by the seller");
     }
 }
 
