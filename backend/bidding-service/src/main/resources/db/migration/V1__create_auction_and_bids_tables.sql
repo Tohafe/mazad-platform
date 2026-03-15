@@ -1,6 +1,8 @@
 CREATE TABLE auctions (
     auction_id BIGINT PRIMARY KEY,
 
+    seller_id UUID NOT NULL,
+
     status VARCHAR(20) NOT NULL,
 
     starting_price BIGINT NOT NULL,

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.mazad.bidding_service.domain.auction.Auction;
 import com.mazad.bidding_service.domain.auction.AuctionRepository;
+import com.mazad.bidding_service.domain.exception.AuctionNotFoundException;
 import com.mazad.bidding_service.web.dto.AuctionCreatedEvent;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class AuctionOpenedConsumer {
 
     private JsonMapper jsonMapper;
 
-    @KafkaListener(topics = "${item.updated.topic}", groupId = "bidder")
+    @KafkaListener(topics = "${item.created.topic}", groupId = "bidder")
     public void handleAuctionCreated(String event) {
 
         Auction auction = new Auction();
@@ -31,6 +32,7 @@ public class AuctionOpenedConsumer {
                                                 .readValue(event);
 
             auction.setAuctionId(auctionEvent.getId());
+            auction.setSellerId(auctionEvent.getSellerId());
             auction.setStatus(auctionEvent.getStatus());
             auction.setStartingPrice(auctionEvent.getStartingPrice());
             auction.setCurrentHighestBid(auctionEvent.getStartingPrice());
@@ -43,5 +45,24 @@ public class AuctionOpenedConsumer {
         }
         
         auctionRepository.save(auction);
+    }
+
+    @KafkaListener(topics = "${item.updated.topic}", groupId = "bidder")
+    public void handleAuctionUpdated(String event) {
+        try {
+            AuctionCreatedEvent auctionEvent = jsonMapper.readerFor(AuctionCreatedEvent.class)
+                                                .readValue(event);
+            Auction auction = auctionRepository.findById(auctionEvent.getId())
+                                .orElseThrow(() -> new AuctionNotFoundException());;
+
+            auction.setStatus(auctionEvent.getStatus());
+            auctionRepository.save(auction);
+            
+            log.info("Item updated event received: {}", event);
+            
+        } catch (Exception e) {
+            log.error("Failed to parse Item updated event: {}", event, e);
+        }
+
     }
 }

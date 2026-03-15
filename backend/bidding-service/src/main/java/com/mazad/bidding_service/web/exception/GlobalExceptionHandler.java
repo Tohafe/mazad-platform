@@ -8,16 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.mazad.bidding_service.domain.exception.AuctionClosedException;
 import com.mazad.bidding_service.domain.exception.AuctionNotFoundException;
-import com.mazad.bidding_service.domain.exception.ErrorResponse;
 import com.mazad.bidding_service.domain.exception.InvalidBidAmountException;
+import com.mazad.bidding_service.domain.exception.InvalidBiderException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,13 +35,19 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT , ex.getMessage());
     }
 
-    // Business Logic: Bid validation (e.g., bid too low)
+    // Business Logic: Bid validation ( bid too low)
     @ExceptionHandler(InvalidBidAmountException.class)
     public ProblemDetail handleInvalidBid(InvalidBidAmountException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    // Concurrency: The Race Condition we solved with @Version
+    // Business Logic: Bid validation
+    @ExceptionHandler(InvalidBiderException.class)
+    public ProblemDetail handleInvalidBider(InvalidBiderException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    // Concurrency: The Race Condition
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ProblemDetail handleRaceCondition(ObjectOptimisticLockingFailureException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(
