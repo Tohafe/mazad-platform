@@ -4,6 +4,7 @@ import com.mazad.item.dto.ItemDetailsDto;
 import com.mazad.item.dto.ItemRequestDto;
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.dto.ItemSummaryDto;
+import com.mazad.item.exceptions.AuthorizationException;
 import com.mazad.item.service.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +35,7 @@ import static com.mazad.item.config.OpenApiConfig.API_KEY_SCHEME;
 @Tag(name = "Public Items", description = "Public endpoints for browsing items, and API-key protected endpoints to manage items.")
 public class PublicController {
 
-    private final static String API_KEY_HEADER = "X-API-KEY";
+    private final static String USER_ID_HEADER = "X-User-Id";
     private final ItemService itemService;
 
     @PostMapping
@@ -48,8 +50,13 @@ public class PublicController {
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content),
             @ApiResponse(responseCode = "401", description = "Missing/invalid API key", content = @Content)
     })
-    public ResponseEntity<ItemDetailsDto> createItem(@RequestBody ItemRequestDto itemRequestDto, @Parameter(hidden = true) @RequestHeader(API_KEY_HEADER)UUID apiKey) {
-        return ResponseEntity.ok(itemService.createItem(itemRequestDto, apiKey));
+    public ResponseEntity<ItemDetailsDto> create(
+            @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId,
+            @RequestBody @Valid ItemRequestDto itemRequestDto) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(itemService.createItem(itemRequestDto, userId));
     }
 
     @GetMapping("/{id}")
@@ -93,8 +100,9 @@ public class PublicController {
     public ResponseEntity<ItemDetailsDto> update(
             @PathVariable Long id,
             @RequestBody @Valid ItemRequestDto itemRequestDto,
-            @Parameter(hidden = true) @RequestHeader(API_KEY_HEADER) UUID apiKey) {
-        return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto, apiKey));
+            @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
+        return ResponseEntity.ok(itemService.updateItem(id, itemRequestDto, userId));
     }
 
     @DeleteMapping("{id}")
@@ -108,8 +116,9 @@ public class PublicController {
             @ApiResponse(responseCode = "401", description = "Missing/invalid API key", content = @Content),
             @ApiResponse(responseCode = "404", description = "Item not found", content = @Content)
     })
-    public ResponseEntity<Void> delete(@PathVariable Long id, @Parameter(hidden = true) @RequestHeader(API_KEY_HEADER) UUID apiKey) {
-        itemService.deleteItem(id, apiKey);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
+        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
+        itemService.deleteItem(id, userId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -98,7 +98,9 @@ public final class ItemBusinessValidator {
 
     public void validateDelete(ItemEntity entity, UUID userId) {
         if (!entity.getSellerId().equals(userId))
-            throw new ValidationException("Item can only be deleted by its seller");
+            throw new AuthorizationException("You don't have permission to perform this action.");
+        if (entity.getCurrentBid() != null && entity.getCurrentBid() > 0)
+            throw new ItemNotEditableException("Item cannot be deleted because it already has bids.");
     }
 
     private void validateMinDuration(Instant endsAt, Instant startsAt) {
