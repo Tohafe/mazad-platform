@@ -1,14 +1,10 @@
 package com.mazad.bidding_service.application.bid;
-
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mazad.bidding_service.domain.auction.Auction;
