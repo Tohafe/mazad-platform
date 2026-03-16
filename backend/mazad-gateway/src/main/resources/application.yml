@@ -138,6 +138,8 @@ spring:
               '[/**]':
                 allowed-origins:
                   - ${FRONT_URL}
+                  # //for frontend Dev, remove it before push @Naoufal
+                  - 'http://localhost:5173'
                 allowed-methods:
                   - GET
                   - POST

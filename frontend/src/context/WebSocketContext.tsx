@@ -5,8 +5,11 @@ import { Client } from '@stomp/stompjs';
 
 // Build WebSocket URL dynamically based on current page location
 const getWsUrl = () => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${window.location.host}`;
+    // const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // return `${protocol}//${window.location.host}`;
+
+    //for frontend Dev, remove it before push @Naoufal
+    return 'wss://localhost:443'
 };
 
 interface WebSocketContextType {
