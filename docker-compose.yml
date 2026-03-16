@@ -158,6 +158,9 @@ services:
       - SSL_KEYSTORE=/etc/ssl/auth-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
 
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+
       # - JAVA_TOOL_OPTIONS="-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 -Djavax.net.ssl.trustStorePassword=mazad-ssl-password -Djavax.net.ssl.trustStoreType=PKCS12"
       # --- OUTBOUND: The Truststore (VIP List) ---
       - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 

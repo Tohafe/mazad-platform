@@ -16,7 +16,7 @@ export default function Security(){
     }
 
     return(
-        <div className="relative flex flex-col w-full h-full">
+        <div className="relative flex flex-col w-full">
             <h2 className="text-xl font-semibold">Security</h2>
             <div className="w-full h-[0.5px] bg-border my-6"></div>
             <div className="flex flex-col gap-0">
