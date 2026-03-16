@@ -17,7 +17,7 @@ export default function Settings(){
                 <Profile/>
                 <div className="flex flex-col gap-1">
                     <Security/>
-                    <h2 className="text-xl font-semibold pb-4">Api key</h2>
+                    <h2 className="text-xl font-semibold pb-4">API key</h2>
                     <ApiKeyGen />
 
                 </div>
