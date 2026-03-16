@@ -105,15 +105,17 @@ async function generateApiKey(api: AxiosInstance): Promise<string> {
 }
 
 async function getApiKey(api: AxiosInstance): Promise<string> {
-    let response;
     try{
-        response = await api.get<string>("/auth/key");
+        const response = await api.get<string>("/auth/key");
+        return response?.data;
     }catch(errors: any){
+        // Treat 404 ("no key yet") as a normal, non-error state
+        if (errors?.response?.status === 404) {
+            return undefined as any;
+        }
         throw errors;
     }
-    return response?.data;
 }
-
 
 
 export {
