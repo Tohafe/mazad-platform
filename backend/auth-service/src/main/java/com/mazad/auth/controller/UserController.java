@@ -60,8 +60,8 @@ public class UserController {
         refreshCookie = ResponseCookie
                             .from("refresh_token", authResponse.refreshToken())
                             .httpOnly(true)
-                            .sameSite("Strict")
-                            .secure(false) // true for HTTPS on production
+                            .sameSite("None") // "None" allows the cookie to be sent across different ports @Naoufal .sameSite("Strict")
+                            .secure(true) // true for HTTPS on production
                             .path("/api/v1/auth/")
                             .maxAge(Duration.ofDays(refreshValidity))
                             .build();
