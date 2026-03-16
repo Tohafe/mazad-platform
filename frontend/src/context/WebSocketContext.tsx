@@ -9,7 +9,9 @@ const getWsUrl = () => {
     // return `${protocol}//${window.location.host}`;
 
     //for frontend Dev, remove it before push @Naoufal
-    return 'wss://localhost:443'
+    const MAZAD_IP = import.meta.env.VITE_MAZAD_IP;
+
+    return `wss://${MAZAD_IP}:443`
 };
 
 interface WebSocketContextType {

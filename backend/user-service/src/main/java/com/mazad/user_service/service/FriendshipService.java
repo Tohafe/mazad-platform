@@ -140,7 +140,10 @@ public class FriendshipService {
         FriendshipEntity entity;
 
         if (!friendRepo.friendshipExists(userId, friendId))
-            throw new ResourceNotFoundException("Not Found");
+            return FriendDto.builder()
+                    .requesterId(null)
+                    .status(FriendshipStatus.DELETED)
+                    .build();
         entity = friendRepo.findFriendship(userId, friendId).get();
         return FriendDto.builder()
                 .requesterId(entity.getRequester().getUserId())

@@ -130,6 +130,7 @@ spring:
               '[/**]':
                 allowed-origins:
                   - ${FRONT_URL}
+                  - http://10.30.245.151:5173
                   # //for frontend Dev, remove it before push @Naoufal
                   - 'http://localhost:5173'
                 allowed-methods:

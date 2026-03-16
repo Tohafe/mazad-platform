@@ -59,16 +59,25 @@ public class ProfileService {
     }
 
     public PrivateResponseDto addProfile(CurrentUser user, RequestDto requestDto) {
-        repo.findByUserId(user.id()).ifPresent((profile) -> {
-            if(profile.isComplete())
-                throw new ProfileAlreadyExistException();
-        });
+        ProfileEntity oldProfile ;
+        if (repo.findByUserId(user.id()).isPresent())
+            oldProfile = repo.findByUserId(user.id()).get();
+        else
+            oldProfile = null;
+        if(oldProfile != null && oldProfile.isComplete())
+            throw new ProfileAlreadyExistException();
         ProfileEntity profile = mapper.toEntity(requestDto);
 
         profile.setUserId(user.id());
         profile.setEmail(user.email());
         profile.setUsername(user.username());
         profile.setComplete(true);
+
+        if (oldProfile != null && oldProfile.getAvatarImageId() != null) {
+            profile.setAvatarImageId(oldProfile.getAvatarImageId());
+            profile.setAvatarUrl(oldProfile.getAvatarUrl());
+            profile.setAvatarThumbnailUrl(oldProfile.getAvatarThumbnailUrl());
+        }
 
         profile = repo.save(profile);
 

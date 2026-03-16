@@ -24,6 +24,8 @@ public class FriendRequestListener {
         try {
             FriendRequestEvent friendRequestEvent= objectMapper.readValue(event, FriendRequestEvent.class);
 
+            webSocketService.sendPrivateMessage(friendRequestEvent.getTargetId(), "/queue/profile/" + friendRequestEvent.getUsername(),
+                    null, friendRequestEvent, false);
             if(friendRequestEvent.getStatus() == FriendshipStatus.ACCEPTED){
                 NotificationEntity entity = NotificationEntity.builder()
                                             .userId(friendRequestEvent.getTargetId())
@@ -42,7 +44,7 @@ public class FriendRequestListener {
                 webSocketService.sendPrivateMessage(friendRequestEvent.getTargetId(), "/queue/notification",
                                                      entity, null, true);
             }
-            
+
         } catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);
             throw new RuntimeException("Kafka event processing failed ", e);
