@@ -94,6 +94,26 @@ async function editProfile(api: AxiosInstance, data: ProfileData) {
 }
 
 
+async function generateApiKey(api: AxiosInstance): Promise<string> {
+    let response;
+    try{
+        response = await api.post("/auth/keys");
+    }catch(errors: any){
+        throw errors;
+    }
+    return response?.data;
+}
+
+async function getApiKey(api: AxiosInstance): Promise<string> {
+    let response;
+    try{
+        response = await api.get<string>("/auth/key");
+    }catch(errors: any){
+        throw errors;
+    }
+    return response?.data;
+}
+
 
 
 export {
@@ -104,5 +124,7 @@ export {
     isFriend,
     getPrivateProfile,
     addProfile,
-    editProfile
+    editProfile,
+    generateApiKey,
+    getApiKey
 }
