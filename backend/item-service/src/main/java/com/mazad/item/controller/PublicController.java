@@ -45,13 +45,13 @@ public class PublicController {
             description = "Creates an item using the provided request body."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Item created",
+            @ApiResponse(responseCode = "201", description = "Item created",
                     content = @Content(schema = @Schema(implementation = ItemDetailsDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content),
             @ApiResponse(responseCode = "401", description = "Missing/invalid API key", content = @Content)
     })
     public ResponseEntity<ItemDetailsDto> create(
-            @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId,
+            @Parameter(hidden = true) @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId,
             @RequestBody @Valid ItemRequestDto itemRequestDto) {
         if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         return ResponseEntity
