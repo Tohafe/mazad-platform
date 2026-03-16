@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS api_keys
     user_id    UUID                NOT NULL,
     created_at TIMESTAMPTZ      DEFAULT CURRENT_TIMESTAMP,
 
+    CONSTRAINT uq_api_keys_user_id UNIQUE (user_id),
     CONSTRAINT fk_user_apikey
         FOREIGN KEY (user_id)
             REFERENCES users (id)
