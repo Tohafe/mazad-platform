@@ -332,11 +332,13 @@ services:
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
       MINIO_PUB_URL: ${MINIO_PUB_URL}
       MINIO_URL: https://mazad-minio:9000
-      # SSL Configuration
+      SIGHTENGINE_USER: ${SIGHTENGINE_USER}
+      SIGHTENGINE_PASSWORD: ${SIGHTENGINE_PASSWORD}
+
       SSL_ENABLED: "true"
       SSL_KEYSTORE: /etc/ssl/upload-service.p12
       SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
-      # SSL_TRUST_CERT: /etc/ssl/mazad-root-ca.crt
+
       JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
         -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
         -Djavax.net.ssl.trustStoreType=PKCS12
@@ -361,7 +363,7 @@ services:
       - NOTIFY_FRIENDS_TOPIC=${NOTIFY_FRIENDS_TOPIC}
       - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
       - DB_URL=${DB_URL}
-      # SSL Configuration
+
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/notification-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
