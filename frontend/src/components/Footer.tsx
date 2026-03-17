@@ -14,7 +14,7 @@ const tables: TableData[] = [
             {title: "About Us", url: "/about"},
             {title: "How it works", url: "/how-it-works"},
             {title: "Technologies", url: "/technologies"},
-            {title: "API Documentation", url: "http://localhost:8080/docs/index.html", external: true},
+            {title: "API Documentation", url: "https://localhost/docs/index.html", external: true},
         ]
     },
     {
