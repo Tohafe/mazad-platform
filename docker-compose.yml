@@ -5,6 +5,7 @@ services:
       context: ./frontend
       args:
         - VITE_API_KEY=${API_KEY}
+        - VITE_MAZAD_IP=${MAZAD_IP}
         - VITE_DEFAUTLT_AVATAR=${AVATAR_URL}
         - VITE_DEFAUTLT_AVATAR_THUMB=${AVATAR_THUMBNAIL_URL}
     container_name: frontend-c
@@ -12,8 +13,6 @@ services:
     ports:
       # - "80:80"
       - "443:443"
-    environment:
-      - VITE_MAZAD_IP=${MAZAD_IP}
     volumes:
       - ./infrastructure/certs/generated/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
       - ./infrastructure/certs/generated/nginx.key:/etc/nginx/ssl/nginx.key:ro
