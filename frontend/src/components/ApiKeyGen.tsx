@@ -6,6 +6,7 @@ import toast, {Toaster} from "react-hot-toast";
 import {useEffect, useState} from "react";
 import {CgSpinner} from "react-icons/cg";
 import {useQueryClient} from "@tanstack/react-query";
+import {useAuth} from "../context/AuthProvider.tsx";
 
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const ApiKeyGen = ({className = "",}: Props) => {
+    const {user} = useAuth();
     const [key, setKey] = useState<string>();
     const {data: apiKey, isLoading} = useGetApiKey()
     const genApikey = useGenApiKey()
@@ -41,7 +43,7 @@ const ApiKeyGen = ({className = "",}: Props) => {
                 const hiddenKey = newApiKey?.slice(0, 5) + "**************************";
                 setKey(hiddenKey);
 
-                queryClient.setQueryData(["apiKey"], newApiKey);
+                queryClient.setQueryData(["apiKey", user?.id], newApiKey);
             },
             onError: () => {
                 toast.error("Failed to generate key!");
