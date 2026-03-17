@@ -19,8 +19,8 @@ public class UploadServiceApplication {
 	@Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
-        factory.setMaxFileSize(DataSize.ofMegabytes(100));
-        factory.setMaxRequestSize(DataSize.ofMegabytes(100));
+        factory.setMaxFileSize(DataSize.ofMegabytes(50));
+        factory.setMaxRequestSize(DataSize.ofMegabytes(50));
         return factory.createMultipartConfig();
     }
 }

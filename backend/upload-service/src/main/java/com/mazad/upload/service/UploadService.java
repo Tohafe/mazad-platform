@@ -25,6 +25,7 @@ import java.util.List;
 public class UploadService {
 
 	private final MinioClient minioClient;
+	private final ContentModerationService moderationService;
 
 	@Value("${minio.bucket-name}")
 	private String bucketName;
@@ -35,16 +36,19 @@ public class UploadService {
 
 	private static final List<String> ALLOWED_IMAGES = Arrays.asList(
 		"image/jpeg",
-		"image/png"
+		"image/png",
+        "image/webp"
 	);
 
 	private static final List<String> ALLOWED_VIDEOS = Arrays.asList(
 		"video/mp4",
-		"video/webm"
+		"video/webm",
+        "video/quicktime"
 	);
 
 	private static final List<String> ALLOWED_DOCS = Arrays.asList(
-		"application/pdf"
+		"application/pdf",
+		"text/plain"
 	);
 
 	
@@ -83,6 +87,10 @@ public class UploadService {
 		int dotIndex = fileName.lastIndexOf('.');
 		if (dotIndex >= 0) {
 			format = fileName.substring(dotIndex + 1);
+			if(format.equals("webp")){
+				format = "jpg";
+				thumbName = thumbName.substring(0, thumbName.lastIndexOf('.')) + ".jpg";
+			}
 		}
 
 		try {
@@ -107,15 +115,23 @@ public class UploadService {
 
             if (detectedCategory.equals("image")) {
                 if (!ALLOWED_IMAGES.contains(detectedType)) {
-                    throw new IllegalArgumentException("Unsupported image format: " + detectedType + ". Only JPG and PNG are allowed.");
+                    throw new IllegalArgumentException("Unsupported image format: " + detectedType + ". Only JPG, WEBP and PNG are allowed.");
                 }
+				
+				long maxImageSize = 15 * 1024 * 1024;
+                if (file.getSize() > maxImageSize) {
+                    throw new IllegalArgumentException("Image size exceeds the 15MB limit.");
+                }
+				
+				moderationService.moderateImage(file);
+
             } else if (detectedCategory.equals("video")) {
                 if (!ALLOWED_VIDEOS.contains(detectedType)) {
-                    throw new IllegalArgumentException("Unsupported video format: " + detectedType + ". Only MP4 and WEBM are allowed.");
+                    throw new IllegalArgumentException("Unsupported video format: " + detectedType + ". Only MP4, WEBM and QUICKTIME are allowed.");
                 }
             } else if (detectedCategory.equals("application") || detectedCategory.equals("text")) {
                 if (!ALLOWED_DOCS.contains(detectedType)) {
-                    throw new IllegalArgumentException("Unsupported document format: " + detectedType + ". Only PDF is allowed.");
+                    throw new IllegalArgumentException("Unsupported document format: " + detectedType + ". Only PDF and TEXT is allowed.");
                 }
             } else {
                  throw new IllegalArgumentException("Unrecognized file category: " + detectedCategory + ". Please upload a valid image, video, or document.");
@@ -218,7 +234,17 @@ public class UploadService {
 	public void deleteFile(String fileName){
 		try {
 			rmFromMinio(fileName);
-			rmFromMinio("thumbnail_" + fileName);
+
+			String thumbName = "thumbnail_" + fileName;
+
+			int dotIndex = fileName.lastIndexOf('.');
+			if (dotIndex >= 0) {
+				String format = fileName.substring(dotIndex + 1).toLowerCase();
+				if (format.equals("webp")) 
+					thumbName = thumbName.substring(0, thumbName.lastIndexOf('.')) + ".jpg";
+			}
+			rmFromMinio(thumbName);
+			
 		} catch (Exception e) {
 			throw new RuntimeException("Remove Failed: " + e.getMessage());
 		}
