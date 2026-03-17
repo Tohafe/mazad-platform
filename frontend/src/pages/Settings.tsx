@@ -15,7 +15,7 @@ export default function Settings(){
             <div className="w-full h-[0.5px] bg-border my-10"></div>
             <div className="flex flex-col gap-10 xl:flex-row xl:gap-10">
                 <Profile/>
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 w-full">
                     <Security/>
                     <h2 className="text-xl font-semibold pb-4">API key</h2>
                     <ApiKeyGen />

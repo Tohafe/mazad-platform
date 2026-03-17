@@ -68,7 +68,7 @@ export default function PublicProfile(){
                                 {data.content && data.content.map((item) => <ItemCard key={item.id} className="pt-2" auction={item}/>)}
                             </ItemGrid>
                             <Pagination page={data.page.number + 1} totalPages={data.page.totalPages} onPageChange={(pageNum) => setPage(pageNum - 1)} className="pt-10"/>
-                        </> : <div className="text-secondary textd-xl  mt-8 w-full text-center"> This user hasn't listed any items</div>}
+                        </> : <div className="text-secondary textd-xl  mt-8 w-full text-center"> This user currently has no active auctions.</div>}
             
                     </div>
                 </div>

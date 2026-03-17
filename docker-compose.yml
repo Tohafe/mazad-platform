@@ -12,6 +12,8 @@ services:
     ports:
       # - "80:80"
       - "443:443"
+    environment:
+      - VITE_MAZAD_IP=${MAZAD_IP}
     volumes:
       - ./infrastructure/certs/generated/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
       - ./infrastructure/certs/generated/nginx.key:/etc/nginx/ssl/nginx.key:ro

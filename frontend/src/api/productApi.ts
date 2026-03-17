@@ -2,10 +2,10 @@ import axios from 'axios';
 import type { ApiProduct, ApiResponse } from '../types';
 
 const API_KEY = import.meta.env.VITE_API_KEY;
-
+const MAZAD_IP = import.meta.env.VITE_MAZAD_IP;
 //for frontend Dev, remove it before push @Naoufal
 // const BASE_URL = '/api/v1'
-const BASE_URL = 'https://localhost/api/v1'
+const BASE_URL = `https://${MAZAD_IP}/api/v1`
 
 const api = axios.create({
   baseURL: BASE_URL,

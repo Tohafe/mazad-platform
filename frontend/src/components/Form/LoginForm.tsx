@@ -42,8 +42,10 @@ export default function Login(){
 
     
     useEffect(() => {
-        if (isAuthenticated)
-            navigate(from?.pathname || '/');
+        if (isAuthenticated){
+            const path = from?.pathname ? from?.pathname === '/login' ? '/' : from?.pathname : '/';
+            navigate(path);
+        }
 }, []);
 
 
@@ -63,7 +65,8 @@ const onSubmit = async (data: LoginData) => {
                 }
                 setUser(updatedUser);
             })
-        navigate(from?.pathname || '/');
+        const path = from?.pathname ? from?.pathname === '/login' ? '/' : from?.pathname : '/';
+        navigate(path);
     }catch(errors: any){
         setAccessToken(null);
         if (errors.response?.status !== 401){

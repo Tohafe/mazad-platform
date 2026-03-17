@@ -1,9 +1,12 @@
 import useApiPrivate from "../hooks/useApiPrivate";
 
+const MAZAD_IP = import.meta.env.VITE_MAZAD_IP;
+
 export const useNotificationApi = () => {
     const apiPrivate = useApiPrivate(); 
     // @ Naoufal remove 'https://localhost' when front dev end, leave /api.
-    const BASE_URL = 'https://localhost/api';
+
+    const BASE_URL = `https://${MAZAD_IP}/api`;
 
     return {
         getPage: async (pageNumber: number) => {
