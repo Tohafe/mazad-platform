@@ -1,7 +1,7 @@
 import type { AuctionFormData } from '../components/Form/AuctionDetails';
 import AuctionDetails from '../components/Form/AuctionDetails';
 import ImageUpload from '../components/Form/ImageUpload';
-import FilePreview from '../components/Form/FilePreview';
+// import FilePreview from '../components/Form/FilePreview';
 import { useFileUpload } from '../hooks/useFileUpload';
 import type { UploadableFile } from '../types/upload';
 import { useNavigate } from 'react-router-dom';
@@ -370,32 +370,59 @@ const CreateAuction = () => {
                     <span className="font-medium">{errorToast}</span>
                 </div>
             )}
-
-        {isUploading && (
+            
+            {isUploading && (
                 <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 animate-fadeIn">
-                    <div className="bg-white rounded-xl shadow-2xl p-8 max-w-4xl w-full">
+                    <div className="bg-white rounded-sm border border-gray-300 shadow-md p-8 max-w-lg w-full">
                         
-                        <div className="text-center mb-6">
-                            <h3 className="text-2xl font-bold text-gray-800">Securing Your Auction</h3>
-                            <p className="text-gray-500 mt-2">Uploading media to the server...</p>
+                        <div className="text-center mb-8">
+                            <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
+                                {isCreating ? "Finalizing Auction" : "Transmitting media"}
+                            </h3>
                         </div>
                         
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {files.map((fileObj, index) => (
-                                <div key={fileObj.localId}>
-                                    <FilePreview 
-                                        fileData={fileObj} 
-                                        onRemove={() => {}}
-                                        onSetMain={() => {}} 
-                                        isMain={index === 0}
-                                    />
-                                </div>
-                            ))}
-                        </div>
+                        {(() => {
+                            const allMedia = additionalMedia ? [...files, additionalMedia] : files;
+                            const totalBytes = allMedia.reduce((acc, f) => acc + f.file.size, 0);
+                            const loadedBytes = allMedia.reduce((acc, f) => {
+                                const fileProgress = f.progress || 0;
+                                return acc + (f.file.size * (fileProgress / 100));
+                            }, 0);
+                            
+                            const overallProgress = totalBytes === 0 ? 0 : Math.round((loadedBytes / totalBytes) * 100);
+                            const uploadedCount = allMedia.filter(f => f.status === 'SUCCESS').length;
 
-                        <div className="mt-8 flex justify-center items-center gap-3 text-blue-600">
-                            <FiLoader className="animate-spin h-6 w-6" />
-                            <span className="font-semibold text-lg">Uploading ...</span>
+                            const formatMB = (bytes: number) => (bytes / (1024 * 1024)).toFixed(1);
+
+                            return (
+                                <div className="w-full space-y-3">
+                                    <div className="w-full bg-gray-100 border border-gray-300 rounded-sm h-3 relative">
+                                        <div 
+                                            className="bg-blue-600 h-full transition-all duration-300 ease-out" 
+                                            style={{ width: `${overallProgress}%` }}
+                                        ></div>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-end font-medium">
+                                        <div className="flex flex-col">
+                                            <span className="text-gray-800 text-sm">
+                                                Processed {uploadedCount} / {allMedia.length}
+                                            </span>
+                                            <span className="text-gray-500 text-xs font-mono mt-1">
+                                                {formatMB(loadedBytes)} MB / {formatMB(totalBytes)} MB
+                                            </span>
+                                        </div>
+                                        <span className="text-blue-700 font-bold font-mono">
+                                            {overallProgress}%
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        <div className="mt-2 flex justify-center items-center gap-2 text-gray-500 border-t border-gray-100 pt-4">
+                            <FiLoader className="animate-spin h-4 w-4" />
+                            <span className="text-xs uppercase tracking-wider font-semibold">Uploading ...</span>
                         </div>
                         
                     </div>
