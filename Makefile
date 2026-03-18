@@ -41,6 +41,8 @@ prune-img:
 # if a service depends on an other service it will be ran by default
 up-s:
 	$(COMPOSE) up -d $(s)
+down-s:
+	$(COMPOSE) down $(s)
 stop-s:
 	$(COMPOSE) stop $(s)
 logs-s:
