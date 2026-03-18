@@ -98,6 +98,10 @@ const Dropzone: React.FC<DropzoneProps> = ({
         }
     };
 
+    const displayTypes = acceptedTypes === 'image/*' 
+        ? 'images' 
+        : acceptedTypes.split(',').map(type => type.trim().split('/')[1] || type).join(', ');
+
     return (
         <div 
             onClick={handleBoxClick}
@@ -117,7 +121,7 @@ const Dropzone: React.FC<DropzoneProps> = ({
                         {isDragging ? 'Drop files now!' : 'Click or drag files here'}
                     </p>
                     <p className="text-gray-400 text-sm mt-2">
-                        Accepted: {acceptedTypes} (Max {maxSizeMB}MB)
+                        Accepted: {displayTypes} (Max {maxSizeMB}MB)
                     </p>
                 </div>
             )}
