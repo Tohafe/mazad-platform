@@ -14,6 +14,7 @@ public record ItemDetailsDto(
         Long id,
         Long categoryId,
         UUID sellerId,
+        UUID winnerId,
         String title,
         String description,
         String thumbnail,

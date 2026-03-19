@@ -139,7 +139,9 @@ public class ItemServiceImpl implements ItemService {
         entity.setCurrentBid(itemEvent.currentHighestBid());
         entity.setEndsAt(itemEvent.endsAt());
         if (itemEvent.status() == AuctionStatus.CLOSED) {
-            entity.setStatus(itemEvent.lastBidderId() != null ? AuctionStatus.SOLD : AuctionStatus.EXPIRED);
+            var status = itemEvent.lastBidderId() != null ? AuctionStatus.SOLD : AuctionStatus.EXPIRED;
+            entity.setStatus(status);
+            entity.setWinnerId(itemEvent.lastBidderId());
         } else entity.setStatus(itemEvent.status());
         itemRepo.save(entity);
     }

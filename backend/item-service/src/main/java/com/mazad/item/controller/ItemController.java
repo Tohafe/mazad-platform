@@ -119,6 +119,7 @@ public class ItemController {
 
             ItemEventDto event = ItemEventDto.builder()
                     .id(item.getId())
+                    .sellerId(item.getSellerId())
                     .status(item.getStatus())
                     .startingPrice(item.getStartingPrice())
                     .endsAt(item.getEndsAt())
