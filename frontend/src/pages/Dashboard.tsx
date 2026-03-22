@@ -1,7 +1,7 @@
 import Tab from "../components/Card/Tab.tsx";
 import Divider from "../components/Divider.tsx";
 import {type ReactNode, useEffect, useState} from "react";
-import {useCancelAuction, useMyAuctions} from "../hooks/useAuctions.ts";
+import {useCancelAuction, useMyAuctions, useWonAuctions} from "../hooks/useAuctions.ts";
 import Pagination from "../components/Pagination.tsx";
 import Button from "../components/Button/Button.tsx";
 import type {AuctionStatus, AuctionSummary} from "../types/item.ts";
@@ -16,6 +16,7 @@ interface TabInfo {
 
 const tabs: TabInfo[] = [
     {title: "Overview"},
+    {title: "Won", status: "SOLD"},
     {title: "Selling", status: "ACTIVE"},
     {title: "Sold", status: "SOLD"},
     {title: "Expired", status: "EXPIRED"},
@@ -29,6 +30,7 @@ const Empty = ({children}: { children: ReactNode }) => {
 
 const EmptyState = ({tab}: { tab: TabInfo }) => {
     if (!tab.status) return <Empty>You haven’t created any auctions yet.</Empty>;
+    if (tab.title === "Won") return <Empty>You did not win any auctions yet.</Empty>;
     if (tab.status === "ACTIVE") return <Empty>You don’t have any active auctions right now.</Empty>;
     if (tab.status === "SOLD") return <Empty>No sold auctions yet. Your sales will appear here.</Empty>;
     if (tab.status === "EXPIRED") return <Empty>No expired auctions. Ended listings will show up here.</Empty>;
@@ -39,8 +41,8 @@ const EmptyState = ({tab}: { tab: TabInfo }) => {
 const Dashboard = () => {
     const [selectedTab, setSelectedTab] = useState<TabInfo>(tabs[0]);
     const [page, setPage] = useState(0);
-    const {data, isLoading, isError} = useMyAuctions({page: page, size: 8, status: selectedTab.status});
-
+    const {data, isLoading, isError} = selectedTab.title === "Won" ?  useWonAuctions({page: 0, size: 8}) :
+        useMyAuctions({page: page, size: 8, status: selectedTab.status});
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedAuctionId, setSelectedAuctionId] = useState<number | null>(null);

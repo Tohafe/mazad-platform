@@ -4,7 +4,7 @@ import {
     fetchAuctions,
     fetchCategorizedAuctions,
     fetchEndingSoonAuctions,
-    fetchMyAuctions,
+    fetchMyAuctions, fetchWonAuctions,
     signOut
 } from "../api/auctions";
 import type {AuctionFilters} from "../types/item.ts";
@@ -25,6 +25,13 @@ export const useMyAuctions = (filters: AuctionFilters) => {
     return useQuery({
         queryKey: ["my-auctions","list", filters],
         queryFn: () => fetchMyAuctions(api, filters)
+    })
+}
+export const useWonAuctions = (filters: AuctionFilters) => {
+    const api = useApiPrivate();
+    return useQuery({
+        queryKey: ["won-auctions","list"],
+        queryFn: () => fetchWonAuctions(api, filters)
     })
 }
 
