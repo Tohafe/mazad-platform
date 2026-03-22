@@ -360,6 +360,8 @@ services:
       - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
       - DB_URL=${DB_URL}
 
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+      
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/notification-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}

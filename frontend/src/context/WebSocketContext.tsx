@@ -52,9 +52,16 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             beforeConnect: () => {
                 const currentToken = tokenRef.current;
                 
-                client.brokerURL = currentToken 
-                    ? `${wsBase}/ws?token=Bearer ${currentToken}` 
-                    : `${wsBase}/ws`;
+                client.brokerURL = `${wsBase}/ws`;
+                if (currentToken) {
+                    client.connectHeaders = {
+                        Authorization: `Bearer ${currentToken}`,
+                    };
+                    console.log("Connecting with token...");
+                } else {
+                    console.log("Connecting without token...");
+                    client.connectHeaders = {};
+                }
             },
 
             onConnect: () => {
