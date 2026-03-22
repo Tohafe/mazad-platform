@@ -74,19 +74,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public PagedModel<ItemSummaryDto> listItemsBy(UUID sellerId, ItemSearch itemSearch, Pageable pageable) {
-        ItemSearch search = ItemSearch.builder()
-                .sellerId(sellerId)
-                .categoryId(itemSearch.categoryId())
-                .keyword(itemSearch.keyword())
-                .status(itemSearch.status())
-                .minPrice(itemSearch.minPrice())
-                .maxPrice(itemSearch.maxPrice())
-                .endsBefore(itemSearch.endsBefore())
-                .endsAfter(itemSearch.endsAfter())
-                .build();
-        return listItemsBy(search, pageable);
+    public PagedModel<ItemSummaryDto> listWonItems(UUID winnerId, Pageable pageable) {
+        Specification<ItemEntity> spec = ItemSpec.withWinner(winnerId);
+        Page<ItemSummaryDto> itemPage = itemRepo.findAll(spec, pageable).map(mapper::toItemSummaryDto);
+        return new PagedModel<>(itemPage);
     }
+
 
     @Override
     public ItemDetailsDto updateItem(Long id, ItemRequestDto itemRequestDto, UUID userId) {

@@ -17,9 +17,9 @@ import java.util.UUID;
 
 public interface ItemService {
 
-    public ItemDetailsDto createItem(ItemRequestDto itemRequestDto, UUID sellerId);
+    ItemDetailsDto createItem(ItemRequestDto itemRequestDto, UUID sellerId);
 
-    public ItemDetailsDto getItem(Long id);
+    ItemDetailsDto getItem(Long id);
 
     ItemDetailsDto updateItem(Long id, @Valid ItemRequestDto itemRequestDto, UUID userId);
 
@@ -27,12 +27,12 @@ public interface ItemService {
 
     ItemDetailsDto patchItem(Long id, JsonNode jsonPatch, UUID userId);
 
-    public PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
-    public PagedModel<ItemSummaryDto> listItemsBy(UUID sellerId, ItemSearch itemSearch, Pageable pageable);
+    PagedModel<ItemSummaryDto> listItemsBy(ItemSearch itemSearch, Pageable pageable);
+    PagedModel<ItemSummaryDto> listWonItems(UUID winnerId, Pageable pageable);
 
     List<ItemSummaryDto> endingSoonItems(int hours, int limit);
 
-    public void applyUpdateEvent(ItemUpdatedEventDto itemEvent);
+    void applyUpdateEvent(ItemUpdatedEventDto itemEvent);
 
     ItemDetailsDto cancelItem(Long id, UUID userId);
 }

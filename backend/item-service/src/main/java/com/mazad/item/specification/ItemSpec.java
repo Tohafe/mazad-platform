@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public final class ItemSpec {
 
@@ -38,6 +39,10 @@ public final class ItemSpec {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("endsAt"), search.endsAfter()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    public static Specification<ItemEntity> withWinner(UUID winnerId) {
+        return (root, query, cb) -> cb.equal(root.get("winnerId"), winnerId);
     }
 
 }

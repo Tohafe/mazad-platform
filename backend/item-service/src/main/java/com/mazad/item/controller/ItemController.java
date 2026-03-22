@@ -79,13 +79,13 @@ public class ItemController {
         return itemService.listItemsBy(itemSearch, pageable);
     }
 
-    @GetMapping("/self")
+    @GetMapping("/me")
     public PagedModel<ItemSummaryDto> listSellerItems(
             @RequestHeader(value = USER_ID_HEADER, required = false) UUID sellerId,
             @ModelAttribute ItemSearch itemSearch,
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         if (sellerId == null) throw new AuthorizationException("You don't have permission to perform this action.");
-        return itemService.listItemsBy(sellerId, itemSearch, pageable);
+        return itemService.listItemsBy(ItemSearch.withSellerId(sellerId, itemSearch), pageable);
     }
 
     @GetMapping("/ending-soon")
@@ -94,6 +94,15 @@ public class ItemController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         return ResponseEntity.ok(itemService.endingSoonItems(hours, limit));
+    }
+
+    @GetMapping("/won")
+    public PagedModel<ItemSummaryDto> wonItems(
+            @RequestHeader(value = USER_ID_HEADER, required = false) UUID winnerId,
+            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        if (winnerId == null) throw new AuthorizationException("You don't have permission to perform this action.");
+        return itemService.listWonItems(winnerId, pageable);
     }
 
     @PostMapping("{id}/cancel")
