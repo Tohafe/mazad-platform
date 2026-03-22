@@ -29,6 +29,9 @@ public class ItemEntity {
     @Column(nullable = false)
     private UUID sellerId;
 
+    @Column(name = "winner_id")
+    private UUID winnerId;
+
     @Column(nullable = false)
     private String title;
 

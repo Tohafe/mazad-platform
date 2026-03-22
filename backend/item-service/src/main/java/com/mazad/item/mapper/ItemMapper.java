@@ -37,6 +37,7 @@ public class ItemMapper {
                 .id(entity.getId())
                 .categoryId(entity.getCategoryId())
                 .sellerId(entity.getSellerId())
+                .winnerId(entity.getWinnerId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .thumbnail(entity.getThumbnail())
