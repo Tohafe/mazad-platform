@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS items
     shipping_info  TEXT,
 
     seller_id      UUID                              NOT NULL,
+    winner_id      UUID,
     category_id    BIGINT REFERENCES categories (id) NOT NULL,
 
     created_at     TIMESTAMP                         NOT NULL,
