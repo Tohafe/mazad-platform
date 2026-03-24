@@ -104,6 +104,7 @@ public class ProfileService {
                 .orElse(new ProfileEntity());
         }
         jsonMapper.readerForUpdating(profile).readValue(jsonNode);
+
         profile = repo.save(profile);
         return mapper.toPrivateResponseDto(profile);
     }

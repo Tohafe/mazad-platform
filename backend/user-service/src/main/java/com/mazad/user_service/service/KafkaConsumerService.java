@@ -83,6 +83,19 @@ public class KafkaConsumerService {
                 node.put("username", userData.username());
             if (userData.id() != null)
                 node.put("userId", userData.id().toString());
+            if (userData.firstName() != null && !userData.firstName().isBlank())
+                node.put("firstName", userData.firstName());
+            if (userData.lastName() != null && !userData.lastName().isBlank())
+                node.put("lastName", userData.lastName());
+            if (userData.avatarImageId() != null && !userData.avatarImageId().isBlank())
+                node.put("avatarImageId", userData.avatarImageId());
+            if (userData.avatarUrl() != null && !userData.avatarUrl().isBlank())
+                node.put("avatarUrl", userData.avatarUrl());
+            if (userData.avatarThumbnailUrl() != null && !userData.avatarThumbnailUrl().isBlank())
+                node.put("avatarThumbnailUrl", userData.avatarThumbnailUrl());
+//            if (userData.wallet() != null && !userData.wallet().isBlank())
+//                node.put("wallet", userData.wallet());
+
             profileService.patch(userData.id(), node, true);
         }catch(RuntimeException e){
             log.info("Failed to parse event on user-service : " + e.getMessage());

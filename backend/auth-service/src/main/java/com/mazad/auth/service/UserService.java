@@ -1,9 +1,13 @@
 package com.mazad.auth.service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,9 +49,12 @@ public class UserService {
 
     @Value("${auth-user.sync.topic}")
     String syncTopic;
+    @Value("${auth.refresh-token-validity-days:4}")
+    long    refreshValidity;
 
-    public UserResponseDTO addUser(UserRequestDTO userRequest) {
+    public ResponseEntity<LoginResponseDto> addUser(UserRequestDTO userRequest) {
         UserEntity user = mapper.toEntity(userRequest);
+        TokensDto tokens;
 
         if (repo.existsByEmail(user.getEmail()))
             throw new DuplicateResourceException("Email is already in use", "email");
@@ -56,13 +63,14 @@ public class UserService {
 
         user = repo.save(user);
         kafka.produce(syncTopic, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).build());
-        return mapper.toResponseDTO(user);
+        tokens = jwtService.getTokens(user);
+        return getLoginResponse(tokens.refreshToken(),
+                tokens.accessToken(),
+                mapper.toResponseDTO(user));
     }
 
-    public AuthResponseDto verifyUser(UserRequestDTO loginRequest, String refreshToken) {
-
+    public ResponseEntity<LoginResponseDto>  verifyUser(UserRequestDTO loginRequest, String refreshToken) {
         Authentication auth;
-        AuthResponseDto authResponse;
         TokensDto tokens;
 
         auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -74,13 +82,34 @@ public class UserService {
             throw new UnauthorizedException("Invalid Email Or Password");
         }
         tokens = jwtService.getTokens((UserEntity) auth.getPrincipal());
-        authResponse = AuthResponseDto
-                .builder()
-                .accessToken(tokens.accessToken())
-                .refreshToken(tokens.refreshToken())
-                .user(mapper.toResponseDTO((UserEntity) auth.getPrincipal()))
+        return getLoginResponse(tokens.refreshToken(),
+                tokens.accessToken(),
+                mapper.toResponseDTO((UserEntity) auth.getPrincipal()));
+    }
+
+    private ResponseEntity<LoginResponseDto> getLoginResponse(String refreshToken, String accessToken, UserResponseDTO user) {
+        ResponseCookie refreshCookie;
+        LoginResponseDto loginResponse;
+
+
+        refreshCookie = ResponseCookie
+                .from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .sameSite("None") // "None" allows the cookie to be sent across different ports @Naoufal .sameSite("Strict")
+                .secure(true) // true for HTTPS on production
+                .path("/api/v1/auth/")
+                .maxAge(Duration.ofDays(refreshValidity))
                 .build();
-        return authResponse;
+        loginResponse = LoginResponseDto
+                .builder()
+                .accessToken(accessToken)
+                .user(user)
+                .build();
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(loginResponse);
     }
 
     public void logout(String refreshToken) {

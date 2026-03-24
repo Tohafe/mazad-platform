@@ -9,8 +9,12 @@ import api from '../../api/axios';
 import Button from "../Button/Button";
 import Input from "../Input/Input";
 import { useAuth } from '../../context/AuthProvider';
+import useUserApi from "../../hooks/useUserApi.ts";
 import { useEffect, useMemo } from 'react';
 import OAuth from "../OAuth.tsx";
+import type User from "../../types/user.ts";
+import DEFAULT_AVATAR from "../../assets/avatar.jpg";
+import DEFAULT_THUMB from "../../assets/avatar_thumb.jpg";
 
 const schema = z.object({
 
@@ -36,7 +40,8 @@ type RegisterData = z.infer<typeof schema>;
 export default function RegisterForm(){
     const navigate = useNavigate();
     const location = useLocation();
-    const {isAuthenticated} = useAuth();
+    const {isAuthenticated , setAccessToken, setUser} = useAuth();
+    const {getPrivateProfle} = useUserApi();
     
     const from = useMemo(() => {
         return location.state?.from || '/';
@@ -58,7 +63,20 @@ export default function RegisterForm(){
 
 const onSubmit: SubmitHandler<RegisterData> = async (data: RegisterData) =>{
     try {
-            await api.post('/auth/register', data);0.
+          const login =  await api.post('/auth/register', data);
+            setAccessToken(login.data?.accessToken);
+            getPrivateProfle(login.data?.accessToken)
+                .then((user: User) => setUser(user))
+                .catch (() => {
+                    const updatedUser: User = {
+                        ...login.data?.user,
+                        avatarUrl: DEFAULT_AVATAR,
+                        avatarThumbnailUrl: DEFAULT_THUMB
+                    }
+                    setUser(updatedUser);
+                })
+        const path = from?.pathname ? from?.pathname === '/login' ? '/' : from?.pathname : '/';
+        navigate(path);
             navigate('/login', { state: { from: from }});
         }catch(error: any){
             let feildName = error.response?.data?.field;

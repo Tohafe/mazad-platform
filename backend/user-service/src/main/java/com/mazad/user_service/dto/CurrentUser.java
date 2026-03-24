@@ -8,5 +8,11 @@ import lombok.Builder;
 public record  CurrentUser (
     UUID id,
     String email,
-    String username
+    String username,
+    String firstName,
+    String lastName,
+    String avatarImageId,
+    String avatarUrl,
+    String avatarThumbnailUrl,
+    String wallet
 ) {}

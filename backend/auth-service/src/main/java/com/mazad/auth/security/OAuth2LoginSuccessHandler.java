@@ -29,7 +29,10 @@ import java.util.Map;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class
+
+
+OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final UserRepo repo;
     private final KafkaProducerService kafka;
     private final JwtService jwtService;
@@ -56,7 +59,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             String username = attributes.getOrDefault("login", attributes.get("email").toString().split("@")[0]).toString();
             String email = attributes.get("email").toString();
             String wallet = attributes.getOrDefault("wallet", "0").toString();
-            log.info("Wallet = {}", wallet);
             UserEntity user = repo.findByEmail(email).orElseGet(()-> {
                 UserEntity userEntity = UserEntity
                         .builder()
@@ -66,7 +68,26 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                         .verified(true)
                         .build();
                 userEntity = repo.save(userEntity);
-                kafka.produce(syncTopic, CurrentUser.builder().id(userEntity.getId()).username(userEntity.getUserName()).email(userEntity.getEmail()).build());
+                Object image;
+                image = attributes.get("image");
+                String avatar = null;
+                if (image != null) {
+                    Map<String, Object> map = (Map<String, Object>) image;
+                    avatar = map.get("link").toString();
+                }
+                else{
+                    avatar = attributes.get("picture").toString();
+                }
+                CurrentUser profile = CurrentUser.builder()
+                        .id(userEntity.getId())
+                        .username(username)
+                        .email(email)
+                        .firstName(attributes.getOrDefault("first_name", attributes.get("given_name")).toString())
+                        .lastName(attributes.getOrDefault("last_name", attributes.get("family_name")).toString())
+                        .avatarUrl(avatar)
+                        .avatarThumbnailUrl(avatar)
+                        .build();
+                kafka.produce(syncTopic, profile);
                 return userEntity;
             });
 
