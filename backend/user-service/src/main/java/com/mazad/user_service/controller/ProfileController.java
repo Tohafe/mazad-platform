@@ -41,7 +41,7 @@ public class ProfileController {
     private final ProfileService service;
     private final ObjectMapper mapper;
 
-    @Value("${auth-user.sync.key}")
+//    @Value("${auth-user.sync.key}")
     String syncKey;
 
     @GetMapping

@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mazad.auth.client.UserServiceClient;
 import com.mazad.auth.dto.AuthResponseDto;
 import com.mazad.auth.dto.CurrentUser;
 import com.mazad.auth.dto.EmailResetDto;
@@ -21,16 +20,13 @@ import com.mazad.auth.dto.UserRequestDTO;
 import com.mazad.auth.dto.UserResponseDTO;
 import com.mazad.auth.entity.RefreshToken;
 import com.mazad.auth.entity.UserEntity;
-import com.mazad.auth.exception.BadRequestException;
 import com.mazad.auth.exception.DuplicateResourceException;
-import com.mazad.auth.exception.InternalServerErrorException;
 import com.mazad.auth.exception.ResourceNotFoundException;
 import com.mazad.auth.exception.UnauthorizedException;
 import com.mazad.auth.mapper.UserMapper;
 import com.mazad.auth.repo.RefreshTokenRepo;
 import com.mazad.auth.repo.UserRepo;
 
-import feign.FeignException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +41,10 @@ public class UserService {
     private final JwtService jwtService;
     private final RefreshTokenRepo tokenRepo;
     private final PasswordEncoder encoder;
-    private final UserServiceClient client;
+    private final KafkaProducerService kafka;
 
-    @Value("${auth-user.sync.key}")
-    String syncKey;
+    @Value("${auth-user.sync.topic}")
+    String syncTopic;
 
     public UserResponseDTO addUser(UserRequestDTO userRequest) {
         UserEntity user = mapper.toEntity(userRequest);
@@ -59,11 +55,7 @@ public class UserService {
             throw new DuplicateResourceException("Username is already taken", "username");
 
         user = repo.save(user);
-        try{
-            client.updateProfile(syncKey, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).build());
-        }catch(FeignException e){
-            log.error("Sync user data fails on addUser : " + e.getMessage());
-        }
+        kafka.produce(syncTopic, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).build());
         return mapper.toResponseDTO(user);
     }
 
@@ -112,24 +104,13 @@ public class UserService {
                 .build();
     }
 
-    public void delete(UUID userId, String password) {
-        UserEntity user = repo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
-        if (!encoder.matches(password, user.getPassword()))
-            throw new BadRequestException("Invalid Password!");
-        try {
-            log.info("Sync auth service with User service to delete profile...");
-            client.deleteProfile(syncKey, userId);
-            repo.deleteById(userId);
-            log.info("Sync Complete Successfully!, Profile deleted");
-        } catch (FeignException.Unauthorized e) {
-            log.error(e.getMessage());
-            throw new UnauthorizedException("Unauthorized");
-        } catch (FeignException e) {
-            log.error(e.getMessage());
-            throw new InternalServerErrorException("Unexpected Error, Please Try Later!");
-        }
-    }
+//    public void delete(UUID userId, String password) {
+//        UserEntity user = repo.findById(userId)
+//                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+//        if (!encoder.matches(password, user.getPassword()))
+//            throw new BadRequestException("Invalid Password!");
+//
+//    }
 
     public void resetPassword(UUID userId, PasswordResetDto data) {
         UserEntity user = repo
@@ -148,25 +129,8 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found."));
 
         if (repo.existsByEmail(dto.email()) || !encoder.matches(dto.password(), user.getPassword()))
-            throw new UnauthorizedException("Invalid Password");
-        try {
-            log.info("Sync auth service with User service to update email...");
-            client.updateProfile(syncKey, CurrentUser.builder().id(userId).email(dto.email()).build());
-            user.setEmail(dto.email());
-            repo.save(user);
-            log.info("Sync Complete Successfully!, email updated");
-        } catch (FeignException.NotFound e) {
-            log.info("Profile Not Found Updated Only On Auth Service");
-            user.setEmail(dto.email());
-            repo.save(user);
-            log.info("Sync Complete Successfully!");
-        } catch (FeignException.Unauthorized e) {
-            log.error(e.getMessage());
-            throw new UnauthorizedException("Unauthorized");
-        } catch (FeignException e) {
-            log.error(e.getMessage());
-            throw new InternalServerErrorException("Unexpected Error, Please Try Later!");
-        }
+            throw new UnauthorizedException("Invalid Password or email");
+        kafka.produce(syncTopic, CurrentUser.builder().id(userId).email(dto.email()).build());
     }
 
 }

@@ -29,7 +29,7 @@ import tools.jackson.databind.JsonNode;
 
 
 @RestController
-@RequestMapping("/auth/")
+@RequestMapping("/api/v1/auth/")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -101,20 +101,20 @@ public class UserController {
         return userService.refresh(refreshToken);
     }
     
-    @DeleteMapping("delete")
-    public ResponseEntity<String> delete(
-        @RequestHeader(name="X-User-Id") UUID userId,
-        @RequestBody JsonNode passNode
-    ){
-        String password;
-        if (!passNode.has("password"))
-            throw new BadRequestException("Password Required!");
-        password = passNode.get("password").asString();
-        if (password == null || password.isBlank())
-            throw new BadRequestException("Password Can't Be Empty!");
-        userService.delete(userId, passNode.get("password").asString());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted");
-    }
+//    @DeleteMapping("delete")
+//    public ResponseEntity<String> delete(
+//        @RequestHeader(name="X-User-Id") UUID userId,
+//        @RequestBody JsonNode passNode
+//    ){
+//        String password;
+//        if (!passNode.has("password"))
+//            throw new BadRequestException("Password Required!");
+//        password = passNode.get("password").asString();
+//        if (password == null || password.isBlank())
+//            throw new BadRequestException("Password Can't Be Empty!");
+//        userService.delete(userId, passNode.get("password").asString());
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted");
+//    }
 
     @PatchMapping("reset/password")
     public ResponseEntity<String> resetPassword(

@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final UserDetailService userDetailService;
+    private final OAuth2LoginSuccessHandler successHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -36,17 +37,16 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // .authorizeHttpRequests(auth -> 
-                //     auth.requestMatchers("/auth/login", "/auth/register", "/auth/refresh", "/auth/logout", "/auth/delete").permitAll()
-                //         .requestMatchers("/error").permitAll()
-                //         .anyRequest().authenticated())
+                .oauth2Login((oauth) -> {
+                    oauth.successHandler(successHandler);
+                })
                 .build();
     }
-    
+
 
     @Bean
     public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider = 
+        DaoAuthenticationProvider provider =
                                         new DaoAuthenticationProvider(userDetailService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
@@ -54,7 +54,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(){
-        return 
+        return
             new ProviderManager(authenticationProvider());
     }
 }
