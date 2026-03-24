@@ -40,7 +40,7 @@ public class UserController {
     long    refreshValidity;
 
     @PostMapping("register")
-    public UserResponseDTO adddUser(
+    public ResponseEntity<LoginResponseDto> adddUser(
         @RequestBody @Validated(UserRequestDTO.OnRegister.class) UserRequestDTO userRequest
     ) {
         return userService.addUser(userRequest);
@@ -51,30 +51,7 @@ public class UserController {
         @RequestBody @Validated(UserRequestDTO.OnLogin.class) UserRequestDTO userRequest,
         @CookieValue(name="refresh_token", required=false) String refreshToken
     ) {
-        AuthResponseDto authResponse;
-        ResponseCookie refreshCookie;
-        LoginResponseDto loginResponse;
-
-
-        authResponse = userService.verifyUser(userRequest, refreshToken);
-        refreshCookie = ResponseCookie
-                            .from("refresh_token", authResponse.refreshToken())
-                            .httpOnly(true)
-                            .sameSite("None") // "None" allows the cookie to be sent across different ports @Naoufal .sameSite("Strict")
-                            .secure(true) // true for HTTPS on production
-                            .path("/api/v1/auth/")
-                            .maxAge(Duration.ofDays(refreshValidity))
-                            .build();
-        loginResponse = LoginResponseDto
-                            .builder()
-                            .accessToken(authResponse.accessToken())
-                            .user(authResponse.user())
-                            .build();
-
-        return ResponseEntity
-                        .ok()
-                        .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                        .body(loginResponse);
+      return userService.verifyUser(userRequest, refreshToken);
     }
     
     @PostMapping("logout")
