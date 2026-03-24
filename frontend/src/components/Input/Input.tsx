@@ -35,10 +35,11 @@ export default function Input({label, error, isPass,  ...props}: InputProps){
                     peer-placeholder-shown:translate-y-0
                 `}
                 >{label}</label>)}
-            {error && !isPass && 
+            {error &&
                 <>
-                    <span className={` text-red-600  text-[12px] ml-3`}> {error} </span> 
-                    <IconButton icon={MdErrorOutline} className="absolute top-3 right-1 pointer-events-none" iconClassName="text-red-500 "> </IconButton>
+                    <span className={` text-red-600  text-[12px] ml-3`}> {error} </span>
+                    {!isPass &&
+                        <IconButton icon={MdErrorOutline} className="absolute top-3 right-1 pointer-events-none" iconClassName="text-red-500 "> </IconButton>}
                 </>
             }
             {isPass && 

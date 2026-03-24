@@ -4,6 +4,9 @@ CERTS_DIR = infrastructure/certs/generated
 
 up: build
 	$(COMPOSE) up -d
+
+watch:
+	$(COMPOSE) up --watch
 down:
 	$(COMPOSE) down
 

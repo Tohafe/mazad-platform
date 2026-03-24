@@ -19,6 +19,8 @@ public class RouterValidator {
                 Map.entry("/api/v1/auth/login", List.of(HttpMethod.POST)),
                 Map.entry("/api/v1/auth/register", List.of(HttpMethod.POST)),
                 Map.entry("/api/v1/auth/refresh", List.of(HttpMethod.POST)),
+                Map.entry("/oauth2", List.of(HttpMethod.POST, HttpMethod.GET)),
+                Map.entry("/login/oauth2", List.of(HttpMethod.POST, HttpMethod.GET)),
                 Map.entry("/api/v1/profile/", List.of(HttpMethod.GET)),
                 Map.entry("/api/v1/items", List.of(HttpMethod.GET)),
                 Map.entry("/api/items", List.of(HttpMethod.GET, HttpMethod.POST,  HttpMethod.PUT, HttpMethod.DELETE)),

@@ -14,6 +14,8 @@ import { useEffect } from "react";
 import DEFAULT_AVATAR from '../../assets/avatar.jpg'
 import DEFAULT_THUMB from '../../assets/avatar_thumb.jpg'
 
+import OAuth from "../OAuth.tsx";
+
 
 const schema = z.object({
     email: z.email(),
@@ -77,6 +79,8 @@ const onSubmit = async (data: LoginData) => {
     }
 
 
+
+
     return (
         <div className="bg-white z-20 shadow-2xl border border-gray-200 p-3 w-87  sm:w-110 sm:p-5">
             <div className='flex items-center justify-between mb-10'>
@@ -97,11 +101,16 @@ const onSubmit = async (data: LoginData) => {
                 <span className="text-red-500 text-sm ml-2">
                     {errors.root?.message || "Invalid email or password"}
                 </span>
-                } 
+                }
+                <OAuth/>
 
-                <p className='text-xs mt-5 text-gray-600 '>By signing in, you agree to our 
+                <p className='text-xs mt-5 text-gray-600 '>By signing in, you agree to our
                 <Link to='/terms-of-service' className="text-brand"> Terms of Service</Link>
                 </p>
+
+
+
+
                 <Button type="submit" className="w-full mt-3" disabled={isSubmitting} >
                     {!isSubmitting ? "Sign in" :
                         <CgSpinner className="text-4xl text-gray-300 animate-spin"> </CgSpinner>}

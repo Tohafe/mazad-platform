@@ -30,8 +30,8 @@ services:
     volumes:
       - postgres-v:${PGDATA}
       - ./infrastructure/postgres/init-scripts:/docker-entrypoint-initdb.d/
-    # ports:
-    #   - "5000:5432"
+    ports:
+      - "5000:5432"
     networks:
       mazad-network:
     restart: unless-stopped
@@ -145,6 +145,7 @@ services:
       - mazad-gateway
     environment:
       - DB_URL=${DB_URL}
+      - MAZAD_IP=${MAZAD_IP}
       - AUTH_DB_NAME=${AUTH_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -152,22 +153,37 @@ services:
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
       - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
       - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
-      - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
+      # kafka
+      - USER_AUTH_SYNC_TOPIC=${USER_AUTH_SYNC_TOPIC}
+      - KAFKA_BOOTSTRAP_SERVERS=kafka-service:9093
       # - USER_SERVICE_URL=${USER_SERVICE_URL}
       # SSL Configuration
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/auth-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+      - FORTY_TWO_CLIENT_ID=${FORTY_TWO_CLIENT_ID}
+      - FORTY_TWO_CLIENT_SECRET=${FORTY_TWO_CLIENT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
 
       # - JAVA_TOOL_OPTIONS="-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 -Djavax.net.ssl.trustStorePassword=mazad-ssl-password -Djavax.net.ssl.trustStoreType=PKCS12"
       # --- OUTBOUND: The Truststore (VIP List) ---
-      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
-        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
-        -Djavax.net.ssl.trustStoreType=PKCS12
-
+#      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12
+#        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password
+#        -Djavax.net.ssl.trustStoreType=PKCS12
+    develop:
+      watch:
+        - action: rebuild
+          path: ./backend/auth-service/src
+        - action: rebuild
+          path: ./backend/auth-service/pom.xml
+        - action: sync
+          path: ./backend/auth-service/src/main/resources
+          target: /app/resources
+          # Syncing resources (like application.properties) is instant
     volumes:
       - ./infrastructure/certs/generated/auth-service.p12:/etc/ssl/auth-service.p12:ro
       - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
@@ -189,7 +205,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       # - USER_SERVER_PORT=${USER_SERVER_PORT}
-      - USER_AUTH_SYNC_KEY=${USER_AUTH_SYNC_KEY}
       - AVATAR_URL=${AVATAR_URL}
       - AVATAR_THUMBNAIL_URL=${AVATAR_THUMBNAIL_URL}
       - REDIS_HOST=${REDIS_HOST}
@@ -198,6 +213,7 @@ services:
       - ITEM_CREATED_TOPIC=${ITEM_CREATED_TOPIC}
       - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC}
       - NOTIFY_FRIENDS_TOPIC=${NOTIFY_FRIENDS_TOPIC}
+      - USER_AUTH_SYNC_TOPIC=${USER_AUTH_SYNC_TOPIC}
       - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
       - KAFKA_BOOTSTRAP_SERVERS=kafka-service:9093
       # SSL Configuration

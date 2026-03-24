@@ -10,6 +10,7 @@ import Button from "../Button/Button";
 import Input from "../Input/Input";
 import { useAuth } from '../../context/AuthProvider';
 import { useEffect, useMemo } from 'react';
+import OAuth from "../OAuth.tsx";
 
 const schema = z.object({
 
@@ -86,6 +87,9 @@ const onSubmit: SubmitHandler<RegisterData> = async (data: RegisterData) =>{
                         {errors.root.message}
                     </span>
                 )}
+
+                <OAuth/>
+
                 <p className='text-xs mt-4 text-gray-600'>By creating an account, you agree to our <Link to='/terms-of-service' className='text-brand'> Terms of Service</Link> and acknowledge our
                 <Link to='/privacy-policy' className='text-brand'> Privacy Policy</Link>.
                 Depending on how you use Mazad, we may send you promotional emails.</p>
