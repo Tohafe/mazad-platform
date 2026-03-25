@@ -9,6 +9,7 @@ interface MainContentProps {
   title: string;
   images: ProductImage[];
   description: string;
+  document: string;
   sellerDescription: string;
   details: ProductDetail[];
   shippingInfo: string;
@@ -20,6 +21,7 @@ export function MainContent({
   title,
   images,
   sellerDescription,
+  document,
   details,
   shippingInfo,
 }: MainContentProps) {
@@ -36,6 +38,18 @@ export function MainContent({
 
       {/* Description from seller */}
       <SellerDescription description={sellerDescription} />
+
+      {/* Document */}
+      <div className="border-t  border-border pt-6">
+        <h2 className="text-base font-semibold uppercase tracking-widest text-secondary mb-3">
+          Item documnet
+        </h2>
+        <a href={document} target="_blank" rel="noopener noreferrer" style={{ color: "blue" }}>
+          Open Document
+        </a>
+        <div className="flex items-center gap-4">
+        </div>
+      </div>
 
       {/* Details Grid */}
       <DetailsGrid details={details} />

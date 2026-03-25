@@ -63,6 +63,7 @@ function ItemPage() {
                             title={data.product.title}
                             images={data.product.images}
                             description={data.product.description}
+                            document={data.product.document}
                             sellerDescription={data.product.sellerDescription}
                             details={data.product.details}
                             shippingInfo={data.product.shippingInfo}

@@ -148,6 +148,7 @@ export function useProduct(productId: number) {
         title: data.title ?? 'Untitled Product',
         images: transformImages(data.images),
         description: data.description ?? '',
+        document: data.document ?? '',
         sellerDescription: data.description ?? '',
         details: transformSpecs(data.specs),
         shippingInfo: data.shippingInfo ?? 'No shipping information available',
