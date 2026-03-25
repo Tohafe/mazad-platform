@@ -19,7 +19,7 @@ function ItemPage() {
         window.scrollTo(0, 0);
     }, [data]);
 
-    if (isLoading) {
+    if (isLoading) { 
         return (
             <div className="min-h-screen bg-white">
                 {/* <Header /> */}

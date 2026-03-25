@@ -30,7 +30,7 @@ function calculateCountdown(endsAt: string): Countdown {
   const now = new Date();
   const diff = endDate.getTime() - now.getTime();
 
-  if (diff <= 0) {
+  if (diff <= 0) {  
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
 
