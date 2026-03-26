@@ -18,14 +18,17 @@ interface ItemCardCompactProps {
 
 const ItemCardCompact = ({className = "", imgClassName = "", auction}: ItemCardCompactProps) => {
     const baseStyles = "flex flex-col w-full aspect-square justify-center gap-2 shrink-0 cursor-pointer";
+    const showCurrentBid = auction.currentBid !== 0
+    const priceTitle = showCurrentBid ? "CURRENT BID": "STARTING PRICE";
+    const effectivePrice = showCurrentBid ? auction.currentBid: auction.startingPrice;
     return (
         <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
             <div className={cn("relative w-full h-full", imgClassName)}>
                 <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
             </div>
-            <div className="flex flex-col start-0 pt-1">
-                <label className="text-muted font-mono tracking-widest text-[12px]">CURRENT BID</label>
-                <label className="text-black font-medium text-xl text-start">{auction.currentBid}</label>
+            <div className="flex flex-col pt-1">
+                <label className="text-muted font-mono tracking-widest text-[12px]">{priceTitle}</label>
+                <label className="text-black font-medium text-xl text-start">{effectivePrice}</label>
             </div>
         </Link>
     )

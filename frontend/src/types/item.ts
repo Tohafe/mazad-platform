@@ -13,6 +13,7 @@ export interface AuctionSummary {
     title: string;
     thumbnail: string;
     currentBid: number;
+    startingPrice: number;
     status: AuctionStatus;
     startsAt: string;
     endsAt: string;
