@@ -9,64 +9,11 @@ import ItemCardCompact from "../Card/ItemCardCompact.tsx";
 import {useCategoriesAuctions} from "../../hooks/useAuctions.ts";
 import type {AuctionSummary} from "../../types/item.ts";
 import type {Category} from "../../types/category.ts";
-
-interface Slide {
-    image: string,
-    title: string,
-    subtitle: string,
-    description: string,
-}
-
-export const heroSlides: Slide[] = [
-    {
-        image: "src/assets/nature_img.jpg",
-        title: "World Money Fair",
-        subtitle: "Collection",
-        description:
-            "Historic coins and rare banknotes from sellers at the World Money Fair in Berlin.",
-    },
-    {
-        image: "src/assets/nature_img2.jpg",
-        title: "Ancient Coins Expo",
-        subtitle: "Limited Edition",
-        description:
-            "Discover rare ancient coins from around the world, carefully curated for collectors.",
-    },
-    {
-        image: "src/assets/nature_img3.jpg",
-        title: "Modern Currency Showcase",
-        subtitle: "Exclusive Notes",
-        description:
-            "Explore colorful banknotes and modern collectible coins from international mints.",
-    },
-    {
-        image: "src/assets/nature_img2.jpg",
-        title: "Gold & Silver Treasures",
-        subtitle: "Collector's Choice",
-        description:
-            "High-value gold and silver coins from historical collections available for enthusiasts.",
-    },
-    {
-        image: "src/assets/nature_img3.jpg",
-        title: "Rare Coin Auction",
-        subtitle: "Bid Now",
-        description:
-            "Join live auctions and grab rare coins before they disappear into private collections.",
-    },
-    {
-        image: "src/assets/nature_img.jpg",
-        title: "Historical Banknotes",
-        subtitle: "Classic Series",
-        description:
-            "Explore historical banknotes from around the world, perfect for any collector.",
-    },
-];
-
+import {Link} from "react-router-dom";
 
 const HeroCarousel = ({className = ""}) => {
     const {data = [], isLoading} = useCategoriesAuctions(6, 4);
     const [currentSlide, setCurrentSlide] = useState(0);
-
 
     if (isLoading) return <div>Loading...</div>;
 
@@ -75,7 +22,7 @@ const HeroCarousel = ({className = ""}) => {
         <div className={cn("flex flex-col w-full h-full", className)}>
             <div className={"flex flex-row gap-4 w-full h-76"}>
 
-                <InfoSlider className="flex-1" data={data[currentSlide].category}/>
+                {data.length > 0 && <InfoSlider className="flex-1" data={data[currentSlide].category}/>}
 
                 <Swiper
                     className="w-full h-full flex-1"
@@ -94,15 +41,15 @@ const HeroCarousel = ({className = ""}) => {
                 >
                     {data.map((slide, index) =>
                         <SwiperSlide key={index} className="">
-                            <div className="flex flex-row w-full h-full">
+                            <Link to={`/c/${slide.category.id}-${slide.category.slug}`} className="flex flex-row w-full h-full">
                                 <ImageSlide className="" url={slide.category.imageUrl}/>
-                            </div>
+                            </Link>
                         </SwiperSlide>
                     )}
                 </Swiper>
             </div>
 
-            <ItemsSlider key={currentSlide} auctions={data[currentSlide].items} className="w-full h-full mt-12"/>
+            {data.length > 0 && <ItemsSlider key={currentSlide} auctions={data[currentSlide].items} className="w-full h-full mt-12"/>}
 
         </div>
     )
