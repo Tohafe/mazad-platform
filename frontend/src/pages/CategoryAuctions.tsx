@@ -20,7 +20,7 @@ const CategoryAuctions = () => {
         return pageNum - 1;
     }, [searchParams]);
 
-    const {data, isLoading} = useAuctions({page: page, size: 16, categoryId: id, ...filters});
+    const {data, isLoading} = useAuctions({page: page, size: 16, status: "ACTIVE" , categoryId: id, ...filters});
 
     useEffect(() => {
         setAppliedFilters([]);
