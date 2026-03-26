@@ -82,11 +82,14 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             }
         });
 
-        client.activate();
-        setStompClient(client);
+        const connectionTimer = setTimeout(() => {
+            client.activate();
+            setStompClient(client);
+        }, 200);
 
         return () => {
             console.log("Destroying old socket...");
+            clearTimeout(connectionTimer);
             client.deactivate();
             setStompClient(null);
             setIsConnected(false);
