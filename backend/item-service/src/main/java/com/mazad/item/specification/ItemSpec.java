@@ -12,7 +12,8 @@ import java.util.UUID;
 
 public final class ItemSpec {
 
-    private ItemSpec() {}
+    private ItemSpec() {
+    }
 
 
     public static Specification<ItemEntity> withSearch(ItemSearch search) {
@@ -29,10 +30,13 @@ public final class ItemSpec {
                 String keywordLower = search.keyword().trim().toLowerCase();
                 predicates.add(cb.like(titleLower, "%" + keywordLower + "%"));
             }
+            Expression<Long> effectivePrice = cb.<Long>selectCase()
+                    .when(cb.greaterThan(root.get("currentBid"), 0L), root.get("currentBid"))
+                    .otherwise(root.get("startingPrice"));
             if (search.minPrice() != null)
-                predicates.add(cb.greaterThanOrEqualTo(root.get("currentBid"), search.minPrice()));
+                predicates.add(cb.greaterThanOrEqualTo(effectivePrice, search.minPrice()));
             if (search.maxPrice() != null)
-                predicates.add(cb.lessThanOrEqualTo(root.get("currentBid"), search.maxPrice()));
+                predicates.add(cb.lessThanOrEqualTo(effectivePrice, search.maxPrice()));
             if (search.endsBefore() != null)
                 predicates.add(cb.lessThanOrEqualTo(root.get("endsAt"), search.endsBefore()));
             if (search.endsAfter() != null)
