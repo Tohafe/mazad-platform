@@ -109,7 +109,7 @@ public class UserController {
     public ResponseEntity<String> resetUsername(
         @RequestHeader(name="X-User-Id") UUID userId,
         @RequestBody @Valid UsernameResetDto dto
-    ){ 
+    ){
         userService.resetUsername(userId, dto);
         return ResponseEntity.ok("Username changed successfully.");
     }
@@ -124,8 +124,6 @@ public class UserController {
 
     @GetMapping("key")
     public ResponseEntity<String> getApiKey(@RequestHeader(name = "X-User-Id") UUID userId) {
-        return apiKeyService.getApiKey(userId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(apiKeyService.getApiKey(userId));
     }
 }
