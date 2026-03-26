@@ -47,4 +47,5 @@ export interface AuctionFilters {
 
     // sorting
     sort?: string;
+    priceSort?: string;
 }
