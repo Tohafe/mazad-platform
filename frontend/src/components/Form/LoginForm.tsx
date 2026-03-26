@@ -71,7 +71,7 @@ const onSubmit = async (data: LoginData) => {
         navigate(path);
     }catch(errors: any){
         setAccessToken(null);
-        if (errors.response?.status !== 401){
+        if (errors.response?.status !== 401 && errors.response?.status !== 400){
             message = "An unexpected error occurred, Please try later.";
         }
         setError('root', {message: message});

@@ -1,31 +1,26 @@
 package com.mazad.auth.controller;
 
-import java.time.Duration;
 import java.util.UUID;
 
 import com.mazad.auth.entity.ApiKey;
-import com.mazad.auth.exception.BadRequestException;
 import com.mazad.auth.service.ApiKeyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.mazad.auth.dto.AuthResponseDto;
 import com.mazad.auth.dto.EmailResetDto;
 import com.mazad.auth.dto.LoginResponseDto;
 import com.mazad.auth.dto.PasswordResetDto;
 import com.mazad.auth.dto.UserRequestDTO;
-import com.mazad.auth.dto.UserResponseDTO;
+import com.mazad.auth.dto.UsernameResetDto;
 import com.mazad.auth.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import tools.jackson.databind.JsonNode;
 
 
 @RestController
@@ -109,6 +104,14 @@ public class UserController {
     ){ 
         userService.resetEmail(userId, dto);
         return ResponseEntity.ok("Email changed successfully.");
+    }
+    @PatchMapping("reset/username")
+    public ResponseEntity<String> resetUsername(
+        @RequestHeader(name="X-User-Id") UUID userId,
+        @RequestBody @Valid UsernameResetDto dto
+    ){ 
+        userService.resetUsername(userId, dto);
+        return ResponseEntity.ok("Username changed successfully.");
     }
 
     @PostMapping("keys")

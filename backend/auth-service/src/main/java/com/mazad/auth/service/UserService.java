@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.mazad.auth.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -14,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mazad.auth.dto.AuthResponseDto;
 import com.mazad.auth.dto.CurrentUser;
 import com.mazad.auth.dto.EmailResetDto;
 import com.mazad.auth.dto.LoginResponseDto;
@@ -22,6 +22,7 @@ import com.mazad.auth.dto.PasswordResetDto;
 import com.mazad.auth.dto.TokensDto;
 import com.mazad.auth.dto.UserRequestDTO;
 import com.mazad.auth.dto.UserResponseDTO;
+import com.mazad.auth.dto.UsernameResetDto;
 import com.mazad.auth.entity.RefreshToken;
 import com.mazad.auth.entity.UserEntity;
 import com.mazad.auth.exception.DuplicateResourceException;
@@ -51,6 +52,8 @@ public class UserService {
     String syncTopic;
     @Value("${auth.refresh-token-validity-days:4}")
     long    refreshValidity;
+    @Value("${DEFAULT_SOLD}")
+    String DEFAULT_SOLD;
 
     public ResponseEntity<LoginResponseDto> addUser(UserRequestDTO userRequest) {
         UserEntity user = mapper.toEntity(userRequest);
@@ -62,7 +65,7 @@ public class UserService {
             throw new DuplicateResourceException("Username is already taken", "username");
 
         user = repo.save(user);
-        kafka.produce(syncTopic, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).build());
+        kafka.produce(syncTopic, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).sold(DEFAULT_SOLD).build());
         tokens = jwtService.getTokens(user);
         return getLoginResponse(tokens.refreshToken(),
                 tokens.accessToken(),
@@ -159,7 +162,21 @@ public class UserService {
 
         if (repo.existsByEmail(dto.email()) || !encoder.matches(dto.password(), user.getPassword()))
             throw new UnauthorizedException("Invalid Password or email");
+        user.setEmail(dto.email());
+        repo.save(user);
         kafka.produce(syncTopic, CurrentUser.builder().id(userId).email(dto.email()).build());
+    }
+
+    public void resetUsername(UUID userId, @NotNull UsernameResetDto dto){
+        UserEntity user = repo
+                .findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found."));
+
+        if (repo.existsByUsername(dto.username()))
+            throw new DuplicateResourceException("Username is already taken", "username");
+        user.setUsername(dto.username());
+        repo.save(user);
+        kafka.produce(syncTopic, CurrentUser.builder().id(userId).username(dto.username()).build());
     }
 
 }

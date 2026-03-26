@@ -73,7 +73,7 @@ public class ProfileService {
         profile.setUsername(user.username());
         profile.setComplete(true);
 
-        if (oldProfile != null && oldProfile.getAvatarImageId() != null) {
+        if (oldProfile != null && oldProfile.getAvatarUrl() != null) {
             profile.setAvatarImageId(oldProfile.getAvatarImageId());
             profile.setAvatarUrl(oldProfile.getAvatarUrl());
             profile.setAvatarThumbnailUrl(oldProfile.getAvatarThumbnailUrl());
@@ -109,11 +109,11 @@ public class ProfileService {
         return mapper.toPrivateResponseDto(profile);
     }
 
-    @Transactional
-    public void deleteProfile(UUID userId) {
-        if (repo.existsByUserId(userId))
-            repo.deleteByUserId(userId);
-    }
+//    @Transactional
+//    public void deleteProfile(UUID userId) {
+//        if (repo.existsByUserId(userId))
+//            repo.deleteByUserId(userId);
+//    }
     
     public PrivateResponseDto changeAvatar(AvatarDto dto, UUID userId) {
         ProfileEntity profile = repo

@@ -27,8 +27,8 @@ export  default function OAuth(){
             <div className="w-full h-[0.5px] bg-border my-6"></div>
         </div>
         <div className={'space-y-2'}>
-            <IconButton className={"w-full border border-gray-500 h-13"} iconClassName={"h-full w-9 "} icon={FcGoogle} onClick={() => handleOAuthLogin('google') }>     Continue with Google </IconButton>
-            <IconButton className={"w-full border border-gray-500 h-13"} iconClassName={"h-full w-9 "} icon={Si42} onClick={() => handleOAuthLogin('42') }>     Continue with 42 </IconButton>
+            <IconButton className={"w-full border border-gray-500 h-13 relative"} iconClassName={"h-full w-9 absolute left-5"} icon={FcGoogle} onClick={() => handleOAuthLogin('google') }>     Continue with Google </IconButton>
+            <IconButton className={"w-full border border-gray-500 h-13 relative"} iconClassName={"h-full w-9 absolute left-5"} icon={Si42} onClick={() => handleOAuthLogin('42') }>     Continue with 42 </IconButton>
         </div>
     </>
 }

@@ -1,18 +1,10 @@
 package com.mazad.auth.security;
 
-import com.mazad.auth.dto.AuthResponseDto;
-import com.mazad.auth.dto.CurrentUser;
-import com.mazad.auth.dto.TokensDto;
-import com.mazad.auth.entity.UserEntity;
-import com.mazad.auth.repo.UserRepo;
-import com.mazad.auth.service.JwtService;
-import com.mazad.auth.service.KafkaProducerService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Map;
+import java.util.UUID;
+
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -22,9 +14,18 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.Map;
+import com.mazad.auth.dto.CurrentUser;
+import com.mazad.auth.entity.UserEntity;
+import com.mazad.auth.repo.UserRepo;
+import com.mazad.auth.service.JwtService;
+import com.mazad.auth.service.KafkaProducerService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -44,6 +45,8 @@ OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private int refreshValidity;
     @Value("${MAZAD_IP}")
     private String MAZAD_IP;
+    @Value("${DEFAULT_SOLD}")
+    private String DEFAULT_SOLD;
 
     @Override
     public void onAuthenticationSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -58,34 +61,40 @@ OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         if (attributes != null) {
             String username = attributes.getOrDefault("login", attributes.get("email").toString().split("@")[0]).toString();
             String email = attributes.get("email").toString();
-            String wallet = attributes.getOrDefault("wallet", "0").toString();
+            String sold = attributes.getOrDefault("wallet", DEFAULT_SOLD).toString();
+
             UserEntity user = repo.findByEmail(email).orElseGet(()-> {
+                String finalUsername = username;
+                if (repo.existsByUsername(username)) {
+                    finalUsername = username + UUID.randomUUID().toString().substring(0, 4);
+                    if (repo.existsByUsername(finalUsername))
+                        finalUsername = username + UUID.randomUUID().toString().substring(0, 4);
+                }
                 UserEntity userEntity = UserEntity
                         .builder()
-                        .username(username)
+                        .username(finalUsername)
                         .email(email)
                         .password(null)
                         .verified(true)
                         .build();
                 userEntity = repo.save(userEntity);
-                Object image;
-                image = attributes.get("image");
-                String avatar = null;
-                if (image != null) {
-                    Map<String, Object> map = (Map<String, Object>) image;
-                    avatar = map.get("link").toString();
-                }
-                else{
+                Map<String, Object> image;
+                String avatar;
+
+                image =(Map<String, Object>) attributes.get("image");
+                if (image != null)
+                    avatar = image.get("link").toString();
+                else
                     avatar = attributes.get("picture").toString();
-                }
                 CurrentUser profile = CurrentUser.builder()
                         .id(userEntity.getId())
-                        .username(username)
+                        .username(finalUsername)
                         .email(email)
                         .firstName(attributes.getOrDefault("first_name", attributes.get("given_name")).toString())
                         .lastName(attributes.getOrDefault("last_name", attributes.get("family_name")).toString())
                         .avatarUrl(avatar)
                         .avatarThumbnailUrl(avatar)
+                        .sold(sold)
                         .build();
                 kafka.produce(syncTopic, profile);
                 return userEntity;
