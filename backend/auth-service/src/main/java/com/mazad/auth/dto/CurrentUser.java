@@ -14,5 +14,5 @@ public record  CurrentUser (
         String avatarImageId,
         String avatarUrl,
         String avatarThumbnailUrl,
-        String wallet
+        String sold
 ) {}

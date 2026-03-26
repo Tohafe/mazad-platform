@@ -41,9 +41,6 @@ public class ProfileController {
     private final ProfileService service;
     private final ObjectMapper mapper;
 
-//    @Value("${auth-user.sync.key}")
-    String syncKey;
-
     @GetMapping
     public ResponseEntity<PrivateResponseDto> getPrivateProfile(@RequestHeader(name = "X-User-Id") UUID userId) {
         PrivateResponseDto response = service.getPrivateProfile(userId);

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import useUserApi from '../hooks/useUserApi'
 import type PublicProfile from "../types/PublicProfile";
 import type { AxiosError } from "axios";
@@ -9,7 +9,8 @@ import ItemGrid from "../components/Grid/ItemGrid";
 import Pagination from "../components/Pagination";
 import ItemCard from "../components/Card/ItemCard";
 import ConnectionButton from "../components/Button/ConnectionButton";
-
+import IconButton from "../components/Button/IconButton.tsx";
+import { PiChatDots } from "react-icons/pi";
 
 
 
@@ -21,6 +22,8 @@ export default function PublicProfile(){
     const [profileErrorMsg, setProfileErrorMsg] = useState<string>('loading');
     const [page, setPage] = useState(0);
     const {data} = useAuctions({page: page, size: 10, sellerId: profile?.userId})
+    const [isFriend, setIsFriend] = useState(false);
+    const navigate = useNavigate();
 
     if (!username)
         return (<div>NOT FOUND</div>)
@@ -54,8 +57,11 @@ export default function PublicProfile(){
                                 <h1 className="font-bold text-xl">{profile.username}</h1>
                                 <h2 className="text-secondary ">{profile.country || 'Morroco'}</h2>
                             </div>
-                            {user &&
-                                profile.userId != user.id && <ConnectionButton user={user} other={profile} />}
+                            {user && profile.userId != user.id &&
+                                <div className={'flex mt-10 -ml-5 '}>
+                                    <ConnectionButton user={user} other={profile} setIsFriend={setIsFriend}/>
+                                    {isFriend && <IconButton icon={PiChatDots} className={"text-brand"} onClick={() => navigate('/inbox')}></IconButton>}
+                                </div>}
                         </div>
                         {profile.bio && <p className="text-sm max-w-120"><span className="text-secondary">bio: </span> {profile.bio}</p> }
                     </div>

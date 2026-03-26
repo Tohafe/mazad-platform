@@ -8,7 +8,7 @@ import { useWebSocket } from "../../context/WebSocketContext.tsx";
 import type FriendRequestEvent from "../../types/FriendRequestEvent.ts";
 
 
- export default function ConnectionButton({user, other}:{user: User, other: PublicProfile}){
+ export default function ConnectionButton({user, other, setIsFriend}:{user: User, other: PublicProfile, setIsFriend : (isFriend: boolean) => void}){
     const {sendFriendRequest, isFriend} = useUserApi();
     const [buttonText, setButtonText] = useState('Connect');
     const [variant, setVariant] = useState<'primary' | 'danger' | 'secondary' | null>('primary')
@@ -46,6 +46,7 @@ import type FriendRequestEvent from "../../types/FriendRequestEvent.ts";
             let variant: "primary" | "danger" | "secondary" | null;
             if (res.requesterId !== null){
                 if (res.status === 'PENDDING'){
+                    setIsFriend(false);
                     if (res.requesterId === user.id){
                         text = 'Cancel'
                         variant = 'danger';
@@ -58,15 +59,18 @@ import type FriendRequestEvent from "../../types/FriendRequestEvent.ts";
                 else if (res.status === 'ACCEPTED'){
                     text = 'Disconnect';
                     variant = 'secondary';
+                    setIsFriend(true);
                 }
                 else{
                     text = 'Connect';
                     variant = 'primary';
+                    setIsFriend(false);
                 }
             }
             else{
                 text = 'Connect';
                 variant = 'primary';
+                setIsFriend(false);
             }
             setStatus(res.status);
             setButtonText(text);
@@ -75,11 +79,12 @@ import type FriendRequestEvent from "../../types/FriendRequestEvent.ts";
         .catch(() => {
             setButtonText('Connect')
             setVariant('primary');
+            setIsFriend(false);
         })
     }, [status, other]);
 
 
     return <>
-        <Button size={'sm'} className='mt-10 -ml-5' variant={variant} onClick={onClick}>{buttonText}</Button>
+        <Button size={'sm'}  variant={variant} onClick={onClick}>{buttonText}</Button>
         </>
  }

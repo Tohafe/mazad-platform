@@ -3,11 +3,13 @@ import TextButton from "../Button/TextButton";
 import { useAuth } from "../../context/AuthProvider";
 import ResetEmailForm from "./ResetEmailForm";
 import ResetPasswordForm from "./ResetPasswordForm";
+import ResetUsernameForm from "./ResetUsernameForm.tsx";
 
 export default function Security(){
     const {user} = useAuth();
 
     const [showEmailEdit, setShowEmailEdit] = useState(false);
+    const [showUsernameEdit, setShowUsernameEdit] = useState(false);
     const [showPassEdit, setShowPassEdit] = useState(false);
 
 
@@ -22,7 +24,12 @@ export default function Security(){
             <div className="flex flex-col gap-0">
                 <label className="text-secondary text-sm">Username</label>
                 <h2 className="font-semibold text-xl">{user?.username}</h2>
-                <label className="text-secondary text-sm ">You can't edit your username.</label>
+                <TextButton className="text-brand w-15" onClick={() => setShowUsernameEdit(!showUsernameEdit)}>Change</TextButton>
+                {showUsernameEdit &&
+                    <div className="absolute z-20 space-y-4 w-full max-w-100 bg-white p-6 shadow-2xl border border-gray-100">
+                        <ResetUsernameForm setShowUsernameEdit={setShowUsernameEdit}></ResetUsernameForm>
+                    </div>
+                }
             </div>
             <div className="w-full h-[0.5px] bg-border my-6"></div>
             <div className="flex flex-col gap-0">

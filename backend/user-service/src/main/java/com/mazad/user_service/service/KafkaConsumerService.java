@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.mazad.user_service.dto.CurrentUser;
+import com.mazad.user_service.dto.FriendResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -49,12 +50,12 @@ public class KafkaConsumerService {
             List<UUID> friendIds = friendService
                     .getFriendByStatus(itemEvent.sellerId(), FriendshipStatus.ACCEPTED)
                     .stream()
-                    .map((friend) -> friend.id())
+                    .map(FriendResponseDto::id)
                     .toList();
             String sellerName = profileService
                     .getPrivateProfile(itemEvent.sellerId())
                     .username();
-            if (friendIds != null && !friendIds.isEmpty()){
+            if (friendIds.isEmpty()){
                 NotifyFriendsEvent notifyEvent = NotifyFriendsEvent.builder()
                         .auctionId(itemEvent.id())
                         .username(sellerName)
@@ -93,8 +94,6 @@ public class KafkaConsumerService {
                 node.put("avatarUrl", userData.avatarUrl());
             if (userData.avatarThumbnailUrl() != null && !userData.avatarThumbnailUrl().isBlank())
                 node.put("avatarThumbnailUrl", userData.avatarThumbnailUrl());
-//            if (userData.wallet() != null && !userData.wallet().isBlank())
-//                node.put("wallet", userData.wallet());
 
             profileService.patch(userData.id(), node, true);
         }catch(RuntimeException e){
