@@ -1,13 +1,12 @@
-import type { AuctionFormData } from '../components/Form/AuctionDetails';
+import type { AuctionDetailsData, AuctionFormData } from '../components/Form/AuctionDetails';
 import AuctionDetails from '../components/Form/AuctionDetails';
 import ImageUpload from '../components/Form/ImageUpload';
-// import FilePreview from '../components/Form/FilePreview';
-import { useFileUpload } from '../hooks/useFileUpload';
+import { useFileUpload, type FileResponse } from '../hooks/useFileUpload';
 import type { UploadableFile } from '../types/upload';
 import { useNavigate } from 'react-router-dom';
 import { useItems } from '../hooks/useItems';
+import { useEffect, useState } from 'react';
 import { FiLoader } from 'react-icons/fi';
-import  { useState } from 'react';
 
 
 
@@ -35,8 +34,16 @@ const CreateAuction = () => {
     
     const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' 
+        });
+    }, [currentStep]);
+
     const { createItem, isCreating } = useItems();
 
+    const [isPublishing, setIsPublishing] = useState<boolean>(false);
     
     const [formData, setFormData] = useState<AuctionFormData>({
         categoryId: 0, 
@@ -51,7 +58,7 @@ const CreateAuction = () => {
         { key: '', value: '' } 
     ]);
 
-    let latestSuccessfulUploads: { localId: string; data: any }[] = [];
+    let latestSuccessfulUploads: { localId: string; data: FileResponse }[] = [];
 
     const [files, setFiles] = useState<UploadableFile[]>([]);
     const [additionalMedia, setAdditionalMedia] = useState<UploadableFile | null>(null);
@@ -176,143 +183,149 @@ const CreateAuction = () => {
     };
 
 
-    const handleFinalSubmit = async (auctionTextData: any) => {
+    const handleFinalSubmit = async (auctionTextData: AuctionDetailsData) => {
         if (files.length !== REQUIRED_IMAGE_COUNT) return;
-        setErrorToast(null);
+            setErrorToast(null);
 
-        const pendingFiles = files.filter((f, index) => {
-            if (f.status !== 'SUCCESS') return true;
-            if (index === 0 && !f.data?.thumbnailUrl) return true;
-            return false; 
-        });
-
-        if (pendingFiles.length > 0) {
-            console.log(`Uploading ${pendingFiles.length} pending files to MinIO...`);
-            
-            const filesPreparedForUpload = pendingFiles.map((fileObj) => {
-                const isMainImage = files.findIndex(f => f.localId === fileObj.localId) === 0;
-                return { ...fileObj, targetWidth: isMainImage ? '800' : '0' };
+        setIsPublishing(true);
+        
+        try{
+            const pendingFiles = files.filter((f, index) => {
+                if (f.status !== 'SUCCESS') return true;
+                if (index === 0 && !f.data?.thumbnailUrl) return true;
+                return false; 
             });
 
+            if (pendingFiles.length > 0) {
+                console.log(`Uploading ${pendingFiles.length} pending files to MinIO...`);
 
-            const { successfulUploads, failedUploads } = await uploadMultipleFiles(
-                filesPreparedForUpload, 
-                (localId, progress) => handleProgressUpdate(localId, progress)
-            );
+                const filesPreparedForUpload = pendingFiles.map((fileObj) => {
+                    const isMainImage = files.findIndex(f => f.localId === fileObj.localId) === 0;
+                    return { ...fileObj, targetWidth: isMainImage ? '800' : '0' };
+                });
 
 
-            setFiles(prev => prev.map(f => {
-                const failedMatch = failedUploads.find(fail => fail.localId === f.localId);
-                
-                if (failedMatch) {
-                    return { 
-                        ...f, 
-                        status: 'FAILED' as any, 
-                        progress: 0, 
-                        errorMessage: failedMatch.errorMessage 
-                    };
+                const { successfulUploads, failedUploads } = await uploadMultipleFiles(
+                    filesPreparedForUpload, 
+                    (localId, progress) => handleProgressUpdate(localId, progress)
+                );
+
+
+                setFiles(prev => prev.map(f => {
+                    const failedMatch = failedUploads.find(fail => fail.localId === f.localId);
+
+                    if (failedMatch) {
+                        return { 
+                            ...f, 
+                            status: 'FAILED' as any, 
+                            progress: 0, 
+                            errorMessage: failedMatch.errorMessage 
+                        };
+                    }
+                    const successMatch = successfulUploads.find(s => s.localId === f.localId);
+                    if (successMatch) {
+                        return { ...f, status: 'SUCCESS', data: successMatch.data };
+                    }
+                    return f;
+                }));
+
+
+                if (failedUploads.length > 0) {
+                    showError(`${failedUploads.length} images failed. Please check the error messages and click Retry.`);
+                    return; 
                 }
-                const successMatch = successfulUploads.find(s => s.localId === f.localId);
-                if (successMatch) {
-                    return { ...f, status: 'SUCCESS', data: successMatch.data };
-                }
-                return f;
-            }));
 
-            
-            if (failedUploads.length > 0) {
-                showError(`${failedUploads.length} images failed. Please check the error messages and click Retry.`);
-                return; 
+                latestSuccessfulUploads = successfulUploads;
+
+                setFiles(prev => prev.map(f => {
+                    const match = successfulUploads.find(s => s.localId === f.localId);
+                    return match ? { ...f, status: 'SUCCESS', data: match.data } : f;
+                }));
             }
 
-            latestSuccessfulUploads = successfulUploads;
+            console.log("All images secured! Stitching final DTO payload...");
 
-            setFiles(prev => prev.map(f => {
-                const match = successfulUploads.find(s => s.localId === f.localId);
-                return match ? { ...f, status: 'SUCCESS', data: match.data } : f;
-            }));
-        }
+            let documentUrl = additionalMedia?.data?.url || null; 
+            if (additionalMedia && additionalMedia.status !== 'SUCCESS') {
+                console.log(`Uploading supporting document: ${additionalMedia.file.name}...`);
 
-        console.log("All images secured! Stitching final DTO payload...");
+                try {
+                    const docResponse = await uploadSingleFile(
+                        additionalMedia.file, 
+                        '0', '0', 
+                        (progress) => {
+                            setAdditionalMedia(prev => prev ? { 
+                                ...prev, 
+                                progress, 
+                                status: progress === 100 ? 'SUCCESS' : 'UPLOADING' 
+                            } : null);
+                        }
+                    );
 
-        let documentUrl = additionalMedia?.data?.url || null; 
-        if (additionalMedia && additionalMedia.status !== 'SUCCESS') {
-            console.log(`Uploading supporting document: ${additionalMedia.file.name}...`);
-            
+                    documentUrl = docResponse.url;
+
+                    setAdditionalMedia(prev => prev ? { ...prev, status: 'SUCCESS', data: docResponse } : null);
+
+                } catch (error: any) {
+                    setAdditionalMedia(prev => prev ? { 
+                        ...prev, 
+                        status: 'FAILED', 
+                        progress: 0, 
+                        errorMessage: extractBackendError(error) 
+                    } : null);
+
+                    showError("Failed to upload the supporting document. Please check the error and retry.");
+                    return; 
+                }
+            }
+
+            const finalImageUrls = files.map(f => {
+                const justUploaded = latestSuccessfulUploads.find(s => s.localId === f.localId);
+                return justUploaded?.data?.url || f.data?.url; 
+            }).filter(Boolean) as string[]; 
+
+            const firstFileId = files[0].localId;
+            const newlyUploadedFirst = latestSuccessfulUploads.find(s => s.localId === firstFileId);
+
+            const thumbnailString = 
+                newlyUploadedFirst?.data?.thumbnailUrl || 
+                files[0].data?.thumbnailUrl || 
+                newlyUploadedFirst?.data?.url || 
+                files[0].data?.url || 
+                "";
+
+            const finalPayload = {
+                categoryId: auctionTextData.categoryId,
+                title: auctionTextData.title,
+                description: auctionTextData.description,
+                specs: auctionTextData.specs,
+                shippingInfo: auctionTextData.shippingInfo, 
+                startingPrice: auctionTextData.startingPrice,
+                endsAt: new Date(auctionTextData.endDate).toISOString(),       
+                thumbnail: thumbnailString,
+                document: documentUrl,       
+                images: finalImageUrls            
+            };
+
+            console.log("Transmitting payload to items-service:", finalPayload);
+
+
             try {
-                const docResponse = await uploadSingleFile(
-                    additionalMedia.file, 
-                    '0', '0', 
-                    (progress) => {
-                        setAdditionalMedia(prev => prev ? { 
-                            ...prev, 
-                            progress, 
-                            status: progress === 100 ? 'SUCCESS' : 'UPLOADING' 
-                        } : null);
-                    }
-                );
-                
-                documentUrl = docResponse.url;
-                
-                setAdditionalMedia(prev => prev ? { ...prev, status: 'SUCCESS', data: docResponse } : null);
+                const newAuctionItem = await createItem(finalPayload);
+
+                setFiles([]);
+                console.log("Auction Created Successfully!", newAuctionItem);
+
+                navigate(`/auction/${newAuctionItem.id}`);
 
             } catch (error: any) {
-                setAdditionalMedia(prev => prev ? { 
-                    ...prev, 
-                    status: 'FAILED', 
-                    progress: 0, 
-                    errorMessage: extractBackendError(error) 
-                } : null);
-                
-                showError("Failed to upload the supporting document. Please check the error and retry.");
-                return; 
+                console.error("Backend rejected the item:", error);
+
+                const exactErrorMessage = extractBackendError(error);
+                showError(exactErrorMessage);
             }
-        }
-
-        const finalImageUrls = files.map(f => {
-            const justUploaded = latestSuccessfulUploads.find(s => s.localId === f.localId);
-            return justUploaded?.data?.url || f.data?.url; 
-        }).filter(Boolean) as string[]; 
-
-        const firstFileId = files[0].localId;
-        const newlyUploadedFirst = latestSuccessfulUploads.find(s => s.localId === firstFileId);
-        
-        const thumbnailString = 
-            newlyUploadedFirst?.data?.thumbnailUrl || 
-            files[0].data?.thumbnailUrl || 
-            newlyUploadedFirst?.data?.url || 
-            files[0].data?.url || 
-            "";
-        
-        const finalPayload = {
-            categoryId: auctionTextData.categoryId,
-            title: auctionTextData.title,
-            description: auctionTextData.description,
-            specs: auctionTextData.specs,
-            shippingInfo: auctionTextData.shippingInfo, 
-            startingPrice: auctionTextData.startingPrice,
-            endsAt: new Date(auctionTextData.endDate).toISOString(),       
-            thumbnail: thumbnailString,
-            document: documentUrl,       
-            images: finalImageUrls            
-        };
-
-        console.log("Transmitting payload to items-service:", finalPayload);
-
-
-        try {
-            const newAuctionItem = await createItem(finalPayload);
-            
-            setFiles([]);
-            console.log("Auction Created Successfully!", newAuctionItem);
-            
-            navigate(`/auction/${newAuctionItem.id}`);
-            
-        } catch (error: any) {
-            console.error("Backend rejected the item:", error);
-            
-            const exactErrorMessage = extractBackendError(error);
-            showError(exactErrorMessage);
+        }finally {
+            setIsPublishing(false);
         }
     };
 
@@ -371,7 +384,7 @@ const CreateAuction = () => {
                 </div>
             )}
             
-            {isUploading && (
+            {isPublishing && (
                 <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 animate-fadeIn">
                     <div className="bg-white rounded-sm border border-gray-300 shadow-md p-8 max-w-lg w-full">
                         

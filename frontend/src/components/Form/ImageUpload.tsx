@@ -2,6 +2,7 @@ import React from 'react';
 import Dropzone from './DropZone';
 import FilePreview from './FilePreview';
 import type { UploadableFile } from '../../types/upload';
+import Button from '../Button/Button';
 
 interface ImageUploadProps {
     files: UploadableFile[];
@@ -86,18 +87,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             </div>
 
             <div className="flex justify-end pt-6  mt-8">
-                <button
-                    type="button"
+                <Button 
+                    variant="primary" 
+                    size="md" 
                     onClick={onNextStep} 
                     disabled={files.length !== requiredCount}
-                    className={`px-8 py-3 rounded-lg font-medium text-white transition-all
+                    className={`
                         ${files.length !== requiredCount 
                             ? 'bg-gray-300 cursor-not-allowed' 
-                            : 'bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg'
+                            : ''
                         }`}
                 >
                     Next Step: Auction Details &rarr;
-                </button>
+                </Button>
             </div>
         </div>
     );

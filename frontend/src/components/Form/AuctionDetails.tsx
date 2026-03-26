@@ -1,6 +1,8 @@
-import React from 'react';
 import { useCategories } from '../../hooks/useCategories';
+import TextButton from '../Button/TextButton';
 import { FiLoader } from 'react-icons/fi';
+import Button from '../Button/Button';
+import React from 'react';
 
 export interface AuctionDetailsData {
     categoryId: number;
@@ -23,13 +25,13 @@ export interface AuctionFormData {
 
 interface AuctionDetailsProps {
     onBack: () => void;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: AuctionDetailsData) => void;
     isSubmitting: boolean;
     onError: (message: string) => void;
     hasFailedUploads: boolean;
 
     formData: AuctionFormData;
-    setFormData: React.Dispatch<React.SetStateAction<any>>;
+    setFormData: React.Dispatch<React.SetStateAction<AuctionFormData>>;
     specsList: { key: string; value: string }[];
     setSpecsList: React.Dispatch<React.SetStateAction<{ key: string; value: string }[]>>;
 }
@@ -46,7 +48,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData((prev: any) => ({
+        setFormData((prev: AuctionFormData) => ({
             ...prev,
             [name]: name === 'startingPrice' || name === 'categoryId' ? Number(value) : value
         }));
@@ -67,8 +69,23 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
     const removeSpecRow = (indexToRemove: number) => {
         setSpecsList(prev => prev.filter((_, index) => index !== indexToRemove));
     };
+    
+    const toLocalISOString = (date: Date) => {
+        const tzOffset = date.getTimezoneOffset() * 60000; 
+        const localDate = new Date(date.getTime() - tzOffset);
+        return localDate.toISOString().slice(0, 16);
+    };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const now = new Date();
+    
+    const minAllowedDate = new Date(now.getTime() + 5 * 60 * 1000); 
+    const minDateString = toLocalISOString(minAllowedDate);
+    
+    const maxAllowedDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const maxDateString = toLocalISOString(maxAllowedDate);
+
+
+    const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
         e.preventDefault();
         
      
@@ -116,19 +133,6 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
         onSubmit(finalPayload); 
     };
 
-    const toLocalISOString = (date: Date) => {
-        const tzOffset = date.getTimezoneOffset() * 60000; 
-        const localDate = new Date(date.getTime() - tzOffset);
-        return localDate.toISOString().slice(0, 16);
-    };
-
-    const now = new Date();
-    
-    const minAllowedDate = new Date(now.getTime() + 6 * 60 * 1000); 
-    const minDateString = toLocalISOString(minAllowedDate);
-    
-    const maxAllowedDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-    const maxDateString = toLocalISOString(maxAllowedDate);
 
 
     const inputClass = "w-full px-4 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:bg-gray-100 disabled:border-gray-200 tabular-nums placeholder-gray-400";
@@ -269,15 +273,14 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                             <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Custom Specifications</h3>
                             <p className="text-xs text-gray-500 mt-1">Add specific details like Brand, Material, or Year.</p>
                         </div>
-                        <button
-                            type="button"
-                            onClick={addSpecRow}
-                            disabled={isSubmitting}
-
-                            className="text-sm border border-blue-600 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-50 transition-colors font-medium disabled:opacity-50"
-                        >
-                            + Add Specification
-                        </button>
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={addSpecRow} 
+                                disabled={isSubmitting}
+                            >
+                                + Add
+                            </Button>
                     </div>
                     
                     <div className="space-y-3">
@@ -317,32 +320,28 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
 
 
             <div className="flex justify-between pt-6 border-t border-gray-200 mt-6">
-                <button 
-                    type="button"
-                    onClick={onBack}
-                    className="px-6 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors disabled:opacity-50"
+                <TextButton 
+                    variant="secondary" 
+                    onClick={onBack} 
                     disabled={isSubmitting}
                 >
                     &larr; Back to Images
-                </button>
+                </TextButton>
                 
-                <button 
+                <Button 
                     type="submit" 
-                    disabled={isSubmitting}
 
-                    className={`px-8 py-3 rounded text-white font-semibold transition-all
-                        ${isSubmitting 
-                            ? 'bg-gray-400 cursor-not-allowed' 
-                            : hasFailedUploads 
-                                ? 'bg-red-700 hover:bg-red-600 shadow-none' 
-                                : 'bg-green-600 hover:bg-green-700 shadow-none'}`} 
+                    variant={isSubmitting ? "secondary" : hasFailedUploads ? "danger" : "primary"} 
+                    size="lg"
+                    disabled={isSubmitting}
+                    className={isSubmitting ? "cursor-not-allowed opacity-70" : ""}
                 >
                     {isSubmitting 
-                        ? <FiLoader className="animate-spin h-6 w-6" /> 
+                        ? <><FiLoader className="animate-spin h-5 w-5" /></> 
                         : hasFailedUploads 
                             ? 'Retry The Upload' 
                             : 'Launch Auction'}
-                </button>
+                </Button>
             </div>
         </form>
     );
