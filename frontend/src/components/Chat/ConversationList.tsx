@@ -1,12 +1,5 @@
-// import { Link } from "react-router-dom";
+import type { Chat } from "../../types/chat.ts";
 
-export interface Chat {
-    id: string;
-    name: string;
-    avatar?: string;
-    lastMessage: string;
-    hasUnreadMessages: boolean;
-}
 
 interface ConversationListProps {
     chats: Chat[] ;

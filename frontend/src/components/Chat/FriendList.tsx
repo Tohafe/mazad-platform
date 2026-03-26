@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
-import useApiPrivate from "../../hooks/useApiPrivate";
 import { Link } from "react-router-dom";
-
-export interface Friend {
-    username: string;
-    userId: string;
-    thumbnail: string;
-    onlineStatus: boolean;
-}
+import useChatApi  from  "../../hooks/useChatApi"
+import { useAuth } from "../../context/AuthProvider";
+import type { Friend } from "../../types/chat";
 
 interface FriendListProps {
     onMessageFriend: (username: string) => void; 
@@ -102,14 +97,15 @@ interface FriendListProps {
 // ];
 
 function FriendList({ onMessageFriend }: FriendListProps) {
-    const apiPrivate = useApiPrivate();
+    // const apiPrivate = useApiPrivate();
     const [friends, setFriends] = useState<Friend[]>();
     const [isLoading, setIsLoading] = useState(true);
-
+    const { getFriends } = useChatApi();
+    const { user } = useAuth();
     useEffect(() => {
         const fetchFriends = async () => {
             try {
-                const response = await apiPrivate.get("/friends");
+                const response = await getFriends();
                 setFriends(response.data);
                 console.log(response.data);
                 // setFriends(FAKE_FRIENDS);
@@ -119,9 +115,10 @@ function FriendList({ onMessageFriend }: FriendListProps) {
                 setIsLoading(false);
             }
         };
-
-        fetchFriends();
-    }, [apiPrivate]);
+        if (user?.id){
+            fetchFriends();
+        }
+    }, [user?.id]);
 
     if (isLoading) {
         return <div className="p-4 text-center text-gray-500">Loading friends...</div>;

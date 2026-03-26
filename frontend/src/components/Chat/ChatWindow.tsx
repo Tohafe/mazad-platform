@@ -1,15 +1,14 @@
 import {  useEffect, useRef, useState } from "react";
-import useApiPrivate from "../../hooks/useApiPrivate";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid'
+import useChatApi from "../../hooks/useChatApi";
 
 
 
 function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string, onMessageSent: (msg: string) => void, onBack: () => void }>, ){
 
-    const apiPrivate = useApiPrivate();
 
     const [messages, setMessages]  = useState<any[]>([]);
     
@@ -17,6 +16,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+    const { sendMessage, getChatHistory, getUserDetails } = useChatApi();
 
     const scrollToBottom = () => {
         setTimeout(() => {
@@ -44,12 +44,10 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         setMessages([...messages, newMessage]);
         setInputText("");
         try {
-            await apiPrivate.post(`/chat/send`, {
-                receiverId: chatId,
-                content: newMessage.text
-            });
+            const response = await sendMessage(chatId, newMessage.text);
             // MOVE THE CHAT TO THE TOP
             onMessageSent(newMessage.text);
+            console.log("message's id:", response.data.id);
         } catch (error){
             console.error("Failed to send message: ",  error);
             // doing some disign for failed send
@@ -65,7 +63,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         // TODO: TRIGGER AXIOS FETCH INBOX FOR THE NEW CHATID
         const fetchHistory = async () => {
             try {
-                const response = await apiPrivate.get(`/chat/history/${chatId}`);
+                const response = await getChatHistory(chatId);
                 const rawMessages = response.data.content;
 
                 const formattedMessages = rawMessages.map((dto:any) => ({
@@ -81,7 +79,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         }
         fetchHistory();
     }
-    , [chatId, user?.id, apiPrivate]);
+    , [chatId, user?.id]);
     // SUBSCRIBING TO THE WEBSOCKET 
     const {stompClient, isConnected } = useWebSocket();
     useEffect(() => {
@@ -114,14 +112,14 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                 console.log("Unsubscribing from chat updates");
             }
         });
-    }, [stompClient, isConnected, chatId]);
+    }, [stompClient, isConnected, chatId, user?.id]);
 
 
     const [otherUser, setOtherUser] = useState<{username:string, avatar?:string} | null>(null);
     useEffect(() => {
         const getOtherUserInfo = async () => {
             try{
-                const response = await apiPrivate.get(`/profile/users/${chatId}`);
+                const response = await getUserDetails(chatId);
                 setOtherUser({
                     username: response.data.username,
                     avatar: response.data.avatarUrl

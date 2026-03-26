@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import useApiPrivate from "../../hooks/useApiPrivate";
 import { Link } from "react-router-dom";
+import useChatApi from "../../hooks/useChatApi"
+import { useAuth } from "../../context/AuthProvider";
 
-export interface FriendRequest {
-    username: string;
-    thumbnail: string;
-    status: string;
-}
+import type { FriendRequest } from "../../types/chat";
 
 // const FAKE_REQUESTS: FriendRequest[] = [
 //     {
@@ -25,16 +22,17 @@ export interface FriendRequest {
 // ];
 
 function FriendRequestsList() {
-    const apiPrivate = useApiPrivate();
     const [requests, setRequests] = useState<FriendRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
 
+    const { getFriendRequests, acceptFriendRequest } = useChatApi();
+    const { user } = useAuth();
     // FETCH REQUESTS 
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                const response = await apiPrivate.get("/friends/requests");
+                const response = await getFriendRequests();
                 setRequests(response.data);
                 
                 // setRequests([
@@ -74,12 +72,12 @@ function FriendRequestsList() {
         };
 
         fetchRequests();
-    }, [apiPrivate]);
+    }, [user?.id]);
 
     const handleAccept = async (username: string) => {
         setProcessingId(username);
         try {
-            await apiPrivate.post(`/friends/request/${username}`);
+            await acceptFriendRequest(username);
             setRequests(prev => prev.filter(r => r.username !== username));
         } catch (error) {
             console.error(`Failed to accept request from ${username}`, error);

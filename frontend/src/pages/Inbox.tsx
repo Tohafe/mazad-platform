@@ -1,14 +1,10 @@
-import { useEffect, useState } from "react";
 import ConversationList from "../components/Chat/ConversationList";
-import type { Chat } from "../components/Chat/ConversationList";
 import ChatWindow from "../components/Chat/ChatWindow";
-import { apiPrivate } from "../api/axios";
-import { useWebSocket } from "../context/WebSocketContext";
-import { useAuth } from "../context/AuthProvider";
 import FriendList  from "../components/Chat/FriendList"
 import FriendRequestsList from "../components/Chat/FriendRequestsList";
 import useUserApi from "../hooks/useUserApi";
-
+import useChatInbox from "../hooks/useChatInbox";
+import { useState } from "react";
 type ViewType = 'messages' | 'friends' | 'requests';
 
 function Inbox(){
@@ -16,170 +12,153 @@ function Inbox(){
     const [ActiveView, setActiveView] = useState<ViewType>('messages');
     const [activeChatId, setActiveChatId] = useState<string | null>(null);
 
-    // const fakeChats : Chat[]=
-    // [
-    //     {
-    //         id: '014604f7-1668-4b45-8f44-a42096d7da26', name: "Hamzam", lastMessage: "",
-    //         hasUnreadMessages: true
-    //     },
-    //     {
-    //         id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
-    //         hasUnreadMessages: false
-    //     },
-    //     {
-    //         id: "014604f7-1668-4b45-8f44-a42096d7da28", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
-    //         hasUnreadMessages: false
-    //     },
-    //     {
-    //         id: "014604f7-1668-4b45-8f44-a42096d7da29", name: "Hamza", lastMessage: "Can i get the full history of the Item ?",
-    //         hasUnreadMessages: false
+    const { chats, handleSelectChat, moveChatToTop } = useChatInbox(activeChatId);
+    // const { getInbox, getUserDetails, markChatRead } = useChatApi();
+    // // FETCH CHATS FRON /INBOX ENDPOIT
+    // const fetchUserDetails = async (userId: string) => {
+    //     try {
+
+    //         const response = await getUserDetails(userId);
+    //         const userData = response.data;
+            
+    //         setChats(prev => prev.map( c => 
+    //                         c.id === userId 
+    //                         ? { ...c, name: userData.username, avatar: userData.avatarUrl} 
+    //                         : c
+                
+    //         ));
+    //     } catch(err) {
+    //         console.error(`could not fetch info for user ${userId}`, err);
     //     }
 
-    // ];
-    // FETCH CHATS FRON /INBOX ENDPOIT
-    const fetchUserDetails = async (userId: string) => {
-        try {
+    // }
 
-            const response = await apiPrivate.get(`/profile/users/${userId}`);
-            const userData = response.data;
-            
-            setChats(prev => prev.map( c => 
-                            c.id === userId 
-                            ? { ...c, name: userData.username, avatar: userData.avatarUrl} 
-                            : c
-                
-            ));
-        } catch(err) {
-            console.error(`could not fetch info for user ${userId}`, err);
-        }
+    // const [chats, setChats] = useState<Chat[]>([]);
+    // useEffect(()=>{
+    //     const fetchInbox = async () => {
+    //         try{
 
-    }
-    const fetchInbox = async () => {
-        try{
+    //             const response = await getInbox();
+    //             const rawChats = response.data.content;
+    //             const formattedChats = rawChats.map((dto:any) => ({
+    //                 id: dto.otherUserId,
+    //                 name: `User ${dto.otherUserId.substring(0, 4)}..`,
+    //                 lastMessage: dto.lastMessage,
+    //                 hasUnreadMessages: dto.hasUnreadMessages
+    //             }));
+    //             setChats(formattedChats);
 
-            const response = await apiPrivate.get(`/chat/inbox`);
-            const rawChats = response.data.content;
-            const formattedChats = rawChats.map((dto:any) => ({
-                id: dto.otherUserId,
-                name: `User ${dto.otherUserId.substring(0, 4)}..`,
-                lastMessage: dto.lastMessage,
-                hasUnreadMessages: dto.hasUnreadMessages
-            }));
-            setChats(formattedChats);
+    //             formattedChats.forEach( (chat: Chat) => {
+    //                 fetchUserDetails(chat.id);
+    //             })
+    //         }catch(error){
+    //             console.error("Failed to fetch inbox:", error);
+    //         }
+    //     }
+    //     fetchInbox();
+    // }, [user?.id]);
 
-            formattedChats.forEach( (chat: Chat) => {
-                fetchUserDetails(chat.id);
-            })
-        }catch(error){
-            console.error("Failed to fetch inbox:", error);
-        }
-    }
-    const [chats, setChats] = useState<Chat[]>([]);
-    useEffect(()=>{
-        fetchInbox();
-    }, [apiPrivate]);
+    // // MARK AS READ AFTER SELECTING A CHAT
+    // const handleSelectChat = async (chatId: string) => {
+    //     setActiveChatId(chatId);
+    //     // need to set read boolean
+    //     const selectedChat = chats.find(c => c.id === chatId);
+    //     if (selectedChat?.hasUnreadMessages) {
+    //         setChats(prevChats => prevChats.map(c => 
+    //                 (c.id === chatId) ? {...c, hasUnreadMessages: false} : c 
+    //         ));
 
-    // MARK AS READ AFTER SELECTING A CHAT
-    const handleSelectChat = async (chatId: string) => {
-        setActiveChatId(chatId);
-        // need to set read boolean
-        const selectedChat = chats.find(c => c.id === chatId);
-        if (selectedChat?.hasUnreadMessages) {
-            setChats(prevChats => prevChats.map(c => 
-                    (c.id === chatId) ? {...c, hasUnreadMessages: false} : c 
-            ));
+    //         try{
+    //             await markChatRead(chatId);
+    //         }catch(e){
+    //             console.error("Failed to mark chat as read:", e);
+    //         }
+    //     }
+    // }
+    // // SUBSCRIBING TO THE WEBSOCKET LISTENING TO MESSAGES TOPIC
+    // const { stompClient, isConnected } = useWebSocket();
+    // useEffect(() => {
+    //         console.log("status check", {
+    //             hasStompClient: !!stompClient,
+    //             userId: user?.id,
+    //             isConnected: isConnected,
+    //             fullUserObject: user
+    //         });
+    //         if (!stompClient || !isConnected || !user?.id){
+    //             if (stompClient && !isConnected){
 
-            try{
-                await apiPrivate.patch(`/chat/read/${chatId}`);
-            }catch(e){
-                console.error("Failed to mark chat as read:", e);
-            }
-        }
-    }
-    // SUBSCRIBING TO THE WEBSOCKET LISTENING TO MESSAGES TOPIC
-    const { stompClient, isConnected } = useWebSocket();
-    const { user } = useAuth();
-    useEffect(() => {
-            console.log("status check", {
-                hasStompClient: !!stompClient,
-                userId: user?.id,
-                isConnected: isConnected,
-                fullUserObject: user
-            });
-            if (!stompClient || !isConnected || !user?.id){
-                if (stompClient && !isConnected){
+    //                 console.log("waiting for websocket connection...");
+    //             }
+    //             return ;
+    //         } 
+    //         console.log("Subscribing to real-time chat updates...");
+    //         const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
+    //             const incomingMsg = JSON.parse(message.body);
+    //             console.log(incomingMsg);
+    //             setChats((prevChats) => {
+    //                 const existingChatIndex = prevChats.findIndex(c => c.id === incomingMsg.senderId);
+    //                 const isCurrentlyOpen = activeChatId?.toLowerCase() === incomingMsg.senderId.toLowerCase();
+    //                 console.log("isCurrentlyOpen", isCurrentlyOpen);
+    //                 let updatedChats = [...prevChats];
+    //                 if (existingChatIndex >= 0) {
+    //                     const existingChat = updatedChats[existingChatIndex];
+    //                     updatedChats.splice(existingChatIndex,  1);
+    //                     updatedChats.unshift({
+    //                         ...existingChat,
+    //                         lastMessage: incomingMsg.content,
+    //                         hasUnreadMessages: !isCurrentlyOpen
+    //                     });
+    //                 }
+    //                 else {
+    //                     updatedChats.unshift({
+    //                         id: incomingMsg.senderId,
+    //                         name: `User ${incomingMsg.senderId.substring(0,4)}..`,
+    //                         lastMessage: incomingMsg.content,
+    //                         hasUnreadMessages: !isCurrentlyOpen
+    //                     });
+    //                     fetchUserDetails(incomingMsg.senderId);
+    //                 }
+    //                 return updatedChats;
+    //             });
+    //         });
+    //         return (() => {
+    //             if (stompClient && stompClient.connected && subscription) {
+    //                 console.log("Unsubscribing from chat updates");
+    //                 subscription.unsubscribe();
+    //             }
+    //         });
+    //     }, [stompClient, isConnected, activeChatId, user?.id]
+    // );
 
-                    console.log("waiting for websocket connection...");
-                }
-                return ;
-            } 
-            console.log("Subscribing to real-time chat updates...");
-            const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
-                const incomingMsg = JSON.parse(message.body);
-                console.log(incomingMsg);
-                setChats((prevChats) => {
-                    const existingChatIndex = prevChats.findIndex(c => c.id === incomingMsg.senderId);
-                    const isCurrentlyOpen = activeChatId?.toLowerCase() === incomingMsg.senderId.toLowerCase();
-                    console.log("isCurrentlyOpen", isCurrentlyOpen);
-                    let updatedChats = [...prevChats];
-                    if (existingChatIndex >= 0) {
-                        const existingChat = updatedChats[existingChatIndex];
-                        updatedChats.splice(existingChatIndex,  1);
-                        updatedChats.unshift({
-                            ...existingChat,
-                            lastMessage: incomingMsg.content,
-                            hasUnreadMessages: !isCurrentlyOpen
-                        });
-                    }
-                    else {
-                        updatedChats.unshift({
-                            id: incomingMsg.senderId,
-                            name: `User ${incomingMsg.senderId.substring(0,4)}..`,
-                            lastMessage: incomingMsg.content,
-                            hasUnreadMessages: !isCurrentlyOpen
-                        });
-                        fetchUserDetails(incomingMsg.senderId);
-                    }
-                    return updatedChats;
-                });
-            });
-            return (() => {
-                if (stompClient && stompClient.connected && subscription) {
-                    console.log("Unsubscribing from chat updates");
-                    subscription.unsubscribe();
-                }
-            });
-        }, [stompClient, isConnected, activeChatId, user?.id]
-    );
+    // // a hook for send button to move chat to top
+    // const moveChatToTop = (chatId: string, lastMessage: string) => {
+    //     setChats((prevChats) => {
+    //         const updatedChats = [...prevChats];
+    //         const index = updatedChats.findIndex(c => c.id.toLowerCase() === chatId.toLowerCase());
 
-    // a hook for send button to move chat to top
-    const moveChatToTop = (chatId: string, lastMessage: string) => {
-        setChats((prevChats) => {
-            const updatedChats = [...prevChats];
-            const index = updatedChats.findIndex(c => c.id.toLowerCase() === chatId.toLowerCase());
+    //         if (index === -1) {
+    //             updatedChats.unshift({
+    //                 id: chatId,
+    //                 name: "Loading ...",
+    //                 lastMessage: lastMessage,
+    //                 hasUnreadMessages: false
+    //             });
+    //             fetchUserDetails(chatId);
+    //         }else {
+    //             const targetChat = updatedChats[index]; 
+    //             updatedChats.splice(index, 1);
+    //             updatedChats.unshift({
+    //                 ...targetChat, 
+    //                 lastMessage: lastMessage,
+    //                 hasUnreadMessages: false
+    //             }); 
+    //         }
 
-            if (index === -1) {
-                updatedChats.unshift({
-                    id: chatId,
-                    name: "Loading ...",
-                    lastMessage: lastMessage,
-                    hasUnreadMessages: false
-                });
-                fetchUserDetails(chatId);
-            }else {
-                const targetChat = updatedChats[index]; 
-                updatedChats.splice(index, 1);
-                updatedChats.unshift({
-                    ...targetChat, 
-                    lastMessage: lastMessage,
-                    hasUnreadMessages: false
-                }); 
-            }
+    //         return updatedChats;
+    //     });
+    // }
 
-            return updatedChats;
-        });
-    }
-
+    // HANDLE OPENING NEW CHAT WITH A FRIEND (FROM FRIEND LIST)
     const   { getPublicProfile } = useUserApi();
     const handleMessageFriend = async (friendUsername: string) => {
         getPublicProfile(friendUsername)
@@ -195,6 +174,11 @@ function Inbox(){
             }) 
     }
     
+    const onChatClick = (chatId: string) => {
+        setActiveChatId(chatId);
+        handleSelectChat(chatId);
+    }
+
     return (
         // PAGE WRAPPER 
         <div className="flex justify-center items-start pt-6  w-full  font-sans px-4">
@@ -237,7 +221,7 @@ function Inbox(){
                         <ConversationList 
                         chats={chats}
                         activeChatId={activeChatId}
-                        onSelectChat={handleSelectChat}
+                        onSelectChat={onChatClick}
                         />
                     )}
                     {/* FRIEND LIST */}
