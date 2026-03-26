@@ -30,7 +30,7 @@ function calculateCountdown(endsAt: string): Countdown {
   const now = new Date();
   const diff = endDate.getTime() - now.getTime();
 
-  if (diff <= 0) {
+  if (diff <= 0) {  
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
 
@@ -148,6 +148,7 @@ export function useProduct(productId: number) {
         title: data.title ?? 'Untitled Product',
         images: transformImages(data.images),
         description: data.description ?? '',
+        document: data.document ?? '',
         sellerDescription: data.description ?? '',
         details: transformSpecs(data.specs),
         shippingInfo: data.shippingInfo ?? 'No shipping information available',

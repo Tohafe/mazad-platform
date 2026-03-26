@@ -12,6 +12,7 @@ import {HelpBox} from './HelpBox';
 import {ClosedAuctionView} from './ClosedAuctionView';
 import {usePlaceBid} from "../../hooks/usePlaceBid.ts";
 import {useAuth} from "../../context/AuthProvider.tsx";
+import { useQueryClient } from '@tanstack/react-query';
 
 interface BidSidebarProps {
     data: BidData;
@@ -19,7 +20,7 @@ interface BidSidebarProps {
 }
 
 export function isAuctionClosed(status: string) {
-    return ["SOLD", "EXPIRED", "CANCELLED"].includes(status);
+    return ["SOLD", "EXPIRED", "CANCELLED", "CLOSED"].includes(status);
 }
 
 export function parseCurrency(value: string): number {
@@ -41,13 +42,27 @@ const AuctionOwner = () => {
 export function BidSidebar({data, auctionId}: BidSidebarProps) {
     const {data: bidsData, isLoading} = useBids(auctionId);
     const {user} = useAuth();
+    const queryClient = useQueryClient();
 
     const isOwner = data.sellerId === user?.id;
 
+    // const latestBidValue = bidsData?.entries?.[0]?.amount ?? data.currentBid;
+
+    
+    // 2. Parse it into a usable number for your math
     const currentBidNumeric = useMemo(
         () => parseCurrency(data.currentBid),
-        [data.currentBid]
+        [data.currentBid] // React will recalculate when latestBidValue changes
     );
+    console.log("Bid Side", currentBidNumeric);
+    console.log("Curent bid", data.currentBid);
+
+    //////////////////////////
+
+    // const currentBidNumeric = useMemo(
+    //     () => parseCurrency(data.currentBid),
+    //     [data.currentBid]
+    // );
 
     const minRequired = useMemo(
         () => currentBidNumeric + 1,
@@ -65,6 +80,7 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
     } = usePlaceBid(auctionId, minRequired);
 
     if (isAuctionClosed(data.status)) {
+        void queryClient.invalidateQueries({ queryKey: ['product', auctionId] });
         return (
             <div className="space-y-4 w-full max-w-100">
                 <ClosedAuctionView

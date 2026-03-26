@@ -14,6 +14,7 @@ export interface ApiProduct {
   categoryId: number;
   title: string;
   description: string;
+  document: string;
   images: string[];
   specs: ProductSpecs;
   currentBid: number;

@@ -11,6 +11,7 @@ import { formatCurrencyWholeNumber } from './useProduct';
 interface BidEventMessage extends ApiBid {
   endsAt?: string;
   status?: AuctionStatus;
+  currentHighestBid: number
 }
 
 
@@ -28,6 +29,8 @@ function timeAgo(dateStr: string): string {
 
 /** Transform a raw API bid into a display entry */
 function transformBid(bid: ApiBid): BidEntry {
+  console.log('inside Transform:', bid.amount);
+  console.log('inside Transform:', formatCurrencyWholeNumber(bid.amount));
   return {
     pseudonym: generatePseudonym(bid.bidderId),
     timeAgo: timeAgo(bid.createdAt),
@@ -40,37 +43,49 @@ export function useBids(auctionId: number) {
   const queryClient = useQueryClient();
   const { getBids } = useBidApi();
 
+  console.log('Naoufal New bid received: 0');
+
   // Subscribe to real-time bid updates via WebSocket
   useEffect(() => {
+    console.log('Naoufal New bid received: 1');
     if (!stompClient || !isConnected || !auctionId) return;
 
     const subscription = stompClient.subscribe(`/topic/auction/${auctionId}`, (message: IMessage) => {
-      const bidEvent: BidEventMessage = JSON.parse(message.body);
-      console.log('New bid received:', bidEvent);
+      console.log('Naoufal New bid received: 2');
+      
+      try {
+        const bidEvent = JSON.parse(message.body) as BidEventMessage;
+        
+        // Update the bids cache with the new bid
+        queryClient.setQueryData<ApiBid[]>(['bids', auctionId], (oldBids) => {
+          if (!oldBids) return [bidEvent];
 
-      // Update the bids cache with the new bid
-      queryClient.setQueryData<ApiBid[]>(['bids', auctionId], (oldBids) => {
-        if (!oldBids) return [bidEvent];
-        // Add new bid if it doesn't already exist
-        const exists = oldBids.some((bid) => bid.id === bidEvent.id);
-        if (exists) return oldBids;
-        return [bidEvent, ...oldBids];
-      });
+          // Add new bid if it doesn't already exist
+          const exists = oldBids.some((bid) => bid.id === bidEvent.id);
+          if (exists) return oldBids;
+          return [bidEvent, ...oldBids];
+        });
 
-      // Update the product cache with the new bid amount and endsAt if provided
-      queryClient.setQueryData<ApiProduct>(['product', auctionId], (oldProduct) => {
-        if (!oldProduct) return oldProduct;
-        return {
-          ...oldProduct,
-          currentBid: bidEvent.amount,
-          ...(bidEvent.endsAt && { endsAt: bidEvent.endsAt }),
-          ...(bidEvent.status && { status: bidEvent.status }),
-        };
-      });
+        // Update the product cache with the new bid amount and endsAt if provided
+        queryClient.setQueryData<ApiProduct>(['product', auctionId], (oldProduct) => {
+          if (!oldProduct) return oldProduct;
+          return {
+            ...oldProduct,
+            currentBid: bidEvent.currentHighestBid,
+            ...(bidEvent.endsAt && { endsAt: bidEvent.endsAt }),
+            ...(bidEvent.status && { status: bidEvent.status }),
+          };
+        });
+
+        console.log('New bid received and processed:', bidEvent);
+        
+      } catch (error) {
+        console.error("Failed to parse incoming bid event:", error);
+      }
 
       // Invalidate queries to ensure components re-render with updated data
       void queryClient.invalidateQueries({ queryKey: ['bids', auctionId] });
-      void queryClient.invalidateQueries({ queryKey: ['product', auctionId] });
+      // void queryClient.invalidateQueries({ queryKey: ['product', auctionId] });
     });
 
     return () => {

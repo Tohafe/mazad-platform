@@ -36,6 +36,11 @@ CREATE TABLE bids (
         ON DELETE CASCADE
 );
 
+CREATE TABLE users (
+    user_id UUID NOT NULL PRIMARY KEY,
+    sold BIGINT NOT NULL
+);
+
 -- Indexing for performance: We will often search for bids by auction_id
 CREATE INDEX idx_bids_auction_id ON bids(auction_id);
 CREATE INDEX idx_auctions_status_ends_at ON auctions (status, ends_at);

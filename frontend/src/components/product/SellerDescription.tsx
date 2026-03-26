@@ -8,7 +8,7 @@ export function SellerDescription({
   description,
 }: SellerDescriptionProps) {
   return (
-    <div className="pb-2">
+    <div className="border-t  border-border pt-6">
       <h2 className="text-base font-semibold uppercase tracking-widest text-secondary mb-3">
         Description from the seller
       </h2>

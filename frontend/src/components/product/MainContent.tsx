@@ -4,11 +4,13 @@ import { ImageGallery } from './ImageGallery';
 import { SellerDescription } from './SellerDescription';
 import { DetailsGrid } from './DetailsGrid';
 import { ShippingInfo } from './ShippingInfo';
+import { SllerDocument } from './sellerDocument';
 
 interface MainContentProps {
   title: string;
   images: ProductImage[];
   description: string;
+  document: string;
   sellerDescription: string;
   details: ProductDetail[];
   shippingInfo: string;
@@ -20,6 +22,7 @@ export function MainContent({
   title,
   images,
   sellerDescription,
+  document,
   details,
   shippingInfo,
 }: MainContentProps) {
@@ -34,6 +37,9 @@ export function MainContent({
         <ImageGallery images={images} />
       </div>
 
+      {/* Document */}
+      <SllerDocument document={document} />
+      
       {/* Description from seller */}
       <SellerDescription description={sellerDescription} />
 
