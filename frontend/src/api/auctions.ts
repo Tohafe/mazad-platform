@@ -6,7 +6,7 @@ export async function fetchAuctions(api: AxiosInstance, auctionFilters: AuctionF
     // const api = useApiPrivate();
     const {page = 0, size = 15, ...filters} = auctionFilters;
     const response = await api.get<Page<AuctionSummary>>("/items", {
-        params: {page, size, status: "ACTIVE", ...filters}
+        params: {page, size, ...filters}
     })
 
     console.log("Fetching auctions with filters:", response);
@@ -17,7 +17,7 @@ export async function fetchMyAuctions(api: AxiosInstance, auctionFilters: Auctio
     // const api = useApiPrivate();
     const {page = 0, size = 12, ...filters} = auctionFilters;
     const response = await api.get<Page<AuctionSummary>>("/items/me", {
-        params: {page, size, status: "ACTIVE", ...filters}
+        params: {page, size, ...filters}
     })
 
     console.log("Fetching auctions with filters:", response);
