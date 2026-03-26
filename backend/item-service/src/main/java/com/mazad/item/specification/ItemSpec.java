@@ -41,6 +41,11 @@ public final class ItemSpec {
                 predicates.add(cb.lessThanOrEqualTo(root.get("endsAt"), search.endsBefore()));
             if (search.endsAfter() != null)
                 predicates.add(cb.greaterThanOrEqualTo(root.get("endsAt"), search.endsAfter()));
+
+            if (search.priceSort() != null && search.priceSort().equals("asc"))
+                query.orderBy(cb.asc(effectivePrice));
+            if (search.priceSort() != null && search.priceSort().equals("desc"))
+                query.orderBy(cb.desc(effectivePrice));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

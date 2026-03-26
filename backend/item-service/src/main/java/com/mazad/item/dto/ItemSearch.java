@@ -17,10 +17,11 @@ public record ItemSearch(
         Long minPrice,
         Long maxPrice,
         Instant endsBefore,
-        Instant endsAfter
+        Instant endsAfter,
+        String priceSort
 ) {
     public ItemSearch() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null,null, null, null, null, null);
     }
 
     public static ItemSearch withSellerId(UUID sellerId, ItemSearch other) {
@@ -33,6 +34,7 @@ public record ItemSearch(
                 .maxPrice(other.maxPrice)
                 .endsBefore(other.endsBefore)
                 .endsAfter(other.endsAfter)
+                .priceSort(other.priceSort)
                 .build();
     }
 }

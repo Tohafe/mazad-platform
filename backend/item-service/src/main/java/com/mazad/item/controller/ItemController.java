@@ -76,6 +76,8 @@ public class ItemController {
     public PagedModel<ItemSummaryDto> listItems(
             @ModelAttribute ItemSearch itemSearch,
             @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        if (itemSearch.priceSort() != null)
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
         return itemService.listItemsBy(itemSearch, pageable);
     }
 
