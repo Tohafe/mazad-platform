@@ -113,8 +113,8 @@ const filterBySort = (filter: AppliedFilter): Partial<AuctionFilters> => {
 
     if (selected.id === "timeRemaining") return { sort: "endsAt,asc" };
     if (selected.id === "recentlyAdded") return { sort: "createdAt,desc" };
-    if (selected.id === "currentBidAsc") return { sort: "currentBid,asc" };
-    if (selected.id === "currentBidDesc") return { sort: "currentBid,desc" };
+    if (selected.id === "currentBidAsc") return { priceSort: "asc" };
+    if (selected.id === "currentBidDesc") return { priceSort: "desc" };
 
 
     return {};

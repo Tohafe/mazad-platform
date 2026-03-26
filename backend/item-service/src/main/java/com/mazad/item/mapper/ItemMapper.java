@@ -76,6 +76,7 @@ public class ItemMapper {
                 .title(entity.getTitle())
                 .thumbnail(entity.getThumbnail())
                 .currentBid(entity.getCurrentBid())
+                .startingPrice(entity.getStartingPrice())
                 .status(entity.getStatus())
                 .startsAt(entity.getStartsAt())
                 .endsAt(entity.getEndsAt())

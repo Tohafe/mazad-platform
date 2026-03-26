@@ -13,6 +13,7 @@ export interface AuctionSummary {
     title: string;
     thumbnail: string;
     currentBid: number;
+    startingPrice: number;
     status: AuctionStatus;
     startsAt: string;
     endsAt: string;
@@ -46,4 +47,5 @@ export interface AuctionFilters {
 
     // sorting
     sort?: string;
+    priceSort?: string;
 }

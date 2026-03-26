@@ -66,7 +66,6 @@ export const filterData: Filter[] = [
         selectionMode: "single",
         options: [
             {id: "timeRemaining", name: "Time remaining"},
-            {id: "recentlyAdded", name: "Recently added"},
             {id: "currentBidAsc", name: "Current bid (low → high)"},
             {id: "currentBidDesc", name: "Current bid (high → low)"},
         ],

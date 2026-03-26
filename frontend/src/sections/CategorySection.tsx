@@ -82,28 +82,32 @@ const CategorySection = ({className = "", onCategoryChange, ...props}: CategoryS
         return `/c/${category.id}-${category.slug}`
     }
 
-    if (isLoading) return <div>Is Loading Categories</div>
+    if (isLoading) return <div>Loading categories...</div>
+    if (data.length === 0) return null;
     const baseStyles = "relative items-center w-full h-full";
     return (
-        <div className={cn(baseStyles, className,)} {...props}>
-            <IconButton
-                className={cn("absolute left-0 bg-linear-to-r from-white from-50% to-transparent w-16 h-full hover:opacity-100", canScrollLeft ? "visible" : "invisible")}
-                onClick={scrollLeft}
-                icon={MdKeyboardArrowLeft} iconClassName="text-brand"/>
-            <IconButton
-                className={cn("absolute right-0 bg-linear-to-l from-white from-50% to-transparent w-16 h-full hover:opacity-100", canScrollRight ? "visible" : "invisible")}
-                onClick={scrollRight}
-                icon={MdKeyboardArrowRight} iconClassName="text-brand"/>
-            <nav ref={navRef} onScroll={checkScrollPos}
-                 className="flex flex-row h-full w-full gap-2 whitespace-nowrap overflow-x-auto no-scrollbar">
-                {categories.map((catTab) => (
-                    <Tab link={getLink(catTab)} variant={`${selectedCat?.id === catTab.id ? "selected" : "unselected"}`}
-                         key={catTab.id}
-                         onClick={() => {
-                         }} iconKey={catTab.icon}>{catTab.name}</Tab>
-                ))}
-            </nav>
-        </div>
+        <>
+            {categories.length > 0 && <div className={cn(baseStyles, className,)} {...props}>
+                <IconButton
+                    className={cn("absolute left-0 bg-linear-to-r from-white from-50% to-transparent w-16 h-full hover:opacity-100", canScrollLeft ? "visible" : "invisible")}
+                    onClick={scrollLeft}
+                    icon={MdKeyboardArrowLeft} iconClassName="text-brand"/>
+                <IconButton
+                    className={cn("absolute right-0 bg-linear-to-l from-white from-50% to-transparent w-16 h-full hover:opacity-100", canScrollRight ? "visible" : "invisible")}
+                    onClick={scrollRight}
+                    icon={MdKeyboardArrowRight} iconClassName="text-brand"/>
+                <nav ref={navRef} onScroll={checkScrollPos}
+                     className="flex flex-row h-full w-full gap-2 whitespace-nowrap overflow-x-auto no-scrollbar">
+                    {categories.map((catTab) => (
+                        <Tab link={getLink(catTab)}
+                             variant={`${selectedCat?.id === catTab.id ? "selected" : "unselected"}`}
+                             key={catTab.id}
+                             onClick={() => {
+                             }} iconKey={catTab.icon}>{catTab.name}</Tab>
+                    ))}
+                </nav>
+            </div>}
+        </>
     )
 }
 

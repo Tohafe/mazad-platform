@@ -32,6 +32,9 @@ const ListingCard = ({
                      }: ListingCardProps) => {
     const baseStyles = "flex flex-col w-full aspect-square justify-center gap-2 shrink-0 cursor-pointer";
     const timeLeftLabel = useAuctionTimeLeft(auction.status, auction.endsAt);
+    const showCurrentBid = auction.currentBid !== 0
+    const priceTitle = showCurrentBid ? "CURRENT BID": "STARTING PRICE";
+    const effectivePrice = showCurrentBid ? auction.currentBid: auction.startingPrice;
     return (
         <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
 
@@ -41,9 +44,9 @@ const ListingCard = ({
                             iconClassName="text-brand">{mapStatus(auction.status)}</IconButton>
             </div>
             <div className="flex items-center justify-between">
-                <div className="flex flex-col start-0 pt-1">
-                    <label className="text-muted font-mono tracking-widest text-[12px]">CURRENT BID</label>
-                    <label className="text-black font-medium text-xl text-start">{auction.currentBid}</label>
+                <div className="flex flex-col pt-1">
+                    <label className="text-muted font-mono tracking-widest text-[12px]">{priceTitle}</label>
+                    <label className="text-black font-medium text-xl text-start">{effectivePrice}</label>
                 </div>
                 {auction.status === "ACTIVE" && handleCancelClick && auction.currentBid === 0 &&
                     <Button size="sm" onMouseDown={() => handleCancelClick(auction)} variant="danger" icon={MdCancel}

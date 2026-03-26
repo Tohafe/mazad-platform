@@ -11,6 +11,7 @@ public record ItemSummaryDto(
         String title,
         String thumbnail,
         Long currentBid,
+        Long startingPrice,
         AuctionStatus status,
         Instant startsAt,
         Instant endsAt
