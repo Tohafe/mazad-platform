@@ -69,9 +69,7 @@ spring:
             - id: auth-service-route
               uri: ${AUTH_SERVICE_URL:https://auth-service:8443}
               predicates:
-                - Path=/api/v1/auth/**
-              filters:
-                - StripPrefix=2
+                - Path=/api/v1/auth/**,/oauth2/**,/login/oauth2/**
 
             - id: user-service-route
               uri: ${USER_SERVICE_URL:https://user-service:8443}
@@ -133,6 +131,7 @@ spring:
                   - http://10.30.245.151:5173
                   # //for frontend Dev, remove it before push @Naoufal
                   - 'http://localhost:5173'
+                  - 'http://127.0.0.1:5173'
                 allowed-methods:
                   - GET
                   - POST

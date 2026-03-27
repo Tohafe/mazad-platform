@@ -1,35 +1,30 @@
 package com.mazad.auth.controller;
 
-import java.time.Duration;
 import java.util.UUID;
 
 import com.mazad.auth.entity.ApiKey;
-import com.mazad.auth.exception.BadRequestException;
 import com.mazad.auth.service.ApiKeyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.mazad.auth.dto.AuthResponseDto;
 import com.mazad.auth.dto.EmailResetDto;
 import com.mazad.auth.dto.LoginResponseDto;
 import com.mazad.auth.dto.PasswordResetDto;
 import com.mazad.auth.dto.UserRequestDTO;
-import com.mazad.auth.dto.UserResponseDTO;
+import com.mazad.auth.dto.UsernameResetDto;
 import com.mazad.auth.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import tools.jackson.databind.JsonNode;
 
 
 @RestController
-@RequestMapping("/auth/")
+@RequestMapping("/api/v1/auth/")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -40,7 +35,7 @@ public class UserController {
     long    refreshValidity;
 
     @PostMapping("register")
-    public UserResponseDTO adddUser(
+    public ResponseEntity<LoginResponseDto> adddUser(
         @RequestBody @Validated(UserRequestDTO.OnRegister.class) UserRequestDTO userRequest
     ) {
         return userService.addUser(userRequest);
@@ -51,30 +46,7 @@ public class UserController {
         @RequestBody @Validated(UserRequestDTO.OnLogin.class) UserRequestDTO userRequest,
         @CookieValue(name="refresh_token", required=false) String refreshToken
     ) {
-        AuthResponseDto authResponse;
-        ResponseCookie refreshCookie;
-        LoginResponseDto loginResponse;
-
-
-        authResponse = userService.verifyUser(userRequest, refreshToken);
-        refreshCookie = ResponseCookie
-                            .from("refresh_token", authResponse.refreshToken())
-                            .httpOnly(true)
-                            .sameSite("None") // "None" allows the cookie to be sent across different ports @Naoufal .sameSite("Strict")
-                            .secure(true) // true for HTTPS on production
-                            .path("/api/v1/auth/")
-                            .maxAge(Duration.ofDays(refreshValidity))
-                            .build();
-        loginResponse = LoginResponseDto
-                            .builder()
-                            .accessToken(authResponse.accessToken())
-                            .user(authResponse.user())
-                            .build();
-
-        return ResponseEntity
-                        .ok()
-                        .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                        .body(loginResponse);
+      return userService.verifyUser(userRequest, refreshToken);
     }
     
     @PostMapping("logout")
@@ -101,20 +73,20 @@ public class UserController {
         return userService.refresh(refreshToken);
     }
     
-    @DeleteMapping("delete")
-    public ResponseEntity<String> delete(
-        @RequestHeader(name="X-User-Id") UUID userId,
-        @RequestBody JsonNode passNode
-    ){
-        String password;
-        if (!passNode.has("password"))
-            throw new BadRequestException("Password Required!");
-        password = passNode.get("password").asString();
-        if (password == null || password.isBlank())
-            throw new BadRequestException("Password Can't Be Empty!");
-        userService.delete(userId, passNode.get("password").asString());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted");
-    }
+//    @DeleteMapping("delete")
+//    public ResponseEntity<String> delete(
+//        @RequestHeader(name="X-User-Id") UUID userId,
+//        @RequestBody JsonNode passNode
+//    ){
+//        String password;
+//        if (!passNode.has("password"))
+//            throw new BadRequestException("Password Required!");
+//        password = passNode.get("password").asString();
+//        if (password == null || password.isBlank())
+//            throw new BadRequestException("Password Can't Be Empty!");
+//        userService.delete(userId, passNode.get("password").asString());
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted");
+//    }
 
     @PatchMapping("reset/password")
     public ResponseEntity<String> resetPassword(
@@ -132,6 +104,14 @@ public class UserController {
     ){ 
         userService.resetEmail(userId, dto);
         return ResponseEntity.ok("Email changed successfully.");
+    }
+    @PatchMapping("reset/username")
+    public ResponseEntity<String> resetUsername(
+        @RequestHeader(name="X-User-Id") UUID userId,
+        @RequestBody @Valid UsernameResetDto dto
+    ){ 
+        userService.resetUsername(userId, dto);
+        return ResponseEntity.ok("Username changed successfully.");
     }
 
     @PostMapping("keys")

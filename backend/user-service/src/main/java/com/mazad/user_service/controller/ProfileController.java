@@ -41,9 +41,6 @@ public class ProfileController {
     private final ProfileService service;
     private final ObjectMapper mapper;
 
-    @Value("${auth-user.sync.key}")
-    String syncKey;
-
     @GetMapping
     public ResponseEntity<PrivateResponseDto> getPrivateProfile(@RequestHeader(name = "X-User-Id") UUID userId) {
         PrivateResponseDto response = service.getPrivateProfile(userId);
@@ -103,31 +100,31 @@ public class ProfileController {
     }
 
 
-    @PatchMapping("internal/sync")
-    public void syncAuthData(
-            @RequestHeader(name = "User-Auth-Sync-Key") String key,
-            @RequestBody CurrentUser userData
-    ) {
-        if (!key.equals(syncKey))
-            throw new UnauthorizedException("Invalid Sync Key!");
-        ObjectNode node = mapper.createObjectNode();
-        if (userData.email() != null && !userData.email().isBlank())
-            node.put("email", userData.email());
-        if (userData.username() != null && !userData.username().isBlank())
-            node.put("username", userData.username());
-        if (userData.id() != null)
-            node.put("userId", userData.id().toString());
-        service.patch(userData.id(), node, true);
-    }
-
-    @DeleteMapping("internal/sync")
-    public void syncAuthData(
-            @RequestHeader(name = "User-Auth-Sync-Key") String key,
-            @RequestBody UUID userId
-    ) {
-        if (!key.equals(syncKey))
-            throw new UnauthorizedException("Invalid Sync Key!");
-        service.deleteProfile(userId);
-    }
+//    @PatchMapping("internal/sync")
+//    public void syncAuthData(
+//            @RequestHeader(name = "User-Auth-Sync-Key") String key,
+//            @RequestBody CurrentUser userData
+//    ) {
+//        if (!key.equals(syncKey))
+//            throw new UnauthorizedException("Invalid Sync Key!");
+//        ObjectNode node = mapper.createObjectNode();
+//        if (userData.email() != null && !userData.email().isBlank())
+//            node.put("email", userData.email());
+//        if (userData.username() != null && !userData.username().isBlank())
+//            node.put("username", userData.username());
+//        if (userData.id() != null)
+//            node.put("userId", userData.id().toString());
+//        service.patch(userData.id(), node, true);
+//    }
+//
+//    @DeleteMapping("internal/sync")
+//    public void syncAuthData(
+//            @RequestHeader(name = "User-Auth-Sync-Key") String key,
+//            @RequestBody UUID userId
+//    ) {
+//        if (!key.equals(syncKey))
+//            throw new UnauthorizedException("Invalid Sync Key!");
+//        service.deleteProfile(userId);
+//    }
 
 }

@@ -45,8 +45,8 @@ export function Header() {
           </svg>
         </button>
 
-        {/* Right Side Actions */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        {/* Right Side Actions */}works
+        <div className="flex items-center gap-2 workssm:gap-4">
           <button className="text-sm text-gray-600 hover:text-gray-900 hidden lg:block">
             How it works?
           </button>
