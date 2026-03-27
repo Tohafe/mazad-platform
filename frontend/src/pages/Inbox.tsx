@@ -5,14 +5,18 @@ import FriendRequestsList from "../components/Chat/FriendRequestsList";
 import useUserApi from "../hooks/useUserApi";
 import useChatInbox from "../hooks/useChatInbox";
 import { useState } from "react";
+// import { useParams } from "react-router-dom";
 type ViewType = 'messages' | 'friends' | 'requests';
 
 function Inbox(){
 
+    // const { userId } = useParams<string>();
+    // console.log("userId from useParams: ",userId);
     const [ActiveView, setActiveView] = useState<ViewType>('messages');
-    const [activeChatId, setActiveChatId] = useState<string | null>(null);
+    const [activeChatId, setActiveChatId] = useState<string | null>( null);
 
     const { chats, handleSelectChat, moveChatToTop } = useChatInbox(activeChatId);
+    
     // const { getInbox, getUserDetails, markChatRead } = useChatApi();
     // // FETCH CHATS FRON /INBOX ENDPOIT
     // const fetchUserDetails = async (userId: string) => {

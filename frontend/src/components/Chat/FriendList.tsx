@@ -97,7 +97,6 @@ interface FriendListProps {
 // ];
 
 function FriendList({ onMessageFriend }: FriendListProps) {
-    // const apiPrivate = useApiPrivate();
     const [friends, setFriends] = useState<Friend[]>();
     const [isLoading, setIsLoading] = useState(true);
     const { getFriends } = useChatApi();
