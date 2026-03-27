@@ -14,6 +14,7 @@ interface ImageUploadProps {
     additionalMedia: UploadableFile | null;
     onAdditionalMediaSelected: (newFiles: File[]) => void;
     onRemoveAdditionalMedia: () => void;
+    onError: (message: string) => void;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -25,7 +26,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     requiredCount,
     additionalMedia,
     onAdditionalMediaSelected,
-    onRemoveAdditionalMedia
+    onRemoveAdditionalMedia,
+    onError
 }) => {
     return (
         <div className="space-y-8 animate-fadeIn">
@@ -38,7 +40,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 <Dropzone
                     multiple={true}
                     maxSizeMB={15}
+                    acceptedTypes=" image/jpeg ,image/png ,image/webp "
                     onFilesSelected={onFilesSelected}
+                    onError={onError}
                 />
             </div>
 
@@ -73,6 +77,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                         maxSizeMB={50} 
                         acceptedTypes="application/pdf, video/mp4, video/webm, video/quicktime, text/plain "
                         onFilesSelected={onAdditionalMediaSelected}
+                        onError={onError}
                     />
                 ) : (
                     <div className="w-64"> 
