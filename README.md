@@ -20,11 +20,9 @@ Mazad was built to simulate a real auction marketplace while exploring practical
 ### Prerequisites
 Make sure the following tools are installed before running the project:
 
-- **Docker** and **Docker Compose**
-- **Node.js** and **npm**
-- **Java 17+**
 - **Git**
 - **Makefile**
+- **Docker** and **Docker Compose**
 
 ### Configuration
 1. Clone the repository.
@@ -32,10 +30,9 @@ Make sure the following tools are installed before running the project:
 3. Fill the required environment variables based on the provided `.env.example` file.
 
 ### Run the project
-1. Start the backend services and infrastructure:
+1. Start the whole project (frontend, backend services, and infrastructure):
    ```bash
-   make up
-   ```
+   make
 
 ## Resources
 
@@ -95,12 +92,9 @@ The team used the following communication channels:
 These technologies were chosen to build a fast, modern, and maintainable user interface with reusable components and strong typing.
 
 ### Backend
-- **Java 17**
+- **Java**
 - **Spring Boot**
-- **Spring Data JPA**
 - **Spring Cloud Gateway**
-- **Lombok**
-
 These technologies were selected because they provide a strong ecosystem for building scalable backend services, API layers, and structured business logic.
 
 ### Database
@@ -119,61 +113,21 @@ The project uses a modern full-stack architecture to simulate a real auction pla
 
 ## Database Schema
 
-Mazad uses a **microservices database-per-service architecture**.  
-Each service owns its own tables, and services communicate using shared IDs and events instead of direct cross-database foreign keys.
+Mazad uses a **microservices database-per-service architecture**. 
+Each service owns its own tables, communicating via shared IDs and events instead of direct cross-database foreign keys.
 
-### Visual Representation
+### Visual Representation & Relationships
+Below is the database structure, showing tables, relationships, key fields, and data types:
 
-- **Auth Service** → `users`, `refresh_token`
+![Database Schema Diagram](resources/images/db_diagram.png)
+
+### Microservice Data Mapping
+- **Auth Service** → `users`, `refresh_token`, `api_keys`
 - **User Service** → `user_profile`, `friendships`
 - **Item Service** → `categories`, `items`, `item_images`
-- **Bidding Service** → `auctions`, `bids`
+- **Bidding Service** → `auctions`, `bids`, `wallets`
 - **Chat Service** → `messages`
 - **Notification Service** → `notifications`
-
-Main links between services:
-- `user_id` connects auth-related data with profiles, items, messages, and notifications
-- `auction_id` / `item_id` connects items with bidding
-
-### Tables and Relationships
-
-- **Auth Service**
-  - Tables: `users`, `refresh_token`
-  - Relationship: one user can have many refresh tokens
-
-- **User Service**
-  - Tables: `user_profile`, `friendships`
-  - Relationship: friendships connect one user profile to another user profile
-
-- **Item Service**
-  - Tables: `categories`, `items`, `item_images`
-  - Relationships:
-    - one category can contain many items
-    - one item can have many images
-    - each item stores a `seller_id` that refers to a user
-
-- **Bidding Service**
-  - Tables: `auctions`, `bids`
-  - Relationship: one auction can have many bids
-
-- **Chat Service**
-  - Table: `messages`
-  - Relationship: each message has a sender and a receiver
-
-- **Notification Service**
-  - Table: `notifications`
-  - Relationship: one user can have many notifications
-
-### Key Fields and Data Types
-
-- `id`, `user_id`, `seller_id`, `bidder_id` → `UUID`
-- `auction_id`, `category_id` → `BIGINT`
-- `title`, `username`, `email`, `status` → `VARCHAR`
-- `description`, `content`, `message`, `shipping_info` → `TEXT`
-- `starting_price`, `current_bid`, `amount` → `BIGINT`
-- `created_at`, `updated_at`, `ends_at`, `timestamp` → `TIMESTAMP` / `TIMESTAMPTZ`
-- `is_read`, `is_verified`, `is_complete`, `active` → `BOOLEAN`
-- `specs` in `items` → `JSONB`
 
 ### Notes
 
