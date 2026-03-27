@@ -3,7 +3,7 @@ CREATE TABLE notifications (
     id BIGINT PRIMARY KEY DEFAULT nextval('notification_id_seq'),
     user_id VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
-    target_url VARCHAR(30),
+    target_url VARCHAR(255),
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

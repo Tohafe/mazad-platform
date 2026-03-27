@@ -40,11 +40,8 @@ public class StompAuthInterceptor implements ChannelInterceptor {
                     
                 } catch (Exception e) {
                     log.error("WebSocket JWT validation failed: {}", e.getMessage());
-                    accessor.setUser(new StompPrincipal(null));
                 }
             }
-            else
-                accessor.setUser(new StompPrincipal(null));
         }
         return message; 
     }
