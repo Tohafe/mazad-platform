@@ -7,6 +7,7 @@ interface DropzoneProps {
     acceptedTypes?: string; 
     multiple?: boolean; 
     children?: React.ReactNode;
+    onError?: (message: string) => void;
 }
 
 const Dropzone: React.FC<DropzoneProps> = ({ 
@@ -15,7 +16,8 @@ const Dropzone: React.FC<DropzoneProps> = ({
     maxFiles = 0,
     acceptedTypes = 'image/*',
     multiple = false,
-    children
+    children,
+    onError
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -71,6 +73,7 @@ const Dropzone: React.FC<DropzoneProps> = ({
     const processFiles = (fileList: FileList) => {
         const filesArray = Array.from(fileList);
         const maxSizeBytes = maxSizeMB * 1024 * 1024; 
+        const rejectedFiles: string[] = [];
 
         let validFiles = filesArray.filter(file => {
             const isUnderMaxSize = file.size <= maxSizeBytes;
@@ -78,8 +81,18 @@ const Dropzone: React.FC<DropzoneProps> = ({
                 ? file.type.startsWith('image/')
                 : acceptedTypes.includes(file.type);
 
+            if (!isUnderMaxSize) {
+                rejectedFiles.push(`"${file.name}" (Exceeds ${maxSizeMB}MB)`);
+            } else if (!isAcceptedType) {
+                rejectedFiles.push(`"${file.name}" (Invalid type)`);
+            }
+
             return isUnderMaxSize && isAcceptedType;
         });
+
+        if (rejectedFiles.length > 0 && onError) {
+            onError(`Rejected: ${rejectedFiles.join(', ')}`);
+        }
 
         if (!multiple && validFiles.length > 0) {
             validFiles = [validFiles[0]];

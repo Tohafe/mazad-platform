@@ -360,6 +360,7 @@ const CreateAuction = () => {
                         additionalMedia={additionalMedia}
                         onAdditionalMediaSelected={handleAdditionalMediaSelected}
                         onRemoveAdditionalMedia={handleRemoveAdditionalMedia}
+                        onError={showError}
                     />
                 )}
 
