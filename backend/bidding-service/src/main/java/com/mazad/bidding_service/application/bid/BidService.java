@@ -7,6 +7,7 @@ import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import com.mazad.bidding_service.application.wallet.WalletService;
 import com.mazad.bidding_service.domain.auction.Auction;
 import com.mazad.bidding_service.domain.auction.AuctionRepository;
 import com.mazad.bidding_service.domain.bid.Bid;
@@ -27,6 +28,7 @@ public class BidService {
     private static final int EXTENSION_DURATION_MINUTES = 1;
 
     private final BidRepository bidRepository;
+    private final WalletService walletService;
     private final AuctionRepository auctionRepository;
     private final AuctionUpdateProducer auctionUpdateProducer;
 
@@ -36,8 +38,21 @@ public class BidService {
         Auction auction = auctionRepository.findById(auctionId)
         .orElseThrow(() -> new AuctionNotFoundException());
         
+        
         BidValidator.validate(auction, amount, userId);
         
+        /* just for now we create a wallet for each user*/
+        // walletService.createWalletForNewUser(userId, 1000L);
+        walletService.reserveFunds(userId, amount);
+        
+        UUID previousBidderId = auction.getCurrentHighestBidderId();
+        if (previousBidderId != null) {
+            // A previous bidder exists! 
+            // This is where you release the reserved funds back to them.
+            walletService.releaseFunds(previousBidderId, auction.getCurrentHighestBid());
+        }
+        /* you can reset this by remove the included lines (between /*), ecxept uuid */
+
         // Anti-Sniping Check
         extendAuctionIfNecessary(auction);
         
@@ -46,7 +61,8 @@ public class BidService {
         bid.setBidderId(userId);
         bid.setAuctionId(auction.getAuctionId());
         
-        UUID previousBidderId = auction.getCurrentHighestBidderId();
+        
+
         auction.setCurrentHighestBid(amount);
         auction.setCurrentHighestBidderId(userId);
 

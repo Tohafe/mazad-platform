@@ -3,11 +3,13 @@ package com.mazad.bidding_service.application.auction;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
+import com.mazad.bidding_service.application.wallet.WalletService;
 import com.mazad.bidding_service.domain.auction.Auction;
 import com.mazad.bidding_service.domain.auction.AuctionRepository;
 import com.mazad.bidding_service.domain.auction.AuctionStatus;
@@ -22,6 +24,8 @@ public class CloseExpiredAuctionsService {
 
     final public AuctionRepository auctionRepository;
     private final AuctionUpdateProducer auctionUpdateProducer;
+    private final WalletService walletService;
+
 
     public void closeExpiredAuctions() {
         log.info("Cron triggered at {}",  OffsetDateTime.now());
@@ -42,6 +46,11 @@ public class CloseExpiredAuctionsService {
 
     public void closeAuction(Auction auction) {
         auction.setStatus(AuctionStatus.CLOSED);
+
+        UUID winerId =  auction.getCurrentHighestBidderId() ;
+        if ( winerId!= null)
+            walletService.transferReservedFunds(winerId, auction.getSellerId(), auction.getCurrentHighestBid());
+        
         auctionRepository.save(auction);
 
         // auctionUpdateProducer.sendUpdate(auction); 

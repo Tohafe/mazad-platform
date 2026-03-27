@@ -47,6 +47,13 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    // Business Logic: Invalid State (e.g., Insufficient Funds, Wallet already exists)
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail handleIllegalState(IllegalStateException ex) {
+        // BAD_REQUEST (400) or CONFLICT (409) are usually best for state violations
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     // Concurrency: The Race Condition
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ProblemDetail handleRaceCondition(ObjectOptimisticLockingFailureException ex) {
