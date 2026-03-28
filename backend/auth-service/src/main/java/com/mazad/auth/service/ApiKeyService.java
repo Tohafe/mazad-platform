@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,8 +38,9 @@ public class ApiKeyService {
         return savedKey;
     }
 
-    public Optional<String> getApiKey(UUID userId) {
+    public String getApiKey(UUID userId) {
         return apiKeyRepository.findByUserId(userId)
-                .map(ApiKey::getApiKey);
+                .map(ApiKey::getApiKey)
+                .orElse(null);
     }
 }

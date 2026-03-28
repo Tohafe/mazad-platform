@@ -7,30 +7,32 @@ import {FaFacebook, FaInstagram} from "react-icons/fa";
 import Divider from "./Divider.tsx";
 import {useAuth} from "../context/AuthProvider.tsx";
 
+
+const MAZAD_IP = import.meta.env.VITE_MAZAD_IP;
 const tables: TableData[] = [
     {
         title: "Team",
         rows: [
-            {title: "About Us", url: "/about"},
-            {title: "How it works", url: "/how-it-works"},
-            {title: "Technologies", url: "/technologies"},
-            {title: "API Documentation", url: "https://localhost/docs/index.html", external: true},
+            {title: "About Us", url: "/about", external: true},
+            {title: "How it works", url: "/how-it-works", external: true},
+            {title: "Technologies", url: "/technologies", external: true},
+            {title: "API Documentation", url: `https://${MAZAD_IP}/docs/index.html`, external: true},
         ]
     },
     {
         title: "Legal",
         rows: [
-            {title: "Privacy Policy", url: "/privacy-policy"},
-            {title: "Terms of Service", url: "/terms-of-service"},
+            {title: "Privacy Policy", url: "/privacy-policy", external: true},
+            {title: "Terms of Service", url: "/terms-of-service", external: true},
         ]
     },
     {
         title: "Account",
         rows: [
-            {title: "My Listing", url: "/dashboard"},
-            {title: "List an item", url: "/listing"},
-            {title: "Conversations", url: "/inbox"},
-            {title: "Settings", url: "/settings"},
+            {title: "My Listing", url: "/dashboard", external: true},
+            {title: "List an item", url: "/listing", external: true},
+            {title: "Conversations", url: "/inbox", external: true},
+            {title: "Settings", url: "/settings", external: true},
         ]
     },
     {
