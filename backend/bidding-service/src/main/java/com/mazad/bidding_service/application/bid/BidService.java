@@ -15,6 +15,7 @@ import com.mazad.bidding_service.domain.bid.BidRepository;
 import com.mazad.bidding_service.domain.bid.BidValidator;
 import com.mazad.bidding_service.domain.exception.AuctionNotFoundException;
 import com.mazad.bidding_service.web.dto.BidResponse;
+import com.mazad.bidding_service.web.dto.BiddersAvailableBalance;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +44,17 @@ public class BidService {
         
         /* just for now we create a wallet for each user*/
         // walletService.createWalletForNewUser(userId, 1000L);
-        walletService.reserveFunds(userId, amount);
+        Long previousBidderIdAvailableBalance = null;
+        
+        Long lastBidderAvailableBalance = walletService.reserveFunds(userId, amount);
         
         UUID previousBidderId = auction.getCurrentHighestBidderId();
         if (previousBidderId != null) {
             // A previous bidder exists! 
             // This is where you release the reserved funds back to them.
-            walletService.releaseFunds(previousBidderId, auction.getCurrentHighestBid());
+            previousBidderIdAvailableBalance = walletService.releaseFunds(previousBidderId, auction.getCurrentHighestBid());
         }
+
         /* you can reset this by remove the included lines (between /*), ecxept uuid */
 
         // Anti-Sniping Check
@@ -76,7 +80,9 @@ public class BidService {
         bidRes.setCreatedAt(bid.getCreatedAt());
 
         // Trigger the Kafka event
-        auctionUpdateProducer.sendUpdate(auction, previousBidderId);
+        auctionUpdateProducer.sendUpdate(auction, previousBidderId,
+            previousBidderIdAvailableBalance, lastBidderAvailableBalance,
+            null);
 
         return bidRes;
     }

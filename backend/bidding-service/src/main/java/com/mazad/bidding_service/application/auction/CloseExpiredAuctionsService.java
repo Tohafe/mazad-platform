@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.mazad.bidding_service.infrastructure.kafka.AuctionUpdateProducer;
+import com.mazad.bidding_service.web.dto.TransferResult;
+
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
@@ -48,15 +50,19 @@ public class CloseExpiredAuctionsService {
         auction.setStatus(AuctionStatus.CLOSED);
 
         UUID winerId =  auction.getCurrentHighestBidderId() ;
-        if ( winerId!= null)
-            walletService.transferReservedFunds(winerId, auction.getSellerId(), auction.getCurrentHighestBid());
+        if ( winerId!= null) {
+            TransferResult  result = walletService.transferReservedFunds(winerId, auction.getSellerId(), auction.getCurrentHighestBid());
+
+            // Trigger the Kafka event
+            auctionUpdateProducer.sendUpdate(auction, null, null, result.bidderBalance(), result.ownerBalance());
+        } else {
+            // Trigger the Kafka event
+            auctionUpdateProducer.sendUpdate(auction, null, null, null, null);
+        }
         
         auctionRepository.save(auction);
 
         // auctionUpdateProducer.sendUpdate(auction); 
         log.info("Auction {} has been closed successfully.", auction.getAuctionId());
-
-        // Trigger the Kafka event
-        auctionUpdateProducer.sendUpdate(auction, null);
     }
 }

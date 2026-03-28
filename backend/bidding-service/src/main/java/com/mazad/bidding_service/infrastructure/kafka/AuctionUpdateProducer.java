@@ -25,14 +25,18 @@ public class AuctionUpdateProducer {
     @Value("${auction.update.topic}")
     private String updateTopic;
     
-    public void sendUpdate(@NonNull Auction auction, UUID previousBidderId) {
+    public void sendUpdate(@NonNull Auction auction, UUID previousBidderId, Long previousBidderIdAvailableBalance, Long lastBidderAvailableBalance, Long sellerAvailableBalance) {
         AuctionUpdateEvent event = new AuctionUpdateEvent(
                 auction.getAuctionId(),
                 auction.getCurrentHighestBid(),
                 auction.getEndsAt(),
                 auction.getStatus(),
+                auction.getSellerId(),
                 auction.getCurrentHighestBidderId(),
-                previousBidderId
+                previousBidderId,
+                previousBidderIdAvailableBalance,
+                lastBidderAvailableBalance,
+                sellerAvailableBalance
         );
 
         

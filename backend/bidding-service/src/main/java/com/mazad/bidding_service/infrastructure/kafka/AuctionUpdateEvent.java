@@ -10,6 +10,10 @@ public record AuctionUpdateEvent(
         Long currentHighestBid,
         Instant endsAt,
         AuctionStatus status,
+        UUID sellerId,
         UUID lastBidderId,
-        UUID previousBidderId
+        UUID previousBidderId,
+        Long previousBidderIdAvailableBalance,
+        Long lastBidderAvailableBalance,
+        Long sellerAvailableBalance
 ) {}

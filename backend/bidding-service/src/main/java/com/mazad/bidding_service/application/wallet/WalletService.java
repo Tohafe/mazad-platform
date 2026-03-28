@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import com.mazad.bidding_service.domain.wallet.Wallet;
 import com.mazad.bidding_service.domain.wallet.WalletRepository;
+import com.mazad.bidding_service.web.dto.TransferResult;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,31 +34,36 @@ public class WalletService {
     }
 
     @Transactional
-    public void reserveFunds(UUID userId, Long amount) {
+    public Long reserveFunds(UUID userId, Long amount) {
         Wallet wallet = getWalletOrThrow(userId);
         
         if (wallet.getAvailableBalance() < amount) {
-            throw new IllegalStateException("Insufficient available balance to place this bid.");
+            throw new IllegalStateException("Insufficient available balance.");
         }
 
         wallet.setAvailableBalance(wallet.getAvailableBalance() - amount);
         wallet.setReservedBalance(wallet.getReservedBalance() + amount);
         
         walletRepository.save(wallet);
+        
+        // Return the new available balance
+        return wallet.getAvailableBalance();
     }
 
     @Transactional
-    public void releaseFunds(UUID userId, Long amount) {
+    public Long releaseFunds(UUID userId, Long amount) {
         Wallet wallet = getWalletOrThrow(userId);
         
         wallet.setReservedBalance(wallet.getReservedBalance() - amount);
         wallet.setAvailableBalance(wallet.getAvailableBalance() + amount);
         
         walletRepository.save(wallet);
+
+        return wallet.getAvailableBalance();
     }
 
     @Transactional
-    public void transferReservedFunds(UUID winningBidderId, UUID auctionOwnerId, Long amount) {
+    public TransferResult transferReservedFunds(UUID winningBidderId, UUID auctionOwnerId, Long amount) {
         Wallet bidderWallet = getWalletOrThrow(winningBidderId);
         Wallet ownerWallet = getWalletOrThrow(auctionOwnerId);
 
@@ -71,6 +78,11 @@ public class WalletService {
                  
         walletRepository.save(bidderWallet);
         walletRepository.save(ownerWallet);
+
+        return new TransferResult(
+            bidderWallet.getAvailableBalance(), 
+            ownerWallet.getAvailableBalance()
+        );
     }
 
     /**
@@ -81,3 +93,4 @@ public class WalletService {
                 .orElseThrow(() -> new IllegalArgumentException("Wallet not found for user ID: " + userId));
     }
 }
+
