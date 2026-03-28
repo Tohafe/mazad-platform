@@ -4,6 +4,7 @@ import { useWebSocket } from "../../context/WebSocketContext";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid'
 import useChatApi from "../../hooks/useChatApi";
+// import Button from "../Button/Button";
 
 
 
@@ -202,6 +203,9 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                             onClick={handleSend}>
                         Send
                     </button>
+                    {/* <Button className="bg-blue-500 rounded-full px-4 py-2 text-white font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+                            onClick={handleSend}
+                    >send</Button> */}
 
                 </div>
             </div>
