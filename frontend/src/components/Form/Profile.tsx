@@ -55,6 +55,7 @@ export default function Profile(){
     const [success, setSuccess] = useState(false);
     const [more, setMore] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null)
     const {saveFile, deleteFile} = useFileUpload();
     const {editAvatar, addProfile, editProfile} = useUserApi();
 
@@ -140,8 +141,9 @@ export default function Profile(){
                 };
                 setUser(updatedUser);
             }
+        setUploadError(null);
         }catch (err: any){
-            console.log("Error on uploadAvatar = ", err);
+            setUploadError(err.response?.data?.message || 'An unexpected error occurred, Please try again.')
         }
     }
     
@@ -154,8 +156,13 @@ export default function Profile(){
                 .then((user: User) => setUser(user));
             }
         }catch (err: any){
-            console.log("Error on deleteAvatar = ", err);
+            setUploadError('An unexpected error occurred, Please try again.')
         }
+    }
+
+    const uploadFails = (message: string) => {
+        setMore(false);
+        setUploadError(message);
     }
 
 
@@ -175,7 +182,7 @@ export default function Profile(){
                         </IconButton>
                         <div ref={moreRef} className="absolute -right-22 bottom-1 w-22 ">
                             <Dropdown open={more}>
-                                <Dropzone onFilesSelected={uploadAvatar}  >
+                                <Dropzone onFilesSelected={uploadAvatar} onError={uploadFails} maxSizeMB={8} >
                                     <TextButton className="hover:bg-gray-100 cursor-pointer w-full">Update</TextButton>
                                 </Dropzone>
                                 <div className="w-full h-[0.5px] bg-border "></div>
@@ -195,6 +202,7 @@ export default function Profile(){
                         ></ConfirmDialog>
                 </div>
             </div>
+            { uploadError && <div className="text-error flex justify-center text-sm">{uploadError}</div>}
             <form className="space-y-3">
                 <div className="grid grid-cols-2 gap-4">
                     <Input  label="First name"
@@ -233,7 +241,7 @@ export default function Profile(){
                         {...register('address')}
                         error={errors.address?.message}
                 ></Input>
-                {errors.root && <span className="text-red-600 text-sm ml-3">{errors.root.message}</span>}
+                {errors.root && <span className="text-error text-sm ml-3">{errors.root.message}</span>}
                 {success && <span className="text-green-500 text-sm ml-3">Your changes have been saved.</span>}
 
                 <Button className="mt-5 w-full" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>

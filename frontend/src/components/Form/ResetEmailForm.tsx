@@ -56,7 +56,7 @@ export default function ResetEmailForm({setShowEmailEdit} : Props){
             <Input {...register('email')} error={errors.email?.message} label="New email"></Input>
             <Input {...register('password')} error={errors.password?.message} isPass={true} label="Password"></Input>
             {errors.root && 
-                <span className="text-red-600 text-sm">{errors.root.message } </span>}
+                <span className="text-error text-sm">{errors.root.message } </span>}
             <Button type="submit" className="w-full mt-3" disabled={isSubmitting}>
                 {!isSubmitting  ? 'Save'
                                 : <CgSpinner className="text-4xl text-gray-300 animate-spin"> </CgSpinner>}

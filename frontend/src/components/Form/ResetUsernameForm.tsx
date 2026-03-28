@@ -57,7 +57,7 @@ export default function ResetUsernameForm({setShowUsernameEdit} : Props){
             <div className="w-full h-[0.5px] bg-border my-5"></div>
             <Input {...register('username')} error={errors.username?.message} label="New username"></Input>
             {errors.root &&
-                <span className="text-red-600 text-sm">{errors.root.message } </span>}
+                <span className="text-error text-sm">{errors.root.message } </span>}
             <Button type="submit" className="w-full mt-3" disabled={isSubmitting}>
                 {!isSubmitting  ? 'Save'
                     : <CgSpinner className="text-4xl text-gray-300 animate-spin"> </CgSpinner>}

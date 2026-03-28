@@ -54,16 +54,6 @@ async function editAvatar(api: AxiosInstance, avatarData: AvatarData) {
     return response?.data;
 }
 
-// async function getPrivateProfile(api: AxiosInstance) {
-//     let response;
-//     try{
-//         response = await api.get('/profile');
-//     }catch(errors: any){
-//         throw errors;
-//     }
-//     return response?.data;
-// }
-
 async function getPrivateProfile(api: AxiosInstance, manualToken?: string) {
     const config = manualToken 
         ? { headers: { Authorization: `Bearer ${manualToken}` } } 

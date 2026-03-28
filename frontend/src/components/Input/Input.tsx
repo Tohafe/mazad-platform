@@ -37,7 +37,7 @@ export default function Input({label, error, isPass,  ...props}: InputProps){
                 >{label}</label>)}
             {error &&
                 <>
-                    <span className={` text-red-600  text-[12px] ml-3`}> {error} </span>
+                    <span className={` text-error  text-[12px] ml-3`}> {error} </span>
                     {!isPass &&
                         <IconButton icon={MdErrorOutline} className="absolute top-3 right-1 pointer-events-none" iconClassName="text-red-500 "> </IconButton>}
                 </>
