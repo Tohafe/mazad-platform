@@ -88,7 +88,7 @@ public class WalletService {
     /**
      * Helper method to fetch the wallet using the built-in findById
      */
-    private Wallet getWalletOrThrow(UUID userId) {
+    public Wallet getWalletOrThrow(UUID userId) {
         return walletRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Wallet not found for user ID: " + userId));
     }
