@@ -1,13 +1,14 @@
 package com.mazad.user_service.repo;
 
-import com.mazad.user_service.entity.FriendshipEntity;
-import com.mazad.user_service.enums.FriendshipStatus;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.mazad.user_service.entity.FriendshipEntity;
+import com.mazad.user_service.enums.FriendshipStatus;
 
 public interface FriendshipRepo extends JpaRepository<FriendshipEntity, UUID> {
 
@@ -25,8 +26,6 @@ public interface FriendshipRepo extends JpaRepository<FriendshipEntity, UUID> {
             "OR (f.requester.userId = :u2 AND f.receiver.userId = :u1)"
     )
     boolean friendshipExists(UUID u1, UUID u2);
-
-//    void deleteByRequester(ProfileEntity requester);
 
     @Query("select f From FriendshipEntity f " +
             "where (f.receiver.userId = :u1 and f.requester.userId = :u2) " +

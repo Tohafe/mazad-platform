@@ -135,13 +135,6 @@ public class UserService {
                 .build();
     }
 
-//    public void delete(UUID userId, String password) {
-//        UserEntity user = repo.findById(userId)
-//                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
-//        if (!encoder.matches(password, user.getPassword()))
-//            throw new BadRequestException("Invalid Password!");
-//
-//    }
 
     public void resetPassword(UUID userId, PasswordResetDto data) {
         UserEntity user = repo
