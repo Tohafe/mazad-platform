@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.mazad.auth.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;

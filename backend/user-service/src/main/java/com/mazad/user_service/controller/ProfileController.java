@@ -3,10 +3,8 @@ package com.mazad.user_service.controller;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,13 +20,11 @@ import com.mazad.user_service.dto.PrivateResponseDto;
 import com.mazad.user_service.dto.PublicResponseDto;
 import com.mazad.user_service.dto.RequestDto;
 import com.mazad.user_service.exception.BadRequestException;
-import com.mazad.user_service.exception.UnauthorizedException;
 import com.mazad.user_service.service.ProfileService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 
@@ -39,7 +35,6 @@ import tools.jackson.databind.node.ObjectNode;
 public class ProfileController {
 
     private final ProfileService service;
-    private final ObjectMapper mapper;
 
     @GetMapping
     public ResponseEntity<PrivateResponseDto> getPrivateProfile(@RequestHeader(name = "X-User-Id") UUID userId) {
@@ -98,33 +93,5 @@ public class ProfileController {
         PrivateResponseDto response = service.patch(userId, jsonNode, false);
         return ResponseEntity.ok(response);
     }
-
-
-//    @PatchMapping("internal/sync")
-//    public void syncAuthData(
-//            @RequestHeader(name = "User-Auth-Sync-Key") String key,
-//            @RequestBody CurrentUser userData
-//    ) {
-//        if (!key.equals(syncKey))
-//            throw new UnauthorizedException("Invalid Sync Key!");
-//        ObjectNode node = mapper.createObjectNode();
-//        if (userData.email() != null && !userData.email().isBlank())
-//            node.put("email", userData.email());
-//        if (userData.username() != null && !userData.username().isBlank())
-//            node.put("username", userData.username());
-//        if (userData.id() != null)
-//            node.put("userId", userData.id().toString());
-//        service.patch(userData.id(), node, true);
-//    }
-//
-//    @DeleteMapping("internal/sync")
-//    public void syncAuthData(
-//            @RequestHeader(name = "User-Auth-Sync-Key") String key,
-//            @RequestBody UUID userId
-//    ) {
-//        if (!key.equals(syncKey))
-//            throw new UnauthorizedException("Invalid Sync Key!");
-//        service.deleteProfile(userId);
-//    }
 
 }
