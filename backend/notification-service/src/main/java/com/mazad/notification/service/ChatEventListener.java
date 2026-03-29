@@ -29,6 +29,7 @@ public class ChatEventListener {
             
             log.info("Received chat Event for sender ID: {}", chatEvent.getSenderId());
             webSocketService.sendPrivateMessage(chatEvent.getReceiverId(), "/queue/messages", null, chatEvent, false);
+            webSocketService.sendPrivateMessage(chatEvent.getSenderId(), "/queue/messages", null, chatEvent, false);
         } 
         catch (Exception e) {
             log.error("Failed to process Kafka event: {}", event, e);
