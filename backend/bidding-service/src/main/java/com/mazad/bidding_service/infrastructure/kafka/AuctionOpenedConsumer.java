@@ -3,10 +3,12 @@ package com.mazad.bidding_service.infrastructure.kafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.mazad.bidding_service.application.wallet.WalletService;
 import com.mazad.bidding_service.domain.auction.Auction;
 import com.mazad.bidding_service.domain.auction.AuctionRepository;
 import com.mazad.bidding_service.domain.exception.AuctionNotFoundException;
 import com.mazad.bidding_service.web.dto.AuctionCreatedEvent;
+import com.mazad.bidding_service.web.dto.WalletDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +21,7 @@ import tools.jackson.databind.json.JsonMapper;
 public class AuctionOpenedConsumer {
 
     private final AuctionRepository auctionRepository;
+    private final WalletService walletService;
 
     private JsonMapper jsonMapper;
 
@@ -62,6 +65,21 @@ public class AuctionOpenedConsumer {
             
         } catch (Exception e) {
             log.error("Failed to parse Item updated event: {}", event, e);
+        }
+
+    }
+
+    @KafkaListener(topics = "${USER_WALLET_TOPIC}", groupId = "bidder")
+    public void initialiseUserWallet(String event) {
+        try {
+            WalletDto walletEvent = jsonMapper.readerFor(WalletDto.class)
+                                                .readValue(event);
+            
+            walletService.createWalletForNewUser(walletEvent.id(), walletEvent.sold());
+            log.info("User Wallet event received: {},, Sold {}", event, walletEvent.sold());
+            
+        } catch (Exception e) {
+            log.error("Failed User Wallet updated event: {}", event, e);
         }
 
     }

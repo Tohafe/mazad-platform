@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.kafka.common.errors.AuthorizationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -47,6 +48,13 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    // Business Logic: Invalid State (e.g., Insufficient Funds, Wallet already exists)
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail handleIllegalState(IllegalStateException ex) {
+        // BAD_REQUEST (400) or CONFLICT (409) are usually best for state violations
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     // Concurrency: The Race Condition
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ProblemDetail handleRaceCondition(ObjectOptimisticLockingFailureException ex) {
@@ -82,18 +90,23 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
-    // Safety Net: The "Everything Else" handler
-    @ExceptionHandler(Exception.class)
-    public ProblemDetail handleEverythingElse(Exception ex) {
-        // We log the real error for us, but hide the details from the user
-        log.error("Unexpected error occurred: ", ex); 
-
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-            HttpStatus.INTERNAL_SERVER_ERROR, 
-            "An internal error occurred. Our team has been notified."
-        );
-        pd.setTitle("Server Error");
-        return pd;
+    @ExceptionHandler(AuthorizationException.class)
+    public ProblemDetail handleAuthorizationException(AuthorizationException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
+
+    // // Safety Net: The "Everything Else" handler
+    // @ExceptionHandler(Exception.class)
+    // public ProblemDetail handleEverythingElse(Exception ex) {
+    //     // We log the real error for us, but hide the details from the user
+    //     log.error("Unexpected error occurred: ", ex); 
+
+    //     ProblemDetail pd = ProblemDetail.forStatusAndDetail(
+    //         HttpStatus.INTERNAL_SERVER_ERROR, 
+    //         "An internal error occurred. Our team has been notified."
+    //     );
+    //     pd.setTitle("Server Error");
+    //     return pd;
+    // }
 }
 

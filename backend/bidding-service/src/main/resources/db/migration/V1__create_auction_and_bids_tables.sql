@@ -36,9 +36,15 @@ CREATE TABLE bids (
         ON DELETE CASCADE
 );
 
-CREATE TABLE users (
+CREATE TABLE wallet (
+
     user_id UUID NOT NULL PRIMARY KEY,
-    sold BIGINT NOT NULL
+
+    available_balance BIGINT NOT NULL,
+
+    reserved_balance BIGINT Not Null,
+    
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 -- Indexing for performance: We will often search for bids by auction_id
