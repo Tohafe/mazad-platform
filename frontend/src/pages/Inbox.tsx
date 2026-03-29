@@ -38,7 +38,8 @@ function Inbox(){
                 if (friendId){
                     setActiveChatId(friendId);
                     setActiveView('messages');
-                    navigate('/inbox/');
+                    navigate(`/inbox/${friendId}`);
+                    navigate(`/inbox/${friendId}`);
                 } 
             })
             .catch ((error) => {
@@ -47,9 +48,7 @@ function Inbox(){
     }
     
     const onChatClick = (chatId: string) => {
-        setActiveChatId(chatId);
-        handleSelectChat(chatId);
-        navigate('/inbox/');
+        navigate(`/inbox/${chatId}`);
     }
 
     return (

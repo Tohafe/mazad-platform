@@ -4,6 +4,7 @@ import useChatApi from "../../hooks/useChatApi"
 import { useAuth } from "../../context/AuthProvider";
 
 import type { FriendRequest } from "../../types/chat";
+import toast from "react-hot-toast";
 
 // const FAKE_REQUESTS: FriendRequest[] = [
 //     {
@@ -81,6 +82,7 @@ function FriendRequestsList() {
             setRequests(prev => prev.filter(r => r.username !== username));
         } catch (error) {
             console.error(`Failed to accept request from ${username}`, error);
+            toast.error("Failed to accept request");
         } finally {
             setProcessingId(null);
         }
@@ -135,7 +137,7 @@ if (!requests || requests.length === 0) {
                             <p className="text-xs text-gray-500">Wants to connect</p>
                         </div>
                     </div>
-                    
+
                     {/* Action Buttons */}
                     <div className="flex gap-2 shrink-0">
                         <button

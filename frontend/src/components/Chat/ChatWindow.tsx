@@ -2,9 +2,9 @@ import {  useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
 import { Link } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid'
 import useChatApi from "../../hooks/useChatApi";
-// import Button from "../Button/Button";
+import  { toast } from "react-hot-toast";
+
 
 
 
@@ -35,23 +35,32 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
     useEffect(() => scrollToBottom(), [messages, chatId])
     
     const handleSend = async () => {
-        if (inputText.trim() === "")
+        const trimmedInput = inputText.trim();
+        if (trimmedInput === "")
             return ;
-        const newMessage = {
-            id: uuidv4(),
-            text: inputText,
-            sender: "me"
-        };
-        setMessages([...messages, newMessage]);
+        if (trimmedInput.length > 500) {
+            toast.error(`Message is too long! (${trimmedInput.length}/500)`);
+            return ;
+        }
         setInputText("");
         try {
-            const response = await sendMessage(chatId, newMessage.text);
-            // MOVE THE CHAT TO THE TOP
-            onMessageSent(newMessage.text);
-            console.log("message's id:", response.data.id);
-        } catch (error){
-            console.error("Failed to send message: ",  error);
+            const response = await sendMessage(chatId, trimmedInput);            
+            const realMessage = response.data;
+            setMessages(prev => {
+                if (prev.some(msg => msg.id === realMessage.id)) return prev;
+                return [...prev, {
+                    id: realMessage.id,
+                    text: realMessage.content || trimmedInput,
+                    sender: "me"
+                }];
+            });
+            // MOVE THE CHAT TO THE TOP 
+            onMessageSent(trimmedInput);
+        } catch (error: any){
+            const errorMessage = error.response?.data?.message || error.response?.data?.detail || ""
+            setInputText(trimmedInput);
             // TODO: doing some disign for failed send
+            toast.error(errorMessage);  // Toast logs error on client 
         }
     };
 
@@ -94,7 +103,10 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
             const incomingMsg = JSON.parse(message.body);
             const isRelevent  = incomingMsg.senderId.toLowerCase() === chatId.toLowerCase() || incomingMsg.receiverId.toLowerCase() === chatId.toLowerCase();
             if (isRelevent){
+
                 setMessages((prev) => {
+                    if (prev.some(msg => msg.id === incomingMsg.id))
+                         return prev;
                     return [...prev, {
                         id: incomingMsg.id,
                         text: incomingMsg.content,
@@ -203,9 +215,6 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                             onClick={handleSend}>
                         Send
                     </button>
-                    {/* <Button className="bg-blue-500 rounded-full px-4 py-2 text-white font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
-                            onClick={handleSend}
-                    >send</Button> */}
 
                 </div>
             </div>
