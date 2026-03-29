@@ -3,14 +3,14 @@ package com.mazad.user_service.service;
 import java.util.List;
 import java.util.UUID;
 
-import com.mazad.user_service.dto.CurrentUser;
-import com.mazad.user_service.dto.FriendResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
+import com.mazad.user_service.dto.CurrentUser;
+import com.mazad.user_service.dto.FriendResponseDto;
 import com.mazad.user_service.dto.event.ItemEvent;
 import com.mazad.user_service.dto.event.NotifyFriendsEvent;
 import com.mazad.user_service.enums.FriendshipStatus;
@@ -40,7 +40,7 @@ public class KafkaConsumerService {
     @KafkaListener(topics = {"${item.created.topic}", "${item.updated.topic}"}, groupId = "user-service")
     public void processItemEvents(String event, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic){
         boolean isDelete = true;
-
+        log.info("Item topic detected : Event = {}", event);
         if (topic.equals(itemCreatedTopic))
             isDelete = false;
         try{
@@ -55,7 +55,7 @@ public class KafkaConsumerService {
             String sellerName = profileService
                     .getPrivateProfile(itemEvent.sellerId())
                     .username();
-            if (friendIds.isEmpty()){
+            if (!friendIds.isEmpty()){
                 NotifyFriendsEvent notifyEvent = NotifyFriendsEvent.builder()
                         .auctionId(itemEvent.id())
                         .username(sellerName)
@@ -68,7 +68,6 @@ public class KafkaConsumerService {
         }catch(RuntimeException e){
             log.info("Failed to parse event on user-service : " + e.getMessage());
         }
-
     }
 
     @KafkaListener(topics = "${auth-user.sync.topic}", groupId = "user-service")
