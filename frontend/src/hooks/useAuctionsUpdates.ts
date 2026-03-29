@@ -4,6 +4,8 @@ import {type QueryClient, useQueryClient} from "@tanstack/react-query";
 import type {AuctionSummary, CategorizedAuctions} from "../types/item.ts";
 import type {Page} from "../types/pagination.ts";
 import {useWebSocket} from "../context/WebSocketContext.tsx";
+import type {Wallet} from "../types/user.ts";
+import {useAuth} from "../context/AuthProvider.tsx";
 
 function updateAuctionPage(
     oldPage: Page<AuctionSummary> | undefined,
@@ -74,6 +76,40 @@ export function useAuctionsUpdates() {
             try {
                 const event = JSON.parse(message.body) as AuctionUpdateEvent;
                 updateCache(queryClient, event);
+                console.log("WS parsed:", event);
+            } catch (e) {
+                console.error("WS parse error:", e);
+            }
+        })
+        return () => {
+            if (stompClient && stompClient.connected && subscription) {
+                subscription.unsubscribe();
+            }
+        };
+    }, [stompClient, isConnected]);
+}
+
+export function useBalanceUpdate() {
+    const {stompClient, isConnected} = useWebSocket();
+    const {user} = useAuth();
+    const queryClient = useQueryClient();
+    useEffect(() => {
+        if (!stompClient || !isConnected || !user?.id) return;
+        console.log("WS connected. Subscribing to /user/queue/balance");
+        const subscription = stompClient.subscribe("/user/queue/balance", (message) => {
+            console.log("Subscribed! to /user/queue/balance");
+            console.log("WS /user/queue/balance:", message.body);
+            try {
+                const event = JSON.parse(message.body) as Wallet;
+                queryClient.setQueryData(
+                    ["availableBalance", user?.id],
+                    (oldData: Wallet | undefined) => {
+                        if (!oldData) return undefined;
+                        return {
+                            availableBalance: event.availableBalance
+                        }
+                    },
+                )
                 console.log("WS parsed:", event);
             } catch (e) {
                 console.error("WS parse error:", e);

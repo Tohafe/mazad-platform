@@ -7,10 +7,10 @@ import { useAuth } from "../context/AuthProvider";
 import { useAuctions } from "../hooks/useAuctions";
 import ItemGrid from "../components/Grid/ItemGrid";
 import Pagination from "../components/Pagination";
-import ItemCard from "../components/Card/ItemCard";
 import ConnectionButton from "../components/Button/ConnectionButton";
 import IconButton from "../components/Button/IconButton.tsx";
 import { PiChatDots } from "react-icons/pi";
+import ListingCard from "../components/Card/ListingCard.tsx";
 
 
 
@@ -70,8 +70,8 @@ export default function PublicProfile(){
                         <h1 className="font-semibold text-xl">Objects from <span className="text-brand">{profile.username}</span></h1>
                         {data && data.content.length > 0 ? 
                         <>
-                            <ItemGrid className="w-full h-full pt-4 sm:p-4" compact={false}>
-                                {data.content && data.content.map((item) => <ItemCard key={item.id} className="pt-2" auction={item}/>)}
+                            <ItemGrid className="w-full h-full pt-4" compact={false}>
+                                {data.content && data.content.map((item) => <ListingCard key={item.id} className="pt-2" auction={item}/>)}
                             </ItemGrid>
                             <Pagination page={data.page.number + 1} totalPages={data.page.totalPages} onPageChange={(pageNum) => setPage(pageNum - 1)} className="pt-10"/>
                         </> : <div className="text-secondary textd-xl  mt-8 w-full text-center"> This user currently has no active auctions.</div>}

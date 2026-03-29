@@ -2,6 +2,7 @@ import type { AxiosInstance } from "axios";
 import type PublicProfile from "../types/PublicProfile";
 import type AvatarData from "../types/AvatarData";
 import type { ProfileData } from "../components/Form/Profile";
+import type {Wallet} from "../types/user.ts";
 
 
 async function getPublicProfile(api: AxiosInstance, username: string): Promise<PublicProfile>{
@@ -103,6 +104,16 @@ async function getApiKey(api: AxiosInstance): Promise<string | null> {
     }
 }
 
+async function getUserWallet(api: AxiosInstance): Promise<Wallet> {
+    try {
+        const response = await api.get<Wallet>("/bids/wallet");
+        return response.data;
+    } catch (errors: any) {
+        throw errors;
+    }
+}
+
+
 
 export {
     getPublicProfile,
@@ -114,5 +125,6 @@ export {
     addProfile,
     editProfile,
     generateApiKey,
-    getApiKey
+    getApiKey,
+    getUserWallet
 }

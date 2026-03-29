@@ -23,7 +23,7 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
     const ref = useRef<HTMLDivElement | null>(null);
     useOnClickOutside(ref, () => setOpen(false));
 
-    return <div ref={ref} className={cn("relative flex gap-1 items-center min-w-0", className)}>
+    return <div ref={ref} className={cn("relative flex gap-1 items-center", className)}>
         <div className="flex items-center w-8 h-8" onClick={() => setOpen(!open)}>
             {user?.avatarThumbnailUrl ? (
                 <img

@@ -1,11 +1,13 @@
 import type {ReactNode} from "react";
 import {cn} from "../../lib/utils.ts";
 import {cva, type VariantProps} from "class-variance-authority";
+import {useNavigate} from "react-router-dom";
 
 interface TextButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
     children?: ReactNode,
     className?: string,
-    iconPos?: "left" | "right"
+    iconPos?: "left" | "right",
+    link?: string
 }
 
 const TextButton = ({
@@ -14,10 +16,12 @@ const TextButton = ({
                         variant,
                         size,
                         underline,
+                        link,
                         ...props
                     }: TextButtonProps) => {
+    const navigate = useNavigate();
     return (
-        <button type="button" className={cn(buttonVariants({
+        <button onClick={() => navigate(link ?? "")} type="button" className={cn(buttonVariants({
             variant,
             size,
             underline

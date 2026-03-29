@@ -14,3 +14,7 @@ export default interface User{
     country: string | null;
     isComplete: boolean;
 }
+
+export interface Wallet {
+    availableBalance: number
+}

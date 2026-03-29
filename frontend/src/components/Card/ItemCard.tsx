@@ -2,6 +2,7 @@ import {cn} from "../../lib/utils.ts";
 import type {AuctionSummary} from "../../types/item.ts";
 import {Link} from "react-router-dom";
 import {useAuctionTimeLeft} from "../../lib/useAuctionTimeLeft.ts";
+import {formatPrice} from "../../utils/currency.ts";
 
 
 interface ItemCardProps {
@@ -25,7 +26,7 @@ const ItemCard = ({className = "", auction}: ItemCardProps) => {
             <p className="text-black font-semibold leading-5 line-clamp-2 min-h-10">{auction.title}</p>
             <div className="flex flex-col">
                 <span className="text-muted font-mono tracking-widest text-[12px]">{priceTitle}</span>
-                <span className="text-black font-medium text-lg text-start">{effectivePrice}</span>
+                <span className="w-full block  truncate text-black font-medium text-lg text-start line-clamp-1">{formatPrice(effectivePrice)}</span>
             </div>
             <label className="text-muted font-medium text-base font-noto">{timeLeftLabel}</label>
         </Link>
