@@ -46,7 +46,6 @@ public class BidService {
         // walletService.createWalletForNewUser(userId, 1000L);
         Long previousBidderIdAvailableBalance = null;
         
-        Long lastBidderAvailableBalance = walletService.reserveFunds(userId, amount);
         
         UUID previousBidderId = auction.getCurrentHighestBidderId();
         if (previousBidderId != null) {
@@ -54,7 +53,8 @@ public class BidService {
             // This is where you release the reserved funds back to them.
             previousBidderIdAvailableBalance = walletService.releaseFunds(previousBidderId, auction.getCurrentHighestBid());
         }
-
+        
+        Long lastBidderAvailableBalance = walletService.reserveFunds(userId, amount);
         /* you can reset this by remove the included lines (between /*), ecxept uuid */
 
         // Anti-Sniping Check

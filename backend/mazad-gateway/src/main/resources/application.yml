@@ -129,6 +129,7 @@ spring:
                 allowed-origins:
                   - ${FRONT_URL}
                   - http://10.30.245.151:5173
+                  - http://10.30.243.50:5173 #@Naoufal
                   # //for frontend Dev, remove it before push @Naoufal
                   - 'http://localhost:5173'
                   - 'http://127.0.0.1:5173'
