@@ -67,11 +67,11 @@ const SearchBar = ({className = ""}: SearchBarProps) => {
     }
 
     return (
-        <form onSubmit={handleSubmit} className={cn("flex flex-row w-full max-w-150 grow items-center", className)}>
+        <form onSubmit={handleSubmit} className={cn("flex flex-row max-w-150 grow items-center", className)}>
             <div className="relative w-full">
                 <TextField
                     className="w-full"
-                    hint={"Search for brand, model, artist..."}
+                    hint={"Type what you are looking for..."}
                     icon={BiSearch}
                     value={query}
                     onFocus={() => setIsFocused(true)}

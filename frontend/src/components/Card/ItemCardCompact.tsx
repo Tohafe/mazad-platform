@@ -1,6 +1,7 @@
 import {cn} from "../../lib/utils.ts";
 import type {AuctionSummary} from "../../types/item.ts";
 import {Link} from "react-router-dom";
+import {formatPrice} from "../../utils/currency.ts";
 
 export interface Item {
     id: number;
@@ -28,7 +29,7 @@ const ItemCardCompact = ({className = "", imgClassName = "", auction}: ItemCardC
             </div>
             <div className="flex flex-col pt-1">
                 <label className="text-muted font-mono tracking-widest text-[12px]">{priceTitle}</label>
-                <label className="text-black font-medium text-xl text-start">{effectivePrice}</label>
+                <label className="text-black font-medium text-xl text-start">{formatPrice(effectivePrice)}</label>
             </div>
         </Link>
     )

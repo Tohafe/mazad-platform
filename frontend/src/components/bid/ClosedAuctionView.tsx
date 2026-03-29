@@ -18,7 +18,7 @@ const STATUS_CONFIG: Record<'SOLD' | 'EXPIRED' | 'CANCELLED', { label: string; c
   SOLD: {
     label: 'Final Bid',
     color: 'text-blue-600',
-    badge: 'Sold',
+    badge: 'Balance',
     badgeColor: 'bg-green-100 text-green-700',
   },
   EXPIRED: {

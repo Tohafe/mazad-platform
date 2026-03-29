@@ -1,6 +1,4 @@
 import logo from "../assets/logo.png"
-// import TextButton from "../components/Button/TextButton.tsx";
-// MdLanguage
 import {MdKeyboardArrowDown, MdKeyboardArrowLeft} from "react-icons/md";
 import SearchBar from "../components/Input/SearchBar.tsx";
 import IconButton from "../components/Button/IconButton.tsx";
@@ -13,7 +11,8 @@ import {NotificationBell} from '../components/Notification/NotificationBell.tsx'
 import {useAuth} from "../context/AuthProvider.tsx";
 import UserMenu from "../components/UserMenu.tsx";
 import {Link} from "react-router-dom";
-import Sold from "../components/Sold.tsx";
+import Balance from "../components/Balance.tsx";
+import TextButton from "../components/Button/TextButton.tsx";
 
 
 interface HeaderSectionProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -53,14 +52,13 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
             {showFullWidthSearch && <IconButton onClick={() => setShowFullWidthSearch(false)} icon={MdKeyboardArrowLeft}
                                                 iconClassName="text-brand" size="md"/>}
             <SearchBar className={`${showFullWidthSearch ? "flex" : "hidden md:flex"}`}/>
-            <div className={`flex-row items-center gap-1 ${showFullWidthSearch ? "hidden" : "flex"}`}>
+            <div className={`flex flex-row items-center gap-0 ${showFullWidthSearch ? "hidden" : "flex"}`}>
                 <IconButton onClick={() => setShowFullWidthSearch(true)} icon={BiSearch} iconClassName="text-brand"
                             size="md" className="flex md:hidden"/>
-                {/*<TextButton className="hidden md:flex" size="sm">Help</TextButton>*/}
+                {!isAuthenticated && <TextButton link={"/how-it-works"} className="hidden md:flex mx-2" size="sm">How it works</TextButton>}
+                {!isAuthenticated && <TextButton link={"/about"} className="hidden md:flex mx-3" size="sm">About Us</TextButton>}
+                {isAuthenticated && <Balance/>}
                 {isAuthenticated && <NotificationBell/>}
-                {/*<IconButton className="hidden sm:flex" size="md" icon={MdLanguage}*/}
-                {isAuthenticated && <Sold/>}
-                {/*            iconClassName="text-brand">EN</IconButton>*/}
                 {isAuthenticated ?
                     <UserMenu className="ms-3" user={user}/> :
                     <Button link={"/login"} className="">Sign in</Button>

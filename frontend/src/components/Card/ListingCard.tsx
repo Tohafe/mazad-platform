@@ -6,6 +6,7 @@ import type {AuctionStatus} from "../../types/item";
 import {MdCancel} from "react-icons/md";
 import {useAuctionTimeLeft} from "../../lib/useAuctionTimeLeft.ts";
 import {Link} from "react-router-dom";
+import {formatPrice} from "../../utils/currency.ts";
 
 
 function mapStatus(status: AuctionStatus): String {
@@ -46,7 +47,7 @@ const ListingCard = ({
             <div className="flex items-center justify-between">
                 <div className="flex flex-col pt-1">
                     <label className="text-muted font-mono tracking-widest text-[12px]">{priceTitle}</label>
-                    <label className="text-black font-medium text-xl text-start">{effectivePrice}</label>
+                    <label className="text-black font-medium text-xl text-start">{formatPrice(effectivePrice)}</label>
                 </div>
                 {auction.status === "ACTIVE" && handleCancelClick && auction.currentBid === 0 &&
                     <Button size="sm" onMouseDown={() => handleCancelClick(auction)} variant="danger" icon={MdCancel}

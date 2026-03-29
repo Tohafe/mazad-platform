@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { productApi } from '../api';
 import type { ApiProduct, ProductImage, ProductDetail, BidData, Countdown } from '../types';
+import {formatPrice} from "../utils/currency.ts";
 
 // Transform API images to component format
 function transformImages(images: string[]): ProductImage[] {
@@ -85,19 +86,16 @@ function formatEndTime(endsAt: string): string {
   });
 }
 
-// Format currency (whole number with thousand separators)
-function formatCurrencyWholeNumber(amount: number): string {
-  return `$ ${Math.floor(amount).toLocaleString('en-US')}`;
-}
+
 
 // Generate quick bid amounts
 function generateQuickBidAmounts(currentBid: number, startingPrice: number): string[] {
   const baseBid = currentBid === 0 ? startingPrice : currentBid;
   const increment = 5;
   return [
-    formatCurrencyWholeNumber(baseBid + increment),
-    formatCurrencyWholeNumber(baseBid + increment * 2),
-    formatCurrencyWholeNumber(baseBid + increment * 3),
+    formatPrice(baseBid + increment),
+    formatPrice(baseBid + increment * 2),
+    formatPrice(baseBid + increment * 3),
   ];
 }
 
@@ -118,11 +116,11 @@ function transformToBidData(product: ApiProduct): BidData {
     endTime: formatEndTime(endsAt),
     countdown,
     timeProgress,
-    currentBid: formatCurrencyWholeNumber(currentBid),
+    currentBid: formatPrice(currentBid),
     startingPrice,
     sellerId: product.sellerId ?? '',
     quickBidAmounts: generateQuickBidAmounts(currentBid, startingPrice),
-    minBid: `${formatCurrencyWholeNumber((currentBid === 0 ? startingPrice : currentBid) + 1)} or up`,
+    minBid: `${formatPrice((currentBid === 0 ? startingPrice : currentBid) + 1)} or up`,
     shippingLocation: 'Morocco', // Could be derived from user location
     status,
   };
@@ -167,7 +165,6 @@ export {
   calculateCountdown,
   calculateTimeProgress,
   formatEndTime,
-  formatCurrencyWholeNumber,
   generateQuickBidAmounts,
   transformToBidData,
 };

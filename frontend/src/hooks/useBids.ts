@@ -5,7 +5,7 @@ import type { ApiBid, BidEntry, ApiProduct, AuctionStatus } from '../types';
 import { useBidApi } from './useBidApi';
 import { generatePseudonym } from '../utils';
 import { useWebSocket } from '../context/WebSocketContext';
-import { formatCurrencyWholeNumber } from './useProduct';
+import {formatPrice} from "../utils/currency.ts";
 
 /** WebSocket bid event message structure */
 interface BidEventMessage extends ApiBid {
@@ -30,11 +30,11 @@ function timeAgo(dateStr: string): string {
 /** Transform a raw API bid into a display entry */
 function transformBid(bid: ApiBid): BidEntry {
   console.log('inside Transform:', bid.amount);
-  console.log('inside Transform:', formatCurrencyWholeNumber(bid.amount));
+  console.log('inside Transform:', formatPrice(bid.amount));
   return {
     pseudonym: generatePseudonym(bid.bidderId),
     timeAgo: timeAgo(bid.createdAt),
-    amount: formatCurrencyWholeNumber(bid.amount),
+    amount: formatPrice(bid.amount),
   };
 }
 

@@ -1,3 +1,5 @@
+import {formatPrice} from "../../utils/currency.ts";
+
 interface CurrentBidProps {
   amount: string;
   startingPrice?: number;
@@ -14,7 +16,7 @@ export function CurrentBid({ amount, startingPrice = 0 }: CurrentBidProps) {
         </span>
       ) : (
         <span className="inline-block bg-[#edf4e6] text-[#11a88a] px-3 py-1 text-xs font-semibold  mt-2">
-          Starting price: ${startingPrice.toLocaleString()}
+          Starting price: {formatPrice(startingPrice)}
         </span>
       )}
     </div>

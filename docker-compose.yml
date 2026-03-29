@@ -75,8 +75,8 @@ services:
     volumes:
       - ./infrastructure/certs/generated/gateway.p12:/etc/ssl/gateway.p12:ro
       - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
-    # ports:
-    #   - "8443:8443"
+    ports:
+      - "8443:8443"
     networks:
       mazad-network:
     restart: on-failure

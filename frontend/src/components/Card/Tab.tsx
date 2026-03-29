@@ -6,7 +6,7 @@ import {BiSearch} from "react-icons/bi";
 import {
     LuWatch, LuPalette, LuGem, LuCar, LuPackage, LuShirt,
     LuFootprints, LuBookOpen, LuCoins, LuGlassWater,
-    LuPenTool, LuCamera, LuShoppingBag, LuLayers, LuTrophy, LuSmartphone
+    LuPenTool, LuCamera, LuShoppingBag, LuLayers, LuTrophy, LuSmartphone, LuArmchair, LuLibrary, LuTicket, LuArchive
 } from "react-icons/lu";
 import {Link} from "react-router-dom";
 
@@ -14,7 +14,7 @@ import {Link} from "react-router-dom";
 const icons = {
     LiaFireAltSolid, BiSearch, LuWatch, LuPalette, LuGem, LuCar, LuPackage, LuShirt,
     LuFootprints, LuBookOpen, LuCoins, LuGlassWater,
-    LuPenTool, LuCamera, LuShoppingBag, LuLayers, LuTrophy, LuSmartphone
+    LuPenTool, LuCamera, LuShoppingBag, LuLayers, LuTrophy, LuSmartphone, LuArmchair, LuLibrary, LuTicket, LuArchive
 };
 export type IconKey = keyof typeof icons
 
