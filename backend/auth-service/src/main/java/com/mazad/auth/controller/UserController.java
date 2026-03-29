@@ -2,25 +2,31 @@ package com.mazad.auth.controller;
 
 import java.util.UUID;
 
-import com.mazad.auth.entity.ApiKey;
-import com.mazad.auth.service.ApiKeyService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.mazad.auth.dto.EmailResetDto;
 import com.mazad.auth.dto.LoginResponseDto;
 import com.mazad.auth.dto.PasswordResetDto;
 import com.mazad.auth.dto.UserRequestDTO;
 import com.mazad.auth.dto.UsernameResetDto;
+import com.mazad.auth.entity.ApiKey;
+import com.mazad.auth.service.ApiKeyService;
 import com.mazad.auth.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
@@ -30,9 +36,6 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     public final UserService userService;
     private final ApiKeyService apiKeyService;
-
-    @Value("${auth.refresh-token-validity-days:4}")
-    long    refreshValidity;
 
     @PostMapping("register")
     public ResponseEntity<LoginResponseDto> adddUser(
@@ -73,21 +76,6 @@ public class UserController {
         return userService.refresh(refreshToken);
     }
     
-//    @DeleteMapping("delete")
-//    public ResponseEntity<String> delete(
-//        @RequestHeader(name="X-User-Id") UUID userId,
-//        @RequestBody JsonNode passNode
-//    ){
-//        String password;
-//        if (!passNode.has("password"))
-//            throw new BadRequestException("Password Required!");
-//        password = passNode.get("password").asString();
-//        if (password == null || password.isBlank())
-//            throw new BadRequestException("Password Can't Be Empty!");
-//        userService.delete(userId, passNode.get("password").asString());
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted");
-//    }
-
     @PatchMapping("reset/password")
     public ResponseEntity<String> resetPassword(
         @RequestHeader(name="X-User-Id") UUID userId,

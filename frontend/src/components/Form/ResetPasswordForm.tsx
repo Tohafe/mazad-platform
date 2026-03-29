@@ -57,7 +57,7 @@ export default function ResetPasswordForm({setShowPassEdit} : Props){
             <Input {...register('newPassword')} error={errors.newPassword?.message} isPass={true} label="New password"></Input>
             <Input {...register('confirmPassword')} error={errors.confirmPassword?.message} isPass={true} label="Confirm password"></Input>
             {errors.root && 
-                <span className="text-red-600 text-sm">{errors.root.message } </span>}
+                <span className="text-error text-sm">{errors.root.message } </span>}
             <Button type="submit" className="w-full mt-3" disabled={isSubmitting}>
                 {!isSubmitting  ? 'Save'
                                 : <CgSpinner className="text-4xl text-gray-300 animate-spin"> </CgSpinner>}

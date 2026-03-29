@@ -99,7 +99,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({ fileData, onRemove, onSetMain
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </div>
-                            <span className="text-red-600 font-semibold text-xs">Upload Failed</span>
+                            <span className="text-error font-semibold text-xs">Upload Failed</span>
                         </div>
                         <div className="w-full mt-auto border-t border-gray-400 pt-1 overflow-hidden">
                             <p className="text-gray-900 text-[10px] text-center wrap-break-word leading-tight line-clamp-2"

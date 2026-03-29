@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.mazad.auth.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -136,13 +135,6 @@ public class UserService {
                 .build();
     }
 
-//    public void delete(UUID userId, String password) {
-//        UserEntity user = repo.findById(userId)
-//                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
-//        if (!encoder.matches(password, user.getPassword()))
-//            throw new BadRequestException("Invalid Password!");
-//
-//    }
 
     public void resetPassword(UUID userId, PasswordResetDto data) {
         UserEntity user = repo

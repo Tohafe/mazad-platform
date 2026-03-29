@@ -49,7 +49,7 @@ input::-ms-clear {
     /* 🚦 Status (Generates bg-, text-, border-) */
     --color-success: #16a34a;
     --color-warning: #f59e0b;
-    --color-error: #dc2626;
+    --color-error: red;
 
 
     /* 2. Map the Google Fonts to Tailwind variables */

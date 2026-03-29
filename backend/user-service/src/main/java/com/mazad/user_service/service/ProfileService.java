@@ -3,7 +3,6 @@ package com.mazad.user_service.service;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.mazad.user_service.dto.AvatarDto;
 import com.mazad.user_service.dto.CurrentUser;
@@ -109,11 +108,6 @@ public class ProfileService {
         return mapper.toPrivateResponseDto(profile);
     }
 
-//    @Transactional
-//    public void deleteProfile(UUID userId) {
-//        if (repo.existsByUserId(userId))
-//            repo.deleteByUserId(userId);
-//    }
     
     public PrivateResponseDto changeAvatar(AvatarDto dto, UUID userId) {
         ProfileEntity profile = repo

@@ -27,7 +27,7 @@ interface WebSocketProviderProps {
 
 export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     
-    const { accessToken } = useAuth();
+    const { accessToken, isLoading } = useAuth();
     
     const [stompClient, setStompClient] = useState<Client | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false); 
@@ -42,6 +42,9 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     const isLoggedIn = !!accessToken;
 
     useEffect(() => {
+
+        if(isLoading)
+            return ;
         const wsBase = getWsUrl();
 
         const client = new Client({
@@ -82,20 +85,17 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             }
         });
 
-        const connectionTimer = setTimeout(() => {
-            client.activate();
-            setStompClient(client);
-        }, 200);
+        client.activate();
+        setStompClient(client);
 
         return () => {
             console.log("Destroying old socket...");
-            clearTimeout(connectionTimer);
             client.deactivate();
             setStompClient(null);
             setIsConnected(false);
         };
         
-    }, [isLoggedIn]); 
+    }, [isLoggedIn, isLoading]); 
 
 
     return (

@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react'
+import {useEffect} from 'react'
 
 import useRefreshToken from '../hooks/useRefreshToken'
 import { useAuth } from '../context/AuthProvider';
@@ -10,14 +10,12 @@ import DEFAULT_THUMB from '../assets/avatar_thumb.jpg'
 
 export default function PersistLogin(){
     const refresh = useRefreshToken();
-    const [isLoading, setIsLoading] = useState(true);
-    const {accessToken, setUser} = useAuth();
+    const {accessToken, setUser, isLoading, setIsLoading} = useAuth();
     const { getPrivateProfle } = useUserApi();
     
     useEffect(() => {
-        let    isMounted = true;
 
-        const getAccessToken =async () => {
+        const getAccessToken = async () => {
             try{
                 const refreshResponse = await refresh();
                 getPrivateProfle(refreshResponse.accessToken)
@@ -32,20 +30,17 @@ export default function PersistLogin(){
                     })
             }catch(error: any){
             }finally{
-                isMounted && setIsLoading(false);
+                setIsLoading(false);
             }
         }
-
         !accessToken ? getAccessToken() : setIsLoading(false);
-
-        return () => {isMounted = false};
     }, [])
 
     return (
         <>
             {isLoading
-            ? <p className='text-secondary text-xl'>loading ...</p>
-            : <Outlet/> 
+                ? <p className='text-secondary text-xl'>loading ...</p>
+                : <Outlet/> 
             }
         </>
     )
