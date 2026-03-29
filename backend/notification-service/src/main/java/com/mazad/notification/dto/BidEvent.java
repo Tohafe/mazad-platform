@@ -13,6 +13,12 @@ public class BidEvent {
     private Long currentHighestBid;
     private Instant endsAt;      
     private AuctionStatus status;       
+    
     private String lastBidderId;
     private String previousBidderId;
+    private String sellerId;
+
+    Long previousBidderIdAvailableBalance;
+    Long lastBidderAvailableBalance;
+    Long sellerAvailableBalance;
 }
