@@ -57,6 +57,7 @@ re-s: clean-s build-s up-s
 
 restart:
 	$(COMPOSE) restart
+restart-s: down-s up-s
 logs:
 	$(COMPOSE) logs -f
 ps:
@@ -88,4 +89,7 @@ clean-img:
 
 clean-s: stop-s
 	$(COMPOSE) rm -f $(s)
-	docker rmi $$(docker images | grep $(s) | awk '{print $$3}') || true
+	docker rmi $$(docker images | grep $(s) | awk '{print $$3}')
+
+jwt-secret-key:
+	@ openssl rand -base64 64 | tr -d '\n' &&  echo '\n'

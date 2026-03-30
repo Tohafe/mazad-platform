@@ -24,7 +24,7 @@ const CategoryAuctions = () => {
 
     useEffect(() => {
         setAppliedFilters([]);
-        setSearchParams({page: "1"})
+        setSearchParams({page: "1"}, {replace: true})
         window.scrollTo({top: 0, behavior: 'smooth'})
     }, [id])
 
@@ -42,7 +42,7 @@ const CategoryAuctions = () => {
 
     const handleApplyFilters = (appliedFilters: AppliedFilter[]) => {
         setAppliedFilters(appliedFilters);
-        setSearchParams({page: "1"})
+        setSearchParams({page: "1"}, {replace: true})
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 

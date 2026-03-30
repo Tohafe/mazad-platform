@@ -12,7 +12,6 @@ export const useItems = () => {
             const response = await apiPrivate.post<ItemDetailsResponse>('/items', payload);
             return response.data;
         } catch (error) {
-            console.error("Failed to POST item to backend:", error);
             throw error; 
         } finally {
             setIsCreating(false);

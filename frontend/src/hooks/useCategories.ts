@@ -1,10 +1,9 @@
 import {useQuery} from "@tanstack/react-query";
 import {fetchCategories, fetchPopularCategories} from "../api/categories.ts";
-import useApiPrivate from "./useApiPrivate.ts";
+import api from "../api/axios.ts";
 
 
 export const useCategories = () => {
-    const api = useApiPrivate();
     return useQuery({
         queryKey: ["categories"],
         queryFn: () => fetchCategories(api)
@@ -13,7 +12,6 @@ export const useCategories = () => {
 
 
 export const usePopularCategories = () => {
-    const api = useApiPrivate();
     return useQuery({
         queryKey: ["popular-categories"],
         queryFn: () => fetchPopularCategories(api)

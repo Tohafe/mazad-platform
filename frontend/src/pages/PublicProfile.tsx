@@ -34,10 +34,8 @@ export default function PublicProfile(){
             .catch((err: AxiosError) => {
                 if (err.status === 404)
                     setProfileErrorMsg('Not found');
-                else{
+                else
                     setProfileErrorMsg("An unexpected error occurred, Please try later.");
-                    console.log(err);
-                }
                 setProfile(null);
             });
     }, [username])

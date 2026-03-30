@@ -4,7 +4,6 @@ services:
     build:
       context: ./frontend
       args:
-        - VITE_API_KEY=${API_KEY}
         - VITE_MAZAD_IP=${MAZAD_IP}
         - VITE_DEFAUTLT_AVATAR=${AVATAR_URL}
         - VITE_DEFAUTLT_AVATAR_THUMB=${AVATAR_THUMBNAIL_URL}
@@ -30,8 +29,6 @@ services:
     volumes:
       - postgres-v:${PGDATA}
       - ./infrastructure/postgres/init-scripts:/docker-entrypoint-initdb.d/
-    ports:
-      - "5000:5432" #@Naoufal
     networks:
       mazad-network:
     restart: unless-stopped
@@ -40,8 +37,6 @@ services:
   redis:
     container_name: redis-c
     image: redis:8.4.0-bookworm
-    # ports:
-    #   - "6379"
     networks:
       mazad-network:
     restart: unless-stopped
@@ -57,11 +52,6 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
-      # - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
-      - API_KEY=${API_KEY}
-      # - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
-      # - USER_SERVER_PORT=${USER_SERVER_PORT}
-      # - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
       - FRONT_URL=${FRONT_URL}
       # SSL Configuration
       - SSL_ENABLED=true
@@ -89,7 +79,6 @@ services:
       - DB_URL=${DB_URL}/${ITEMS_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      # - ITEMS_SERVICE_PORT=${ITEMS_SERVICE_PORT}
       - ITEM_CREATED_TOPIC=${ITEM_CREATED_TOPIC}
       - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC}
       - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
@@ -118,7 +107,6 @@ services:
      - DB_NAME=${BID_DB_NAME}
      - DB_USER=${BID_DB_USER}
      - DB_PASSWORD=${BID_DB_PASSWORD}
-    #  - BIDDING_SERVICE_PORT=${BIDDING_SERVICE_PORT}
      - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
      - ITEM_CREATED_TOPIC=${ITEM_CREATED_TOPIC}
      - ITEM_UPDATED_TOPIC=${ITEM_UPDATED_TOPIC}
@@ -150,7 +138,6 @@ services:
       - AUTH_DB_NAME=${AUTH_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      # - AUTH_SERVER_PORT=${AUTH_SERVER_PORT}
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
       - ACCESS_TOKEN_MIN=${ACCESS_TOKEN_MIN}
       - REFRESH_TOKEN_DAY=${REFRESH_TOKEN_DAY}
@@ -190,7 +177,6 @@ services:
       - USER_DB_NAME=${USER_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      # - USER_SERVER_PORT=${USER_SERVER_PORT}
       - AVATAR_URL=${AVATAR_URL}
       - AVATAR_THUMBNAIL_URL=${AVATAR_THUMBNAIL_URL}
       - REDIS_HOST=${REDIS_HOST}
@@ -217,8 +203,6 @@ services:
   kafka-service:
     container_name: kafka-c
     image: apache/kafka:latest
-    # ports:
-    #   - "${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}"
     environment:
       KAFKA_NODE_ID: 1 # unique id for this kafka node
 
@@ -289,6 +273,7 @@ services:
       - ./infrastructure/minio-service/init-minio.sh:/usr/bin/init-minio.sh
       - ./infrastructure/certs/generated/mazad-root-ca.crt:/root/.mc/certs/CAs/public.crt
       - ${AVATAR_PATH}:/default-images
+      - ./resources/categories_pics:/categories_pics:ro
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
 
@@ -307,8 +292,6 @@ services:
       - "DB_NAME=${CHAT_SERVICE_DB_NAME}"
       - "POSTGRES_USER=${POSTGRES_USER}"
       - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
-      # KAFKA ENV VARS
-      - "KAFKA_SERVICE_PORT=${KAFKA_SERVICE_PORT}"
       # SSL Configuration
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/chat-service.p12
@@ -361,6 +344,7 @@ services:
       - NOTIFY_FRIENDS_TOPIC=${NOTIFY_FRIENDS_TOPIC}
       - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
       - DB_URL=${DB_URL}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
 
       - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
       
@@ -384,11 +368,3 @@ volumes:
   postgres-v:
     name: postgres-v
   minio_data:
-
-
-
-
-
-# keytool -import -alias mazad-ca \
-#     -file /usr/local/share/ca-certificates/mazad-root-ca.crt \
-#     -cacerts -storepass changeit -noprompt

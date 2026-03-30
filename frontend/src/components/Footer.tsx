@@ -36,12 +36,10 @@ const tables: TableData[] = [
         ]
     },
     {
-        title: "Resources",
+        title: "Support",
         rows: [
-            { title: "React Documentation", url: "https://react.dev/reference/react", external: true },
-            { title: "TypeScript Tutorial", url: "https://www.youtube.com/watch?v=d56mG7DezGs", external: true },
-            { title: "Spring Documentation", url: "https://spring.io/projects", external: true },
-            { title: "Spring Tutorial", url: "https://www.youtube.com/watch?v=4XTsAAHW_Tc", external: true },
+            { title: "Help Center", url: "/help", external: true },
+            { title: "Bidding Guide", url: "/guide", external: true }
         ]
     }
 ];

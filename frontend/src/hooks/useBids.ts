@@ -53,12 +53,9 @@ export function useBids(auctionId: number, user: User | null ) {
 
   // Subscribe to real-time bid updates via WebSocket
   useEffect(() => {
-    console.log('Naoufal New bid received: 1');
     if (!stompClient || !isConnected || !auctionId) return;
 
     const subscription = stompClient.subscribe(`/topic/auction/${auctionId}`, (message: IMessage) => {
-      console.log('Naoufal New bid received: 2');
-      
       try {
         const bidEvent = JSON.parse(message.body) as BidEventMessage;
         
@@ -81,12 +78,8 @@ export function useBids(auctionId: number, user: User | null ) {
             ...(bidEvent.endsAt && { endsAt: bidEvent.endsAt }),
             ...(bidEvent.status && { status: bidEvent.status }),
           };
-        });
-
-        console.log('New bid received and processed:', bidEvent);
-        
+        });        
       } catch (error) {
-        console.error("Failed to parse incoming bid event:", error);
       }
 
       // Invalidate queries to ensure components re-render with updated data

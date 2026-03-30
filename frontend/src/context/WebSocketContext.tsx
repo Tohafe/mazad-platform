@@ -36,7 +36,6 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
     useEffect(() => {
         tokenRef.current = accessToken;
-        console.log("token changed");
     }, [accessToken]);
 
     const isLoggedIn = !!accessToken;
@@ -60,28 +59,21 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
                     client.connectHeaders = {
                         Authorization: `Bearer ${currentToken}`,
                     };
-                    console.log("Connecting with token...");
                 } else {
-                    console.log("Connecting without token...");
                     client.connectHeaders = {};
                 }
             },
 
             onConnect: () => {
-                console.log(`Global STOMP Engine Online! (Auth: ${accessToken ? 'YES' : 'NO'})`);
                 setIsConnected(true); 
             },
             onWebSocketClose: () => {
-                console.log("Connection lost");
                 setIsConnected(false); 
             },
 
-            onWebSocketError: (error) => {
-                console.error("WebSocket Network Error:", error);
+            onWebSocketError: () => {
             },
-            onStompError: (frame) => {
-                console.error("Broker Error:", frame.headers['message']);
-                console.error("Additional Details:", frame.body);
+            onStompError: () => {
             }
         });
 
@@ -89,7 +81,6 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
         setStompClient(client);
 
         return () => {
-            console.log("Destroying old socket...");
             client.deactivate();
             setStompClient(null);
             setIsConnected(false);

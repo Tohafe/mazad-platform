@@ -11,7 +11,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateResourceException.class)
@@ -73,9 +76,10 @@ public class GlobalExceptionHandler {
                         .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(Exception.class)
     public ProblemDetail runTimeExceptionHandler(Exception e){
+        log.error(e.getMessage());
         return ProblemDetail
-                        .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+                        .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Iternal server error, please try later !");
     }
 }

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { productApi } from '../api';
+import productApi from '../api/productApi.ts';
 import type { ApiProduct, ProductImage, ProductDetail, BidData, Countdown } from '../types';
 import {formatPrice} from "../utils/currency.ts";
 

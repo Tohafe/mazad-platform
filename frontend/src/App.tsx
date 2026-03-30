@@ -20,93 +20,107 @@ import Home from "./pages/Home.tsx";
 import AboutPage from "./pages/footer/About.tsx";
 import HowItWorksPage from "./pages/footer/HowItWorks.tsx";
 import TechnologiesPage from "./pages/footer/Technologies.tsx";
+import HelpCenter from "./pages/footer/HelpCenter.tsx";
+import BiddingGuide from "./pages/footer/BiddingGuide.tsx";
 
 
-export const router = createBrowserRouter([
-    {
-        element: <AppLayout/>,
-        children: [
-            {
-                element: <PersistLogin/>,
-                children: [
-                    {
-                        path: '/',
-                        element: <Home/>,
-                    },
-                    {
-                        path: '/c/:idSlug',
-                        element: <CategoryAuctions/>
-                    },
-                    {
-                        path: '/search',
-                        element: <SearchAuctions/>
-                    },
-                    {
-                        path: '/auction/:productId',
-                        element: <ItemPage />
-                    },
-                    {
-                        path: '/privacy-policy',
-                        element: <PrivacyPolicy/>
-                    },
-                    {
-                        path: '/terms-of-service',
-                        element: <TermsOfService/>
-                    },
-                    {
-                        path: '/profile/:username',
-                        element: <PublicProfile/>
-                    },
-                    {
-                        element: <RequireAuth/>,
-                        children: [
+export const router = createBrowserRouter(
+    [
+        {
+            element: <PersistLogin/>,
+            children: [
+                {
+                    element: <AppLayout/>,
+                    children:
+                        [
                             {
-                                path: '/dashboard',
-                                element: <Dashboard/>,
+                                element: <RequireAuth/>,
+                                children:
+                                    [
+                                        {
+                                            path: '/dashboard',
+                                            element: <Dashboard/>,
+                                        },
+                                        {
+                                            path: '/settings',
+                                            element: <Settings/>,
+                                        },
+                                        {
+                                            path: '/listing',
+                                            element: <CreateAuction/>
+                                        },
+                                        {
+                                            path:'/inbox/:userId?',
+                                            element: <Inbox/>
+                                        }
+                                    ]
                             },
                             {
-                                path: '/settings',
-                                element: <Settings/>,
+                                path: '/register',
+                                element: <Register/>
                             },
                             {
-                                path: '/listing',
-                                element: <CreateAuction/>
+                                path: '/',
+                                element: <Home/>,
                             },
                             {
-                                path:'/inbox',
-                                element: <Inbox />
-                            }
+                                path: '/c/:idSlug',
+                                element: <CategoryAuctions/>
+                            },
+                            {
+                                path: '/search',
+                                element: <SearchAuctions/>
+                            },
+                            {
+                                path: '/auction/:productId',
+                                element: <ItemPage/>
+                            },
+                            {
+                                path: '/privacy-policy',
+                                element: <PrivacyPolicy/>
+                            },
+                            {
+                                path: '/terms-of-service',
+                                element: <TermsOfService/>
+                            },
+                            {
+                                path: '/profile/:username',
+                                element: <PublicProfile/>
+                            },
+                            {
+                                path: '/about',
+                                element: <AboutPage/>
+                            },
+                            {
+                                path: '/how-it-works',
+                                element: <HowItWorksPage/>
+                            },
+                            {
+                                path: '/technologies',
+                                element: <TechnologiesPage/>
+                            },
+                            {
+                                path: '/help',
+                                element: <HelpCenter/>
+                            },
+                            {
+                                path: '/guide',
+                                element: <BiddingGuide/>
+                            },
+                            {
+                                path: '/login',
+                                element: <Login/>
+                            },
+                            {
+                                path: '*',
+                                element: <NotFoundPage/>
+                            },
                         ]
-                    },
-                    {
-                        path:'/register',
-                        element: <Register/>
-                    },
-                    {
-                        path: '/login',
-                        element: <Login/>
-                    },
-                    {
-                        path: '*',
-                        element: <NotFoundPage/>
-                    },
-                ]
-            },
-            {
-                path: '/about',
-                element: <AboutPage/>
-            },
-            {
-                path: '/how-it-works',
-                element: <HowItWorksPage/>
-            },
-            {
-                path: '/technologies',
-                element: <TechnologiesPage/>
-            }
+                }
+            ]
+        },
     ]
-    },
-]);
+);
 
 const App = () => {
     useAuctionsUpdates();

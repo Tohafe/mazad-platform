@@ -28,7 +28,6 @@ const SearchBar = ({className = ""}: SearchBarProps) => {
                 return parsed;
             }
         } catch (e) {
-            console.error("Failed to load search history:", e);
         }
         return [];
     });
@@ -50,8 +49,6 @@ const SearchBar = ({className = ""}: SearchBarProps) => {
         setIsFocused(false);
         const trimmed = query.trim();
         if (!trimmed) return;
-
-        console.log("Searching for:", trimmed);
         addToHistory(trimmed)
         navigate(`/search?q=${trimmed}`)
     }

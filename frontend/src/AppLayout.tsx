@@ -1,6 +1,7 @@
 import {Outlet} from "react-router-dom";
 import HeaderSection from "./sections/HeaderSection.tsx";
 import Footer from "./components/Footer.tsx";
+import { Toaster } from "react-hot-toast";
 
 const AppLayout = () => {
     return (
@@ -8,6 +9,7 @@ const AppLayout = () => {
             <HeaderSection className="w-full max-w-305"/>
             <Outlet />
             <Footer className="w-full max-w-305"/>
+            <Toaster position="bottom-right" />
         </div>
     );
 };

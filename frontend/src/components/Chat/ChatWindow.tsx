@@ -1,15 +1,15 @@
 import {  useEffect, useRef, useState } from "react";
-import useApiPrivate from "../../hooks/useApiPrivate";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
 import { Link } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid'
+import useChatApi from "../../hooks/useChatApi";
+import  { toast } from "react-hot-toast";
+
 
 
 
 function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string, onMessageSent: (msg: string) => void, onBack: () => void }>, ){
 
-    const apiPrivate = useApiPrivate();
 
     const [messages, setMessages]  = useState<any[]>([]);
     
@@ -17,6 +17,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+    const { sendMessage, getChatHistory, getUserDetails } = useChatApi();
 
     const scrollToBottom = () => {
         setTimeout(() => {
@@ -34,38 +35,43 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
     useEffect(() => scrollToBottom(), [messages, chatId])
     
     const handleSend = async () => {
-        if (inputText.trim() === "")
+        const trimmedInput = inputText.trim();
+        if (trimmedInput === "")
             return ;
-        const newMessage = {
-            id: uuidv4(),
-            text: inputText,
-            sender: "me"
-        };
-        setMessages([...messages, newMessage]);
+        if (trimmedInput.length > 500) {
+            toast.error(`Message is too long! (${trimmedInput.length}/500)`);
+            return ;
+        }
         setInputText("");
         try {
-            await apiPrivate.post(`/chat/send`, {
-                receiverId: chatId,
-                content: newMessage.text
+            const response = await sendMessage(chatId, trimmedInput);            
+            const realMessage = response.data;
+            setMessages(prev => {
+                if (prev.some(msg => msg.id === realMessage.id)) return prev;
+                return [...prev, {
+                    id: realMessage.id,
+                    text: realMessage.content || trimmedInput,
+                    sender: "me"
+                }];
             });
-            // MOVE THE CHAT TO THE TOP
-            onMessageSent(newMessage.text);
-        } catch (error){
-            console.error("Failed to send message: ",  error);
-            // doing some disign for failed send
+            // MOVE THE CHAT TO THE TOP 
+            onMessageSent(trimmedInput);
+        } catch (error: any){
+            const errorMessage = error.response?.data?.message || error.response?.data?.detail || ""
+            setInputText(trimmedInput);
+            // TODO: doing some disign for failed send
+            toast.error(errorMessage);  // Toast logs error on client 
         }
     };
 
-
+    // FETCH CHAT HISTORY
     const { user } = useAuth();
     useEffect(() => {
-        console.log(user);  
         setInputText("");
         setMessages([]);
-        // TODO: TRIGGER AXIOS FETCH INBOX FOR THE NEW CHATID
         const fetchHistory = async () => {
             try {
-                const response = await apiPrivate.get(`/chat/history/${chatId}`);
+                const response = await getChatHistory(chatId);
                 const rawMessages = response.data.content;
 
                 const formattedMessages = rawMessages.map((dto:any) => ({
@@ -75,31 +81,26 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                     sender: dto.senderId.toLowerCase() === user?.id ? "me" : "them"
                 }));
                 setMessages(formattedMessages.reverse());
-            } catch (error){
-                console.error("Failed to fetch chat history;", error);
+            } catch (err){
             }
         }
         fetchHistory();
     }
-    , [chatId, user?.id, apiPrivate]);
+    , [chatId, user?.id]);
     // SUBSCRIBING TO THE WEBSOCKET 
     const {stompClient, isConnected } = useWebSocket();
     useEffect(() => {
         if (!stompClient || !isConnected || !chatId) {
-            if (stompClient && !isConnected){
-                console.log("waiting for websocket connection in chatWindow...");
-            }
             return ;
         }
-        console.log("Subscribing to real-time chat updates in chatWindow...");
-
         const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
             const incomingMsg = JSON.parse(message.body);
-            console.log(incomingMsg);
             const isRelevent  = incomingMsg.senderId.toLowerCase() === chatId.toLowerCase() || incomingMsg.receiverId.toLowerCase() === chatId.toLowerCase();
-            console.log("chatID:", chatId);
             if (isRelevent){
+
                 setMessages((prev) => {
+                    if (prev.some(msg => msg.id === incomingMsg.id))
+                         return prev;
                     return [...prev, {
                         id: incomingMsg.id,
                         text: incomingMsg.content,
@@ -111,17 +112,16 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         return (() =>{
             if (stompClient && stompClient.connected && subscription){
                 subscription.unsubscribe();
-                console.log("Unsubscribing from chat updates");
             }
         });
-    }, [stompClient, isConnected, chatId]);
+    }, [stompClient, isConnected, chatId, user?.id]);
 
 
     const [otherUser, setOtherUser] = useState<{username:string, avatar?:string} | null>(null);
     useEffect(() => {
         const getOtherUserInfo = async () => {
             try{
-                const response = await apiPrivate.get(`/profile/users/${chatId}`);
+                const response = await getUserDetails(chatId);
                 setOtherUser({
                     username: response.data.username,
                     avatar: response.data.avatarUrl
@@ -132,7 +132,6 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         };
         getOtherUserInfo();
     }, [chatId])
-console.log('haha');
 
     return (
         <div className="flex flex-col w-full h-full bg-white">
