@@ -89,11 +89,15 @@ function useChatInbox(activeChatId: string | null){
             console.log("Subscribing to real-time chat updates...");
             const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
                 const incomingMsg = JSON.parse(message.body);
-                console.log(incomingMsg);
+                console.log(incomingMsg); //TODO: DELETE LOGS
                 setChats((prevChats) => {
-                    const existingChatIndex = prevChats.findIndex(c => c.id === incomingMsg.senderId);
-                    const isCurrentlyOpen = activeChatId?.toLowerCase() === incomingMsg.senderId.toLowerCase();
-                    console.log("isCurrentlyOpen", isCurrentlyOpen);
+                    const conversationParterId = 
+                        incomingMsg.senderId === user.id
+                            ? incomingMsg.receiverId
+                            : incomingMsg.senderId;
+                    const existingChatIndex = prevChats.findIndex(c => c.id === conversationParterId);
+                    const isCurrentlyOpen = activeChatId?.toLowerCase() === conversationParterId;
+                    const didISendThis = incomingMsg.senderId === user.id;
                     let updatedChats = [...prevChats];
                     if (existingChatIndex >= 0) {
                         const existingChat = updatedChats[existingChatIndex];
@@ -101,7 +105,7 @@ function useChatInbox(activeChatId: string | null){
                         updatedChats.unshift({
                             ...existingChat,
                             lastMessage: incomingMsg.content,
-                            hasUnreadMessages: !isCurrentlyOpen
+                            hasUnreadMessages: !didISendThis && !isCurrentlyOpen
                         });
                     }
                     else {
