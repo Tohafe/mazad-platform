@@ -24,7 +24,6 @@ function useChatInbox(activeChatId: string | null){
                             
             ));
         } catch(err) {
-            console.error(`could not fetch info for user ${userId}`, err);
         }
         
     }
@@ -42,14 +41,12 @@ function useChatInbox(activeChatId: string | null){
                     lastMessage: dto.lastMessage,
                     hasUnreadMessages: dto.hasUnreadMessages
                 }));
-                console.log("message:", formattedChats);
                 setChats(formattedChats);
                 
                 formattedChats.forEach( (chat: Chat) => {
                     fetchUserDetails(chat.id);
                 })
             }catch(error){
-                console.error("Failed to fetch inbox:", error);
             }
         }
         if (user?.id)
@@ -70,27 +67,16 @@ function useChatInbox(activeChatId: string | null){
             try{
                 await markChatRead(chatId);
             }catch(e){
-                console.error("Failed to mark chat as read:", e);
             }
         }
         }
     // SUBSCRIBING TO THE WEBSOCKET LISTENING TO MESSAGES TOPIC
     const { stompClient, isConnected } = useWebSocket();
     useEffect(() => {
-            console.log("status check", {
-                hasStompClient: !!stompClient,
-                userId: user?.id,
-                isConnected: isConnected,
-                fullUserObject: user
-            });
             if (!stompClient || !isConnected || !user?.id){
-                if (stompClient && !isConnected){
-                    
-                    console.log("waiting for websocket connection...");
-                }
                 return ;
             } 
-            console.log("Subscribing to real-time chat updates...");
+
             const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
                 const incomingMsg = JSON.parse(message.body);
                 const conversationPartnerId = 
@@ -99,9 +85,6 @@ function useChatInbox(activeChatId: string | null){
                         : incomingMsg.senderId;
                 const isCurrentlyOpen = activeChatId?.toLowerCase() === conversationPartnerId.toLowerCase();
                 const didISendThis = incomingMsg.senderId.toLowerCase() === (user?.id || "").toLowerCase();
-                if (isCurrentlyOpen && !didISendThis) {
-                    markChatRead(conversationPartnerId).catch(e => console.error("Failed to mark read:", e));
-                }
                 setChats((prevChats) => {
         
                     const existingChatIndex = prevChats.findIndex(c => c.id.toLowerCase() === conversationPartnerId.toLowerCase());
@@ -130,7 +113,6 @@ function useChatInbox(activeChatId: string | null){
             });
             return (() => {
                 if (stompClient && stompClient.connected && subscription) {
-                    console.log("Unsubscribing from chat updates");
                     subscription.unsubscribe();
                 }
             });

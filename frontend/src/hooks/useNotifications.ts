@@ -35,7 +35,6 @@ export function useNotifications(isOpen: boolean) {
                     setNotifications(prev => page === 0 ? data : [...prev, ...data]);
                 }
             } catch (error) {
-                console.error("Network Error:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -73,7 +72,6 @@ export function useNotifications(isOpen: boolean) {
         try {
             await api.markAsRead(id);
         } catch (error) {
-            console.error("Failed to sync:", error);
             setNotifications(prev => prev.map(notif => notif.id === id ? { ...notif, read: false } : notif));
         }
     };
@@ -86,14 +84,12 @@ export function useNotifications(isOpen: boolean) {
         try {
             await api.markAllAsRead(); 
         } catch (error) {
-            console.error("Failed to batch sync:", error);
         }
     };
 
     useEffect(() => {
         if (!stompClient || !isConnected) return;
 
-        console.log("subscirbe to notification topic");
         const subscription = stompClient.subscribe('/user/queue/notification', (message) => {
 
             const newNotification: Notification = JSON.parse(message.body);
@@ -104,7 +100,6 @@ export function useNotifications(isOpen: boolean) {
         
         return () => {
             if (stompClient && stompClient.connected && subscription) {
-                console.log("Unsubscribe to notification");
                 subscription.unsubscribe();
             }
         };
@@ -118,7 +113,6 @@ export function useNotifications(isOpen: boolean) {
         if (notif.targetUrl && notif.targetUrl.startsWith('/')) {
             router.navigate(notif.targetUrl); 
         } else if (notif.targetUrl) {
-            console.error("invalid redirect URL:", notif.targetUrl);
         }
     };
 

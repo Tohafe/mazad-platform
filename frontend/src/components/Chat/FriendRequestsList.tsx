@@ -35,38 +35,7 @@ function FriendRequestsList() {
             try {
                 const response = await getFriendRequests();
                 setRequests(response.data);
-                
-                // setRequests([
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "abde1", thumbnail: "", status: "PENDING" },
-                //     { username: "vintage_seller", thumbnail: "https://i.pravatar.cc/150?img=32", status: "PENDING" }
-                // ]);
-            
             } catch (error) {
-                console.error("Failed to fetch friend requests", error);
             } finally {
                 setIsLoading(false);
             }
@@ -81,7 +50,6 @@ function FriendRequestsList() {
             await acceptFriendRequest(username);
             setRequests(prev => prev.filter(r => r.username !== username));
         } catch (error) {
-            console.error(`Failed to accept request from ${username}`, error);
             toast.error("Failed to accept request");
         } finally {
             setProcessingId(null);

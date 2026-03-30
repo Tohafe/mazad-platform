@@ -23,9 +23,7 @@ function FriendList({ onMessageFriend }: FriendListProps) {
             try {
                 const response = await apiPrivate.get("/friends");
                 setFriends(response.data);
-                console.log(response.data);
             } catch (error) {
-                console.error("Failed to fetch friends list", error);
             } finally {
                 setIsLoading(false);
             }

@@ -44,7 +44,6 @@ export default function ResetPasswordForm({setShowPassEdit} : Props){
             setShowPassEdit(false);
         }
         catch (errors: any){
-            console.log(errors.response.data);
             setError('root', {message: errors?.response?.data?.detail || 'An unexpected error occurred, Please try later.'})
         }
     }

@@ -32,7 +32,6 @@ const ApiKeyGen = ({className = "",}: Props) => {
             toast.success("Copied!");
         } catch (err) {
             toast.error("Failed to copy!");
-            console.error("Failed to copy!", err);
         }
     };
 

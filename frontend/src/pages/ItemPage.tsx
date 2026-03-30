@@ -33,7 +33,6 @@ function ItemPage() {
     }
 
     if (isError) {
-        console.error('Auction fetch error:', error);
         return (
             <div className="min-h-screen bg-white">
                 {/* <Header /> */}

@@ -91,7 +91,6 @@ export const useFileUpload = () => {
             return { successfulUploads, failedUploads };
 
         } catch (error) {
-            console.error("error in  upload:", error);
             throw error;
         } finally {
             setIsUploading(false);
@@ -101,10 +100,8 @@ export const useFileUpload = () => {
     const deleteFile = async (fileId: string): Promise<boolean> => {
         try {
             await apiPrivate.delete(`/api/media/${fileId}`);
-            console.log(`Backend confirmed: File ${fileId} securely deleted.`);
             return true; 
         } catch (error) {
-            console.error(`Failed to delete file ${fileId}:`, error);
             return false; 
         }
     };
@@ -140,8 +137,6 @@ export const useFileUpload = () => {
         if (response.data.thumbnailUrl) {
             response.data.thumbnailUrl = `${response.data.thumbnailUrl}?t=${timestamp}`;
         }
-
-        console.log(`Backend confirmed: File ${fileId} successfully replaced.`);
         return response.data;
     };
 
