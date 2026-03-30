@@ -42,6 +42,7 @@ function useChatInbox(activeChatId: string | null){
                     lastMessage: dto.lastMessage,
                     hasUnreadMessages: dto.hasUnreadMessages
                 }));
+                console.log("message:", formattedChats);
                 setChats(formattedChats);
                 
                 formattedChats.forEach( (chat: Chat) => {
@@ -51,7 +52,10 @@ function useChatInbox(activeChatId: string | null){
                 console.error("Failed to fetch inbox:", error);
             }
         }
-        fetchInbox();
+        if (user?.id)
+        {
+            fetchInbox();
+        }
     }, [user?.id]);
 
     // MARK AS READ AFTER SELECTING A CHAT
@@ -89,15 +93,19 @@ function useChatInbox(activeChatId: string | null){
             console.log("Subscribing to real-time chat updates...");
             const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
                 const incomingMsg = JSON.parse(message.body);
-                console.log(incomingMsg); //TODO: DELETE LOGS
+                const conversationPartnerId = 
+                    incomingMsg.senderId.toLowerCase() === (user?.id || "").toLowerCase()
+                        ? incomingMsg.receiverId
+                        : incomingMsg.senderId;
+                const isCurrentlyOpen = activeChatId?.toLowerCase() === conversationPartnerId.toLowerCase();
+                const didISendThis = incomingMsg.senderId.toLowerCase() === (user?.id || "").toLowerCase();
+                if (isCurrentlyOpen && !didISendThis) {
+                    markChatRead(conversationPartnerId).catch(e => console.error("Failed to mark read:", e));
+                }
                 setChats((prevChats) => {
-                    const conversationParterId = 
-                        incomingMsg.senderId === user.id
-                            ? incomingMsg.receiverId
-                            : incomingMsg.senderId;
-                    const existingChatIndex = prevChats.findIndex(c => c.id === conversationParterId);
-                    const isCurrentlyOpen = activeChatId?.toLowerCase() === conversationParterId;
-                    const didISendThis = incomingMsg.senderId === user.id;
+        
+                    const existingChatIndex = prevChats.findIndex(c => c.id.toLowerCase() === conversationPartnerId.toLowerCase());
+                            
                     let updatedChats = [...prevChats];
                     if (existingChatIndex >= 0) {
                         const existingChat = updatedChats[existingChatIndex];
@@ -110,12 +118,12 @@ function useChatInbox(activeChatId: string | null){
                     }
                     else {
                         updatedChats.unshift({
-                            id: incomingMsg.senderId,
-                            name: `User ${incomingMsg.senderId.substring(0,4)}..`,
+                            id: conversationPartnerId,
+                            name: `User ${conversationPartnerId.substring(0,4)}..`,
                             lastMessage: incomingMsg.content,
-                            hasUnreadMessages: !isCurrentlyOpen
+                            hasUnreadMessages: !didISendThis && !isCurrentlyOpen
                         });
-                        fetchUserDetails(incomingMsg.senderId);
+                        fetchUserDetails(conversationPartnerId);
                     }
                     return updatedChats;
                 });
