@@ -16,7 +16,7 @@ ITEM=${ITEMS[$RANDOM % ${#ITEMS[@]}]}
 EXTRA=${EXTRAS[$RANDOM % ${#EXTRAS[@]}]}
 
 TITLE="$COND $BRAND $ITEM $EXTRA"
-PRICE=$(( (RANDOM % 3000) + 100 ))
+PRICE=$(( (RANDOM % 2000) + 1 ))
 
 THUMBNAIL="https://picsum.photos/seed/$RANDOM/600/450"
 
@@ -26,7 +26,7 @@ SECONDS=$(( HOURS * 3600 ))
 
 FUTURE_TIME=$(( $(date +%s) + SECONDS ))
 
-ENDS_AT=$(date -u -d "@$FUTURE_TIME" +"%Y-%m-%dT%H:%M:%SZ")
+ENDS_AT=$(python3 -c "from datetime import datetime, timezone; print(datetime.fromtimestamp($FUTURE_TIME, tz=timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'))")
 
 ITEM=$(cat <<EOF
 {
@@ -44,14 +44,14 @@ ITEM=$(cat <<EOF
         "batch": "26",
         "origin": "Collector Market",
         "condition": "Excellent",
-        "authenticity_score": "98%",
+        "authenticity score": "98%",
         "material": "Patinated Brass & Mahogany",
-        "production_year": 1942,
+        "production year": 1942,
         "weight":"1.2kg",
         "width":"20cm",
         "height":"15cm",
-        "rarity_index": "High",
-        "last_serviced": "2025-11-12"
+        "rarity index": "High",
+        "last serviced": "2025-11-12"
     },
     "shippingInfo": "Worldwide shipping available.",
     "startingPrice": "$PRICE",
