@@ -81,8 +81,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                     sender: dto.senderId.toLowerCase() === user?.id ? "me" : "them"
                 }));
                 setMessages(formattedMessages.reverse());
-            } catch (error){
-                console.error("Failed to fetch chat history;", error);
+            } catch (err){
             }
         }
         fetchHistory();
@@ -92,13 +91,8 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
     const {stompClient, isConnected } = useWebSocket();
     useEffect(() => {
         if (!stompClient || !isConnected || !chatId) {
-            if (stompClient && !isConnected){
-                console.log("waiting for websocket connection in chatWindow...");
-            }
             return ;
         }
-        console.log("Subscribing to real-time chat updates in chatWindow...");
-
         const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
             const incomingMsg = JSON.parse(message.body);
             const isRelevent  = incomingMsg.senderId.toLowerCase() === chatId.toLowerCase() || incomingMsg.receiverId.toLowerCase() === chatId.toLowerCase();
@@ -118,7 +112,6 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         return (() =>{
             if (stompClient && stompClient.connected && subscription){
                 subscription.unsubscribe();
-                console.log("Unsubscribing from chat updates in chatWindow");
             }
         });
     }, [stompClient, isConnected, chatId, user?.id]);

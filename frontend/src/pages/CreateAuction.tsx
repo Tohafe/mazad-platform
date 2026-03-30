@@ -197,7 +197,6 @@ const CreateAuction = () => {
             });
 
             if (pendingFiles.length > 0) {
-                console.log(`Uploading ${pendingFiles.length} pending files to MinIO...`);
 
                 const filesPreparedForUpload = pendingFiles.map((fileObj) => {
                     const isMainImage = files.findIndex(f => f.localId === fileObj.localId) === 0;
@@ -243,12 +242,8 @@ const CreateAuction = () => {
                 }));
             }
 
-            console.log("All images secured! Stitching final DTO payload...");
-
             let documentUrl = additionalMedia?.data?.url || null; 
             if (additionalMedia && additionalMedia.status !== 'SUCCESS') {
-                console.log(`Uploading supporting document: ${additionalMedia.file.name}...`);
-
                 try {
                     const docResponse = await uploadSingleFile(
                         additionalMedia.file, 
@@ -306,21 +301,13 @@ const CreateAuction = () => {
                 document: documentUrl,       
                 images: finalImageUrls            
             };
-
-            console.log("Transmitting payload to items-service:", finalPayload);
-
-
             try {
                 const newAuctionItem = await createItem(finalPayload);
 
                 setFiles([]);
-                console.log("Auction Created Successfully!", newAuctionItem);
-
                 navigate(`/auction/${newAuctionItem.id}`);
 
             } catch (error: any) {
-                console.error("Backend rejected the item:", error);
-
                 const exactErrorMessage = extractBackendError(error);
                 showError(exactErrorMessage);
             }

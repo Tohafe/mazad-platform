@@ -29,8 +29,6 @@ function timeAgo(dateStr: string): string {
 
 /** Transform a raw API bid into a display entry */
 function transformBid(bid: ApiBid): BidEntry {
-  console.log('inside Transform:', bid.amount);
-  console.log('inside Transform:', formatPrice(bid.amount));
   return {
     pseudonym: generatePseudonym(bid.bidderId),
     timeAgo: timeAgo(bid.createdAt),
@@ -43,16 +41,12 @@ export function useBids(auctionId: number) {
   const queryClient = useQueryClient();
   const { getBids } = useBidApi();
 
-  console.log('Naoufal New bid received: 0');
 
   // Subscribe to real-time bid updates via WebSocket
   useEffect(() => {
-    console.log('Naoufal New bid received: 1');
     if (!stompClient || !isConnected || !auctionId) return;
 
     const subscription = stompClient.subscribe(`/topic/auction/${auctionId}`, (message: IMessage) => {
-      console.log('Naoufal New bid received: 2');
-      
       try {
         const bidEvent = JSON.parse(message.body) as BidEventMessage;
         
@@ -75,12 +69,8 @@ export function useBids(auctionId: number) {
             ...(bidEvent.endsAt && { endsAt: bidEvent.endsAt }),
             ...(bidEvent.status && { status: bidEvent.status }),
           };
-        });
-
-        console.log('New bid received and processed:', bidEvent);
-        
+        });        
       } catch (error) {
-        console.error("Failed to parse incoming bid event:", error);
       }
 
       // Invalidate queries to ensure components re-render with updated data

@@ -54,8 +54,7 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
         () => parseCurrency(data.currentBid),
         [data.currentBid] // React will recalculate when latestBidValue changes
     );
-    console.log("Bid Side", currentBidNumeric);
-    console.log("Curent bid", data.currentBid);
+
 
     //////////////////////////
 

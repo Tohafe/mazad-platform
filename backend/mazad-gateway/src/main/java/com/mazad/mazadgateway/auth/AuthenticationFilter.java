@@ -35,16 +35,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        ServerHttpRequest request = exchange.getRequest();
         String token;
+        ServerHttpRequest request = exchange.getRequest().mutate().headers((header) -> {
+            header.remove("X-User-Id");
+        }).build();
+
+        exchange = exchange.mutate()
+            .request(request)
+            .build();
 
         if (RouterValidator.isPublicEndpoint.test(request)) {
-            if (request.getPath().toString().equals("/ws") || request.getPath().toString().startsWith("/api/v1/items")){
-                if (request.getPath().toString().equals("/ws"))
-                    token = request.getQueryParams().getFirst("token");
-                else
-                    token = getAccessToken(request);
-
+            if (request.getPath().toString().startsWith("/api/v1/items")){
+                token = getAccessToken(request);
                 return processAuthenticatedRequest(token, exchange, chain, true);
             }
             return chain.filter(exchange);
@@ -59,11 +61,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         return (processAuthenticatedRequest(token, exchange, chain, false));
     }
 
-   private Mono<Void> processAuthenticatedRequest(String token, ServerWebExchange exchange, GatewayFilterChain chain, boolean isFromParam){
+   private Mono<Void> processAuthenticatedRequest(String token, ServerWebExchange exchange, GatewayFilterChain chain, boolean isTokenRequired){
         ServerHttpRequest request = exchange.getRequest();
 
         if (token == null || !token.startsWith("Bearer ")){
-            if (isFromParam)
+            if (isTokenRequired)
                     return (chain.filter(exchange));
             return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
         }
@@ -79,11 +81,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange.mutate().request(modifiedRequest).build());
 
         } catch (ExpiredJwtException e) {
-            if (isFromParam)
+            if (isTokenRequired)
                 return (chain.filter(exchange));
             return onError(exchange, "Token has expired", HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            if (isFromParam)
+            if (isTokenRequired)
                 return (chain.filter(exchange));
             return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
         }

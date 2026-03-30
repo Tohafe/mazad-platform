@@ -69,16 +69,11 @@ export function useAuctionsUpdates() {
 
     useEffect(() => {
         if (!stompClient || !isConnected) return;
-        console.log("WS connected. Subscribing to /topic/auctions");
         const subscription = stompClient.subscribe("/topic/auctions", (message) => {
-            console.log("Subscribed! to /topic/auctions");
-            console.log("WS /topic/auctions:", message.body);
             try {
                 const event = JSON.parse(message.body) as AuctionUpdateEvent;
                 updateCache(queryClient, event);
-                console.log("WS parsed:", event);
             } catch (e) {
-                console.error("WS parse error:", e);
             }
         })
         return () => {
@@ -95,10 +90,7 @@ export function useBalanceUpdate() {
     const queryClient = useQueryClient();
     useEffect(() => {
         if (!stompClient || !isConnected || !user?.id) return;
-        console.log("WS connected. Subscribing to /user/queue/balance");
         const subscription = stompClient.subscribe("/user/queue/balance", (message) => {
-            console.log("Subscribed! to /user/queue/balance");
-            console.log("WS /user/queue/balance:", message.body);
             try {
                 const event = JSON.parse(message.body) as Wallet;
                 queryClient.setQueryData(
@@ -110,9 +102,7 @@ export function useBalanceUpdate() {
                         }
                     },
                 )
-                console.log("WS parsed:", event);
             } catch (e) {
-                console.error("WS parse error:", e);
             }
         })
         return () => {

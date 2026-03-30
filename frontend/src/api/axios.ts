@@ -1,6 +1,5 @@
 import axios from "axios"
 
-// const API_KEY = import.meta.env.VITE_API_KEY;
 
 //for frontend Dev, remove it before push @Naoufal
 //const BASE_URL = '/api/v1'

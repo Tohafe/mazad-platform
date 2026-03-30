@@ -21,11 +21,6 @@
       "description": "The sync key that auth and user service use to communicate"
     },
     {
-      "name": "user-service.url",
-      "type": "java.lang.String",
-      "description": "user service url"
-    },
-    {
       "name": "spring.security.oauth2.client.registration.42.redirect-uri",
       "type": "java.lang.String",
       "description": "Description for spring.security.oauth2.client.registration.42.redirect-uri."

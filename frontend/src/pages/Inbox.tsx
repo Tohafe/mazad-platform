@@ -42,8 +42,7 @@ function Inbox(){
                     navigate(`/inbox/${friendId}`);
                 } 
             })
-            .catch ((error) => {
-                console.error(`Failed tos fetch ID for user ${friendUsername}:`, error);
+            .catch (() => {
             }) 
     }
     
