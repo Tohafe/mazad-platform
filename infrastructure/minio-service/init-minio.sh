@@ -16,4 +16,14 @@ else
   echo "No default image path provided or one of the images not found"
 fi
 
+if [ -d "/categories_pics" ]; then
+  for file in /categories_pics/*; do
+    if [ -f "$file" ]; then
+      mc cp "$file" myminio/"$MINIO_BUCKET_NAME"/
+    fi
+  done
+else
+  echo "Warning: /categories_pics directory not mounted or not found."
+fi
+
 exit 0
