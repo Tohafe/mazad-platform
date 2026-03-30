@@ -48,6 +48,13 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        if (name === 'startingPrice') {
+            const numericValue = Number(value);
+            if (numericValue >= 1000000) {
+                onError("For auctions starting at 1M or higher, please contact us to list this item.");
+                return; 
+            }
+        }
         setFormData((prev: AuctionFormData) => ({
             ...prev,
             [name]: name === 'startingPrice' || name === 'categoryId' ? Number(value) : value
@@ -224,7 +231,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                                 name="startingPrice"
                                 value={formData.startingPrice || ''}
                                 onChange={handleChange}
-                                required min="1" step="1"
+                                required min="1" step="1" max="999999"
                                 placeholder="0"
                                 className={inputClass}
                             />
