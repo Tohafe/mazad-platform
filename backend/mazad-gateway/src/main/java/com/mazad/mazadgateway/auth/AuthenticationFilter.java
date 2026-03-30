@@ -35,8 +35,14 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        ServerHttpRequest request = exchange.getRequest();
         String token;
+        ServerHttpRequest request = exchange.getRequest().mutate().headers((header) -> {
+            header.remove("X-User-Id");
+        }).build();
+
+        exchange = exchange.mutate()
+            .request(request)
+            .build();
 
         if (RouterValidator.isPublicEndpoint.test(request)) {
             if (request.getPath().toString().startsWith("/api/v1/items")){

@@ -81,7 +81,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                     sender: dto.senderId.toLowerCase() === user?.id ? "me" : "them"
                 }));
                 setMessages(formattedMessages.reverse());
-            } catch (){
+            } catch (err){
             }
         }
         fetchHistory();
