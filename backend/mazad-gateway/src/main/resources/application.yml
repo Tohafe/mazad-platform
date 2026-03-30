@@ -24,30 +24,19 @@ spring:
     gateway:
       server:
         webflux:
-          # httpclient:
-          #  ssl:
-          # This tells the gateway to trust your root CA file
-            # trusted-x509-certificates: 
-            #   - ${SSL_TRUSTSTORE_CERT:/etc/ssl/mazad-root-ca.crt}
-              
-          # Configure httpclient SSL - use insecure trust manager to verify routing works
-          # httpclient:
-          #   ssl:
-              # use-insecure-trust-manager: true
-
           default-filters:
             - AddRequestHeader=X-Source, Mazad-Gateway
 
           routes:
             # OpenAPI docs (Public Items only will be available at /v3/api-docs/public-items)
             - id: item-service-openapi
-              uri: ${ITEMS_SERVICE_URL:https://items-service:8443}
+              uri: https://items-service:8443
               predicates:
                 - Path=/v3/api-docs/**
 
             # Items Public API Route
             - id: item-service-public-route
-              uri: ${ITEMS_SERVICE_URL:https://items-service:8443}
+              uri: https://items-service:8443
               predicates:
                 - Path=/api/items/**
               filters:
@@ -61,63 +50,48 @@ spring:
 
             # Items Internal API Route
             - id: item-service-route
-              uri: ${ITEMS_SERVICE_URL:https://items-service:8443}
+              uri: https://items-service:8443
               predicates:
                 - Path=/api/v1/items/**, /api/v1/categories/**, /api/v1/catalog/**
 
 
             - id: auth-service-route
-              uri: ${AUTH_SERVICE_URL:https://auth-service:8443}
+              uri: https://auth-service:8443
               predicates:
                 - Path=/api/v1/auth/**,/oauth2/**,/login/oauth2/**
 
             - id: user-service-route
-              uri: ${USER_SERVICE_URL:https://user-service:8443}
+              uri: https://user-service:8443
               predicates:
                 - Path=/api/v1/profile/**,/api/v1/friends/**
               filters:
                 - StripPrefix=2
 
             - id: bidding-service-route
-              uri: ${BIDDING_SERVICE_URL:https://bidding-service:8443}
+              uri: https://bidding-service:8443
               predicates:
                 - Path=/api/v1/bids/**,/api/v1/wallet
               filters:
                 - StripPrefix=2
 
             - id: chat-service-route
-              uri: ${CHAT_SERVICE_URL:https://chat-service:8443}
+              uri: https://chat-service:8443
               predicates:
                 - Path=/api/v1/chat/**
 
             - id: notification-service-route
-              uri: ${NOTIFICATION_SERVICE_URL:https://notification-service:8443}
+              uri: https://notification-service:8443
               predicates:
                 - Path=/ws/**,/api/notifications/**
-              # filters:
-              #   - StripPrefix=2
-
-            # - id: notification-service-route
-            #   uri: http://notification-service:8080
-            #   predicates:
-            #     - Path=/ws/**
-
-            # - id: upload-service-route
-            #   uri: http://upload-service:8080
-            #   predicates:
-            #     - Path=/api/v1/api/media/**
-            #   filters:
-            #     - StripPrefix=2k
-
             - id: upload-service-route
-              uri: ${UPLOAD_SERVICE_URL:https://upload-service:8443}
+              uri: https://upload-service:8443
               predicates:
                 - Path=/api/v1/api/media/**
               filters:
                 - StripPrefix=2
 
             - id: minio-route
-              uri: ${MAZD_MINIO_URL:https://mazad-minio:9000}
+              uri: https://mazad-minio:9000
               predicates:
                 - Path=/api/upload/minio/**
               filters:
@@ -128,9 +102,11 @@ spring:
               '[/**]':
                 allowed-origins:
                   - ${FRONT_URL}
-                  - http://10.30.245.151:5173
-                  - http://10.30.243.50:5173 #@Naoufal
                   # //for frontend Dev, remove it before push @Naoufal
+                  - http://10.30.243.50:5173.nip.io #@Naoufal
+                  - https://10.30.243.50.nip.io #@Naoufal
+                  - http://10.30.245.151:5173
+                  - http://10.30.245.151:5173
                   - 'http://localhost:5173'
                   - 'http://127.0.0.1:5173'
                 allowed-methods:
