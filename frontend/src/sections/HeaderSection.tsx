@@ -55,8 +55,8 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
             <div className={`flex flex-row items-center gap-0 ${showFullWidthSearch ? "hidden" : "flex"}`}>
                 <IconButton onClick={() => setShowFullWidthSearch(true)} icon={BiSearch} iconClassName="text-brand"
                             size="md" className="flex md:hidden"/>
-                {!isAuthenticated && <TextButton link={"/how-it-works"} className="hidden md:flex mx-2" size="sm">How it works</TextButton>}
-                {!isAuthenticated && <TextButton link={"/about"} className="hidden md:flex mx-3" size="sm">About Us</TextButton>}
+                {!isAuthenticated && <TextButton link={"/how-it-works"} className="hidden md:flex mx-2" size="sm">How it works?</TextButton>}
+                {!isAuthenticated && <TextButton link={"/help"} className="hidden md:flex ml-2 mr-4" size="sm">Help</TextButton>}
                 {isAuthenticated && <Balance/>}
                 {isAuthenticated && <NotificationBell/>}
                 {isAuthenticated ?

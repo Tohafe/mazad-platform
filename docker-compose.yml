@@ -30,6 +30,7 @@ services:
     volumes:
       - postgres-v:${PGDATA}
       - ./infrastructure/postgres/init-scripts:/docker-entrypoint-initdb.d/
+      - ./resources:/resources
     ports:
       - "5000:5432" #@Naoufal
     networks:

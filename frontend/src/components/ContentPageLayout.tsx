@@ -1,4 +1,3 @@
-// src/components/ContentPageLayout.tsx
 interface ContentPageLayoutProps {
     title: string;
     subtitle?: string;
