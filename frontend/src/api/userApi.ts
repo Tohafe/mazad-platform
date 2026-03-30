@@ -106,7 +106,7 @@ async function getApiKey(api: AxiosInstance): Promise<string | null> {
 
 async function getUserWallet(api: AxiosInstance): Promise<Wallet> {
     try {
-        const response = await api.get<Wallet>("/bids/wallet");
+        const response = await api.get<Wallet>("/wallet");
         return response.data;
     } catch (errors: any) {
         throw errors;
