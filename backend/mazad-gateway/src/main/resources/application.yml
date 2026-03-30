@@ -81,7 +81,7 @@ spring:
             - id: bidding-service-route
               uri: ${BIDDING_SERVICE_URL:https://bidding-service:8443}
               predicates:
-                - Path=/api/v1/bids/**
+                - Path=/api/v1/bids/**,/api/v1/wallet
               filters:
                 - StripPrefix=2
 
