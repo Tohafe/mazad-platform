@@ -289,6 +289,7 @@ services:
       - ./infrastructure/minio-service/init-minio.sh:/usr/bin/init-minio.sh
       - ./infrastructure/certs/generated/mazad-root-ca.crt:/root/.mc/certs/CAs/public.crt
       - ${AVATAR_PATH}:/default-images
+      - ./resources/categories_pics:/categories_pics:ro
     entrypoint: ["/bin/sh", "/usr/bin/init-minio.sh"]
 
 
