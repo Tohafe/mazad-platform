@@ -3,6 +3,7 @@ package com.mazad.notification.config;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,7 @@ public class StompAuthInterceptor implements ChannelInterceptor {
                     
                 } catch (Exception e) {
                     log.error("WebSocket JWT validation failed: {}", e.getMessage());
+                    throw new MessageDeliveryException("Unauthorized: Invalid or Expired Token");
                 }
             }
         }
