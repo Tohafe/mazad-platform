@@ -22,91 +22,95 @@ import HowItWorksPage from "./pages/footer/HowItWorks.tsx";
 import TechnologiesPage from "./pages/footer/Technologies.tsx";
 
 
-export const router = createBrowserRouter([
-    {
-        element: <AppLayout/>,
-        children: [
-            {
-                element: <PersistLogin/>,
-                children: [
-                    {
-                        path: '/',
-                        element: <Home/>,
-                    },
-                    {
-                        path: '/c/:idSlug',
-                        element: <CategoryAuctions/>
-                    },
-                    {
-                        path: '/search',
-                        element: <SearchAuctions/>
-                    },
-                    {
-                        path: '/auction/:productId',
-                        element: <ItemPage />
-                    },
-                    {
-                        path: '/privacy-policy',
-                        element: <PrivacyPolicy/>
-                    },
-                    {
-                        path: '/terms-of-service',
-                        element: <TermsOfService/>
-                    },
-                    {
-                        path: '/profile/:username',
-                        element: <PublicProfile/>
-                    },
-                    {
-                        element: <RequireAuth/>,
-                        children: [
-                            {
-                                path: '/dashboard',
-                                element: <Dashboard/>,
-                            },
-                            {
-                                path: '/settings',
-                                element: <Settings/>,
-                            },
-                            {
-                                path: '/listing',
-                                element: <CreateAuction/>
-                            },
-                            {
-                                path:'/inbox',
-                                element: <Inbox />
-                            }
-                        ]
-                    },
-                    {
-                        path:'/register',
-                        element: <Register/>
-                    },
-                    {
-                        path: '/login',
-                        element: <Login/>
-                    },
-                    {
-                        path: '*',
-                        element: <NotFoundPage/>
-                    },
-                ]
-            },
-            {
-                path: '/about',
-                element: <AboutPage/>
-            },
-            {
-                path: '/how-it-works',
-                element: <HowItWorksPage/>
-            },
-            {
-                path: '/technologies',
-                element: <TechnologiesPage/>
-            }
+export const router = createBrowserRouter(
+    [
+        {
+            element: <PersistLogin/>,
+            children: [
+                {
+                    element: <AppLayout/>,
+                    children: 
+                    [        
+                        {
+                            element: <RequireAuth/>,
+                            children: 
+                            [
+                                {
+                                    path: '/dashboard',
+                                    element: <Dashboard/>,
+                                },
+                                {
+                                    path: '/settings',
+                                    element: <Settings/>,
+                                },
+                                {
+                                    path: '/listing',
+                                    element: <CreateAuction/>
+                                },
+                                {
+                                    path:'/inbox',
+                                    element: <Inbox />
+                                }
+                            ]
+                        },
+                        {
+                            path:'/register',
+                            element: <Register/>
+                        },
+                        {
+                            path: '/',
+                            element: <Home/>,
+                        },
+                        {
+                            path: '/c/:idSlug',
+                            element: <CategoryAuctions/>
+                        },
+                        {
+                            path: '/search',
+                            element: <SearchAuctions/>
+                        },
+                        {
+                            path: '/auction/:productId',
+                            element: <ItemPage />
+                        },
+                        {
+                            path: '/privacy-policy',
+                            element: <PrivacyPolicy/>
+                        },
+                        {
+                            path: '/terms-of-service',
+                            element: <TermsOfService/>
+                        },
+                        {
+                            path: '/profile/:username',
+                            element: <PublicProfile/>
+                        },
+                        {
+                            path: '/about',
+                            element: <AboutPage/>
+                        },
+                        {
+                            path: '/how-it-works',
+                            element: <HowItWorksPage/>
+                        },
+                        {
+                            path: '/technologies',
+                            element: <TechnologiesPage/>
+                        },
+                        {
+                            path: '/login',
+                            element: <Login/>
+                        },
+                        {
+                            path: '*',
+                            element: <NotFoundPage/>
+                        },
+                    ]
+                }
+            ]
+        },
     ]
-    },
-]);
+);
 
 const App = () => {
     useAuctionsUpdates();
