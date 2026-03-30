@@ -50,7 +50,7 @@ export const router = createBrowserRouter(
                                             element: <CreateAuction/>
                                         },
                                         {
-                                            path: '/inbox',
+                                            path:'/inbox/:userId?',
                                             element: <Inbox/>
                                         }
                                     ]

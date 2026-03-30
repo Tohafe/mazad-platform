@@ -13,94 +13,6 @@ interface FriendListProps {
     onMessageFriend: (username: string) => void; 
 }
 
-// const FAKE_FRIENDS: Friend[] = [
-//     {
-//         username: "abde1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "gamil1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "abde1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "gamil1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "abde1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "gamil1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "abde1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "gamil1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "abde1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "gamil1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "abde1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "gamil1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "abde1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-//     {
-//         username: "gamil1",
-//         userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         isOnline: true
-//     },
-   
-// ];
-
 function FriendList({ onMessageFriend }: FriendListProps) {
     const apiPrivate = useApiPrivate();
     const [friends, setFriends] = useState<Friend[]>();
@@ -112,7 +24,6 @@ function FriendList({ onMessageFriend }: FriendListProps) {
                 const response = await apiPrivate.get("/friends");
                 setFriends(response.data);
                 console.log(response.data);
-                // setFriends(FAKE_FRIENDS);
             } catch (error) {
                 console.error("Failed to fetch friends list", error);
             } finally {
@@ -133,7 +44,7 @@ function FriendList({ onMessageFriend }: FriendListProps) {
         return (
             <div className="flex flex-1 flex-col items-center justify-center text-gray-500 text-center p-6 gap-4">
                 <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentcolor" className="w-10 h-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                     </svg>
                 </div>
