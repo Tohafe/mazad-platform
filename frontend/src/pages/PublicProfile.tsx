@@ -60,6 +60,7 @@ export default function PublicProfile(){
                             {user && profile.userId != user.id &&
                                 <div className={'flex mt-10 -ml-5 '}>
                                     <ConnectionButton user={user} other={profile} setIsFriend={setIsFriend}/>
+                                    {/* @NaoufalUse */}
                                     {isFriend && <IconButton icon={PiChatDots} className={"text-brand"} onClick={() => navigate('/inbox')}></IconButton>}
                                 </div>}
                         </div>

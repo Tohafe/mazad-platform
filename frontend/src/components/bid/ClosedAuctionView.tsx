@@ -3,6 +3,9 @@ import type { BidEntry, AuctionStatus } from '../../types';
 import { useSeller } from '../../hooks/useSeller';
 import {BiChevronDown, BiChevronUp} from "react-icons/bi";
 import {Link} from "react-router-dom";
+import ConnectionButton from "../../components/Button/ConnectionButton";
+import IconButton from "../../components/Button/IconButton.tsx";
+import { PiChatDots } from "react-icons/pi";
 
 interface ClosedAuctionViewProps {
   status: AuctionStatus;
@@ -11,6 +14,8 @@ interface ClosedAuctionViewProps {
   bids: BidEntry[];
   totalBids: number;
   isLoading?: boolean;
+  isOwner: boolean;
+  isWinner: boolean;
 }
 
 // Status display configuration
@@ -18,7 +23,7 @@ const STATUS_CONFIG: Record<'SOLD' | 'EXPIRED' | 'CANCELLED', { label: string; c
   SOLD: {
     label: 'Final Bid',
     color: 'text-blue-600',
-    badge: 'Balance',
+    badge: 'Sold',
     badgeColor: 'bg-green-100 text-green-700',
   },
   EXPIRED: {
@@ -35,6 +40,45 @@ const STATUS_CONFIG: Record<'SOLD' | 'EXPIRED' | 'CANCELLED', { label: string; c
   },
 };
 
+// const Congratulations = () => {
+//   return <div className="text-center p-4 rounded-md">
+//   <p className="text-sm font-bold text-brand">
+//       Congratulations on your winning bid!
+//   </p>
+//   <p className="text-xs mt-1">
+//       Get in touch with seller to finalize your purchase.
+//   </p>
+// </div>
+// };
+
+interface CongratulationsProps {
+  isOwner: boolean;
+  isWinner: boolean;
+}
+
+export const Congratulations = ({ isOwner, isWinner }: CongratulationsProps) => {
+  // If they are just a regular user who lost or is browsing, render nothing.
+  if (!isOwner && !isWinner) {
+    return null; 
+  }
+
+  // If the code reaches here, we know they are EITHER the owner OR the winner.
+  return (
+    <div className="text-center p-4 rounded-md">
+      <p className="text-sm font-bold text-brand">
+        {isOwner 
+          ? "Congratulations on your successful sale!" 
+          : "Congratulations on your winning bid!"}
+      </p>
+      <p className="text-xs mt-1">
+        {isOwner
+          ? "Get in touch with the buyer to finalize the transaction."
+          : "Get in touch with the seller to finalize your purchase."}
+      </p>
+    </div>
+  );
+};
+
 export function ClosedAuctionView({
   status,
   finalBid,
@@ -42,6 +86,9 @@ export function ClosedAuctionView({
   bids,
   totalBids,
   isLoading,
+  isOwner,
+  isWinner
+
 }: ClosedAuctionViewProps) {
   const [expanded, setExpanded] = useState(false);
   const { data: seller, isLoading: sellerLoading } = useSeller(sellerId);
@@ -94,6 +141,12 @@ export function ClosedAuctionView({
                 </button>
               </>
             )}
+          </div>
+        )}
+
+        {(
+          <div className="border-t border-gray-100">
+            <Congratulations isOwner={isOwner} isWinner={isWinner}/>
           </div>
         )}
 
