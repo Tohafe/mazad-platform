@@ -28,6 +28,8 @@ const useApiPrivate = () =>{
 
                 if (error.response?.status === 401 && !prevRequest.sent){
                     prevRequest.sent = true;
+                    if (prevRequest.url === '/auth/refresh')
+                        return Promise.reject(error);
                     try {
                         const response = await refresh();
                         prevRequest.headers.Authorization = `Bearer ${response.accessToken}`;

@@ -1,1 +1,0 @@
-export { productApi, default as api } from './productApi';
