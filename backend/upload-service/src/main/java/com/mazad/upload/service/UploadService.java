@@ -10,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import io.minio.RemoveObjectArgs;
+import io.minio.StatObjectArgs;
+import io.minio.StatObjectResponse;
 import io.minio.PutObjectArgs;
 import javax.imageio.ImageIO;
 import org.apache.tika.Tika;
@@ -17,8 +19,10 @@ import io.minio.MinioClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -78,7 +82,7 @@ public class UploadService {
     	return outputStream.toByteArray();
 	}
 
-	private String uploadThumbnail(MultipartFile file, String fileName, int width, int height){
+	private String uploadThumbnail(MultipartFile file, String fileName, int width, int height, String mimeType, String userId){
 		if(!(isImage(file) && shouldResize(file, width, height)))
 			return fileName;
 		String thumbName = "thumbnail_" + fileName;
@@ -95,65 +99,64 @@ public class UploadService {
 
 		try {
 				byte[] thumbBytes = createThumbnail(file, format, width, height);
-				uploadToMinio(new ByteArrayInputStream(thumbBytes), thumbName, file.getContentType(), thumbBytes.length);
+				String ContentType = format.equals("jpg") ? "image/jpeg" : mimeType;
+				uploadToMinio(new ByteArrayInputStream(thumbBytes), thumbName, ContentType, thumbBytes.length, userId);
 		} 
 		catch (Exception e) {
-			deleteFile(fileName);
+			deleteFile(fileName, userId);
 			throw new RuntimeException("Failed to Upload thumbnail " + e.getMessage());
 		}
 		return thumbName;
 	}
 
-	private void validateFile(MultipartFile file){
+	private String getExtensionFromMimeType(String mimeType) {
+		switch (mimeType) {
+			case "image/jpeg": return ".jpg";
+			case "image/png": return ".png";
+			case "image/webp": return ".webp";
+			case "video/mp4": return ".mp4";
+			case "video/webm": return ".webm";
+			case "video/quicktime": return ".mov";
+			case "application/pdf": return ".pdf";
+			case "text/plain": return ".txt";
+			default: throw new IllegalArgumentException("Unknown MIME type for extension mapping");
+		}
+	}
+
+	private String validateFile(MultipartFile file){
 		try {
-            if (file.isEmpty()) {
-                throw new IllegalArgumentException("Cannot upload empty file");
-            }
+            if (file.isEmpty()) 
+				throw new IllegalArgumentException("Cannot upload empty file");
 
 			String detectedType = tika.detect(file.getInputStream());
             String detectedCategory = detectedType.split("/")[0];
 
             if (detectedCategory.equals("image")) {
-                if (!ALLOWED_IMAGES.contains(detectedType)) {
-                    throw new IllegalArgumentException("Unsupported image format: " + detectedType + ". Only JPG, WEBP and PNG are allowed.");
-                }
-				
-				long maxImageSize = 15 * 1024 * 1024;
-                if (file.getSize() > maxImageSize) {
-                    throw new IllegalArgumentException("Image size exceeds the 15MB limit.");
-                }
-				
+                if (!ALLOWED_IMAGES.contains(detectedType)) 
+					throw new IllegalArgumentException("Unsupported image format: " + detectedType);
+				if (file.getSize() > 15 * 1024 * 1024) 
+					throw new IllegalArgumentException("Image size exceeds the 15MB limit.");
+
 				moderationService.moderateImage(file);
 
             } else if (detectedCategory.equals("video")) {
-                if (!ALLOWED_VIDEOS.contains(detectedType)) {
-                    throw new IllegalArgumentException("Unsupported video format: " + detectedType + ". Only MP4, WEBM and QUICKTIME are allowed.");
-                }
+                if (!ALLOWED_VIDEOS.contains(detectedType)) 
+					throw new IllegalArgumentException("Unsupported video format: " + detectedType);
             } else if (detectedCategory.equals("application") || detectedCategory.equals("text")) {
-                if (!ALLOWED_DOCS.contains(detectedType)) {
-                    throw new IllegalArgumentException("Unsupported document format: " + detectedType + ". Only PDF and TEXT is allowed.");
-                }
+                if (!ALLOWED_DOCS.contains(detectedType)) 
+					throw new IllegalArgumentException("Unsupported document format: " + detectedType);
             } else {
-                 throw new IllegalArgumentException("Unrecognized file category: " + detectedCategory + ". Please upload a valid image, video, or document.");
+                 throw new IllegalArgumentException("Unrecognized file category: " + detectedCategory);
             }
 
-            String claimedType = file.getContentType();
-            if (claimedType != null) {
-                String claimedCategory = claimedType.split("/")[0];
-                if (!claimedCategory.equals(detectedCategory)) {
-                    throw new IllegalArgumentException(
-                        "MIME type spoofing detected. Claimed category: '" + claimedCategory + 
-                        "', but binary signature is: '" + detectedCategory + "'."
-                    );
-                }
-            }
+            return detectedType; 
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to validate file content", e);
         }
 	}
 
-	private FileResponse responseBuilder(String filename, MultipartFile file, String thumbnail){
+	private FileResponse responseBuilder(String filename, MultipartFile file, String thumbnail, String contentType){
 		String url = minioUrl + "/" + bucketName + "/" + filename;
 		String thumbnailUrl = null;
 		if(thumbnail != null)
@@ -163,7 +166,7 @@ public class UploadService {
 							.url(url)
 							.thumbnailUrl(thumbnailUrl)
 							.name(file.getOriginalFilename())
-							.type(file.getContentType())
+							.type(contentType)
 							.size(file.getSize())
 							.build();
 	}
@@ -176,30 +179,52 @@ public class UploadService {
 							.object(fileName)
 							.build() );
 	}
-			
-	private void uploadToMinio(InputStream inputStream, String fileName, String contentType, long size) throws Exception {        
-		 minioClient.putObject(
-			 PutObjectArgs.builder()
+
+	private void verifyOwnership(String fileName, String requestingUserId) throws Exception {
+
+		StatObjectResponse stat = minioClient.statObject(
+			StatObjectArgs.builder()
+				.bucket(bucketName)
+				.object(fileName)
+				.build()
+		);
+
+        
+		Map<String, String> metadata = stat.userMetadata();
+		
+		String ownerId = metadata.get("owner-id");
+		if (ownerId == null) {
+			ownerId = metadata.get("Owner-Id");
+		}
+
+		if (ownerId == null || !ownerId.equals(requestingUserId)) {
+			throw new SecurityException("HTTP 403: You do not have permission to modify this file.");
+		}
+	}
+
+	private void uploadToMinio(InputStream inputStream, String fileName, String contentType, long size, String userId) throws Exception {
+		Map<String, String> metadata = new HashMap<>();
+        metadata.put("owner-id", userId);      
+
+		minioClient.putObject(
+			PutObjectArgs.builder()
 				 .bucket(bucketName)
 				 .object(fileName)
 				 .stream(inputStream, size, -1)
 				 .contentType(contentType)
+				 .userMetadata(metadata)
 				 .build() );
 	}
 
-	public FileResponse uploadFile(MultipartFile file, int width, int height) {
+	public FileResponse uploadFile(MultipartFile file, int width, int height, String userId) {
 
-		validateFile(file);
+		String mimeType = validateFile(file);
 
-		String name = file.getOriginalFilename();
-		String extension = "";
-
-		if(name != null && name.contains("."))
-			extension = name.substring(name.lastIndexOf("."));
+		String extension = getExtensionFromMimeType(mimeType);
 		String newFileName = UUID.randomUUID().toString() + extension;
 
 		try {
-			uploadToMinio(file.getInputStream(), newFileName, file.getContentType(), file.getSize());
+			uploadToMinio(file.getInputStream(), newFileName, mimeType, file.getSize(), userId);
 		} 
 		catch (Exception e) {
 			throw new RuntimeException("Upload Failed " + e.getMessage());
@@ -207,32 +232,33 @@ public class UploadService {
 
 		String thumbnail = null;
 		if(width > 0 && height > 0)
-			thumbnail = uploadThumbnail(file, newFileName, width, height);
+			thumbnail = uploadThumbnail(file, newFileName, width, height, mimeType, userId);
 		else
 			thumbnail = newFileName;
-		return responseBuilder(newFileName, file, thumbnail);
+		return responseBuilder(newFileName, file, thumbnail, mimeType);
 	}
 
-	public FileResponse updateFile(MultipartFile file, String fileName, int width, int height){
-
-		validateFile(file);
+	public FileResponse updateFile(MultipartFile file, String fileName, int width, int height, String userId){
 		try {
-			uploadToMinio(file.getInputStream(), fileName, file.getContentType(), file.getSize());
+			verifyOwnership(fileName, userId);
+			String mimeType = validateFile(file);
+			uploadToMinio(file.getInputStream(), fileName, mimeType, file.getSize(), userId);
+			String thumbnail = null;
+			if(width > 0 && height > 0)
+				thumbnail = uploadThumbnail(file, fileName, width, height, mimeType, userId);
+			else
+				thumbnail = fileName;
+			return responseBuilder(fileName, file, thumbnail, mimeType);
 		} catch (Exception e) {
 			throw new RuntimeException("Update Failed " + e.getMessage());
 		}
 
-		String thumbnail = null;
-		if(width > 0 && height > 0)
-			thumbnail = uploadThumbnail(file, fileName, width, height);
-		else
-			thumbnail = fileName;
-		return responseBuilder(fileName, file, thumbnail);
 	}
 
 
-	public void deleteFile(String fileName){
+	public void deleteFile(String fileName, String userId){
 		try {
+			verifyOwnership(fileName, userId);
 			rmFromMinio(fileName);
 
 			String thumbName = "thumbnail_" + fileName;
