@@ -6,7 +6,8 @@ server:
     key-store-password: ${SSL_KEYSTORE_PASSWORD:mazad-ssl-password}
     key-store-type: PKCS12
     key-alias: notification-service
-
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS}
 spring:
   application:
     name: notification-service
