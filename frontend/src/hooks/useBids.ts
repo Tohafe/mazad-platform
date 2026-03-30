@@ -6,7 +6,7 @@ import { useBidApi } from './useBidApi';
 import { generatePseudonym } from '../utils';
 import { useWebSocket } from '../context/WebSocketContext';
 import {formatPrice} from "../utils/currency.ts";
-import { useAuth } from '../context/AuthProvider.tsx';
+// import { useAuth } from '../context/AuthProvider.tsx';@Naoufal
 import type User from '../types/user.ts';
 
 /** WebSocket bid event message structure */

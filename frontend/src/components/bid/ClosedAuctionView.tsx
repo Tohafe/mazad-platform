@@ -3,9 +3,9 @@ import type { BidEntry, AuctionStatus } from '../../types';
 import { useSeller } from '../../hooks/useSeller';
 import {BiChevronDown, BiChevronUp} from "react-icons/bi";
 import {Link} from "react-router-dom";
-import ConnectionButton from "../../components/Button/ConnectionButton";
-import IconButton from "../../components/Button/IconButton.tsx";
-import { PiChatDots } from "react-icons/pi";
+// import ConnectionButton from "../../components/Button/ConnectionButton";
+// import IconButton from "../../components/Button/IconButton.tsx";
+// import { PiChatDots } from "react-icons/pi";@Naoufal
 
 interface ClosedAuctionViewProps {
   status: AuctionStatus;

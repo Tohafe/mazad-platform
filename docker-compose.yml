@@ -68,8 +68,8 @@ services:
       - SSL_KEYSTORE=/etc/ssl/gateway.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
       
-      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
-        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
+      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12
+        -Djavax.net.ssl.trustStorePassword=${SSL_KEYSTORE_PASSWORD}
         -Djavax.net.ssl.trustStoreType=PKCS12
 
     volumes:
@@ -337,8 +337,8 @@ services:
       SSL_KEYSTORE: /etc/ssl/upload-service.p12
       SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
 
-      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
-        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
+      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12
+        -Djavax.net.ssl.trustStorePassword=${SSL_KEYSTORE_PASSWORD}
         -Djavax.net.ssl.trustStoreType=PKCS12
     volumes:
       - ./infrastructure/certs/generated/upload-service.p12:/etc/ssl/upload-service.p12:ro
