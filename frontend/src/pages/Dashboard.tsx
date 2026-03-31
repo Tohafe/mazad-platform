@@ -98,7 +98,7 @@ const Dashboard = () => {
                 ) : hasAuctions ? (
                     <ItemGrid>
                         {auctions.map((auction) => (
-                            <ListingCard auction={auction} handleCancelClick={handleCancelClick}/>)
+                            <ListingCard key={auction.id} auction={auction} handleCancelClick={handleCancelClick}/>)
                         )}
                     </ItemGrid>
                 ) : (

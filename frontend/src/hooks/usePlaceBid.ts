@@ -27,8 +27,10 @@ export function usePlaceBid(auctionId: number, minRequired: number) {
                 err?.response?.data?.message ||
                 err?.message ||
                 "Failed to place bid";
-
-            setError(msg);
+            if (err.response?.status === 429)
+                setError("Too many requests!")
+            else
+                setError(msg);
         },
     });
 

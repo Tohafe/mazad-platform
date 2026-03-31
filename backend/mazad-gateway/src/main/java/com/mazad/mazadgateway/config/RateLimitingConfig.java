@@ -5,7 +5,11 @@ import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpHeaders;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 /*
  * =================================================================================
@@ -32,13 +36,29 @@ import reactor.core.publisher.Mono;
  * =================================================================================
  */
 @Configuration
-public class GatewayConfig {
+public class RateLimitingConfig {
 
-    @Bean
+    @Primary @Bean
     public KeyResolver resolveKey() {
         return (exchange) -> {
             String apiKey = exchange.getRequest().getHeaders().getFirst("X-API-KEY");
             return Mono.justOrEmpty(apiKey);
+        };
+    }
+
+    @Bean
+    public KeyResolver authKeyResolver() {
+        return exchange -> {
+            String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                // Uses the token as the unique identifier.
+                // You can also decode the JWT here to extract the exact User ID.
+                return Mono.just(authHeader.substring(7));
+            }
+
+            // Fallback to IP address for unauthenticated guests
+            return Mono.just(Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress());
         };
     }
 

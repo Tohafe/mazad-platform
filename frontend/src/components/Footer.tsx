@@ -63,7 +63,7 @@ const Footer = ({className = ""}: FooterProps) => {
         <Divider/>
         <div className="flex gap-4 items-center justify-between w-full">
             <div className="flex justify-end items-center gap-4">
-                <a href="/"><img src={logo} alt="Logo" className="w-12 cursor-pointer"/></a>
+                <a href="/"><img src={logo} alt="Logo" className="h-12 w-12 aspect-square shrink-0 cursor-pointer"/></a>
                 <a href="https://www.facebook.com/profile.php?id=61576446457600" target={"_blank"} rel="noopener noreferrer"><FaFacebook size={24} className="text-muted"/></a>
                 <a href="https://www.instagram.com/mazad_platform/" target={"_blank"} rel="noopener noreferrer"><FaInstagram size={24} className="text-muted"/></a>
             </div>
