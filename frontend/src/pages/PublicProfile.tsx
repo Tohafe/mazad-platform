@@ -59,7 +59,7 @@ export default function PublicProfile(){
                                 <div className={'flex mt-10 -ml-5 '}>
                                     <ConnectionButton user={user} other={profile} setIsFriend={setIsFriend}/>
                                     {/* @NaoufalUse */}
-                                    {isFriend && <IconButton icon={PiChatDots} className={"text-brand"} onClick={() => navigate('/inbox/${profile.userId}')}></IconButton>}
+                                    {isFriend && <IconButton icon={PiChatDots} className={"text-brand"} onClick={() => navigate(`/inbox/${profile.userId}`)}></IconButton>}
                                 </div>}
                         </div>
                         {profile.bio && <p className="text-sm max-w-120"><span className="text-secondary">bio: </span> {profile.bio}</p> }

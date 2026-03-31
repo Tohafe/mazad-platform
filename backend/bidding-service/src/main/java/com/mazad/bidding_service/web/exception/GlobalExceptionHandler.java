@@ -100,23 +100,11 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    // @ExceptionHandler(IllegalArgumentException.class)
-    // public ResponseEntity<ErrorResponse> handleBadInput(IllegalArgumentException e) {
-    //     return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage());
-    // }
-
-    // // Safety Net: The "Everything Else" handler
-    // @ExceptionHandler(Exception.class)
-    // public ProblemDetail handleEverythingElse(Exception ex) {
-    //     // We log the real error for us, but hide the details from the user
-    //     log.error("Unexpected error occurred: ", ex); 
-
-    //     ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-    //         HttpStatus.INTERNAL_SERVER_ERROR, 
-    //         "An internal error occurred. Our team has been notified."
-    //     );
-    //     pd.setTitle("Server Error");
-    //     return pd;
-    // }
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail runTimeExceptionHandler(Exception e){
+        log.error(e.getMessage());
+        return ProblemDetail
+                        .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An internal error occurred. Our team has been notified.");
+    }
 }
 
