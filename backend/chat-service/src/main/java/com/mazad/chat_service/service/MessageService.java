@@ -2,9 +2,8 @@ package com.mazad.chat_service.service;
 
 import  java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import  org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,68 +13,70 @@ import com.mazad.chat_service.infrastructure.kafka.ChatEventProducer;
 import com.mazad.chat_service.model.Message;
 import com.mazad.chat_service.repository.MessageRepository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.mazad.chat_service.dto.MessageRequestDTO;
+import com.mazad.chat_service.dto.MessageResponseDTO;
+import com.mazad.chat_service.mapper.MessageMapper;
 
 @Slf4j
 @Service 
+@RequiredArgsConstructor
 public class MessageService {
 
-    @Autowired
-    MessageRepository repository;
+    private final MessageRepository repository;
 
-    @Autowired
-    ChatEventProducer chatEventProducer;
+    private final ChatEventProducer chatEventProducer;
 
+    private final MessageMapper mapper;
     @Transactional
     public void markConversationAsRead(UUID myId, UUID otherUserId) {
         String roomId = getRoomId(myId, otherUserId);
         repository.markMessageAsRead(roomId, myId);
-        log.info("Marked messages as read in room {} for user {}", roomId, myId);
     }
 
-    public Message sendMessage(Message message, UUID myId)
+    public MessageResponseDTO sendMessage(MessageRequestDTO messageDto, UUID myId)
     {
+        Message message = mapper.dtoToEntity(messageDto);
         message.setSenderId(myId);
-        if (message.getSenderId().equals(message.getReceiverId()))
+        if (myId.equals(message.getReceiverId()))
             throw new IllegalArgumentException("you can not send a message to yourself."); 
 
-        String roomId = getRoomId(message.getSenderId(), message.getReceiverId());   
-        log.info("get roomid {}", roomId);
+        String roomId = getRoomId(myId, message.getReceiverId());   
 
         message.setRoomId(roomId);
 
-        Message savedMessage = repository.save(message);
+        message = repository.saveAndFlush(message);
 
         try {
             MessageChateventDTO savedMessageDTO = new MessageChateventDTO();
-            savedMessageDTO.setId(savedMessage.getId());
-            savedMessageDTO.setRoomId(savedMessage.getRoomId());
-            savedMessageDTO.setSenderId(savedMessage.getSenderId());
-            savedMessageDTO.setReceiverId(savedMessage.getReceiverId());
-            savedMessageDTO.setContent(savedMessage.getContent());
-            savedMessageDTO.setTimestamp(savedMessage.getTimestamp());
+            savedMessageDTO.setId(message.getId());
+            savedMessageDTO.setRoomId(message.getRoomId());
+            savedMessageDTO.setSenderId(message.getSenderId());
+            savedMessageDTO.setReceiverId(message.getReceiverId());
+            savedMessageDTO.setContent(message.getContent());
+            savedMessageDTO.setTimestamp(message.getTimestamp());
             
             chatEventProducer.sendMessageEvent(savedMessageDTO);
         }
         catch (JsonProcessingException e)
         {
             log.error("XXXXXXXX preparing kafka error: {} ! XXXXXXXXX\n", e.getMessage());
-            e.printStackTrace();
         }
-        return savedMessage;
+        return mapper.entityToResponseDTO(message);
     }
 
-    public Slice<Message> fetchChatHistory(UUID userId1, UUID userId2, Pageable pageable){
+    public List<Message> fetchChatHistory(UUID userId1, UUID userId2){
         
 
         String roomId   = getRoomId(userId1, userId2);
-        return repository.findByRoomIdOrderByTimestampDesc(roomId, pageable);
+        return repository.findByRoomIdOrderByTimestampDesc(roomId);
     }   
 
-    public Slice<Message> fetchInbox(UUID myId, Pageable pageable){
+    public List<Message> fetchInbox(UUID myId){
 
-        return repository.findInbox(myId, pageable);
+        return repository.findInbox(myId);
 
     }
 
@@ -86,5 +87,9 @@ public class MessageService {
         else{
             return id2.toString() + "_" + id1.toString();
         }
+    }
+
+    public ChatEventProducer getChatEventProducer() {
+        return chatEventProducer;
     }
 }
