@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import { Link } from "react-router-dom";
+import PLACEHOLDER from "./../../assets/avatar.jpg";
+import toast from "react-hot-toast";
 
 export interface Friend {
     username: string;
@@ -23,7 +25,8 @@ function FriendList({ onMessageFriend }: FriendListProps) {
             try {
                 const response = await apiPrivate.get("/friends");
                 setFriends(response.data);
-            } catch (error) {
+            } catch  {
+                toast.error("An unexpected error getting friends list");
             } finally {
                 setIsLoading(false);
             }
@@ -68,11 +71,20 @@ function FriendList({ onMessageFriend }: FriendListProps) {
                         <div className="relative">
                             <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full font-bold text-gray-600 text-lg shrink-0 overflow-hidden">
                                 {friend.thumbnail ? ( 
-                                    <img src={friend.thumbnail} alt={friend.username} className="w-full h-full object-cover" />
+                                    <img src={friend.thumbnail}
+                                        className="w-full h-full object-cover rounded-full" 
+                                        onError={(e) => {
+                                            e.currentTarget.src = PLACEHOLDER;
+                                        }}
+                                    />
                                 ) : (
-                                    <span>{friend.username.charAt(0).toUpperCase()}</span>
+                                    <img 
+                                        src={PLACEHOLDER}
+                                        className="rounded-full w-full h-full object-cover"
+                                    />
                                 )}
                             </div>
+
                             <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${friend.onlineStatus ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                         </div>
                         <div className="flex-1 overflow-hidden">

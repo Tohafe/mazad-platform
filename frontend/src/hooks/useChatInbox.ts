@@ -57,7 +57,6 @@ function useChatInbox(activeChatId: string | null){
     }, [user?.id]);
 
     const handleSelectChat = async (chatId: string) => {
-        // need to set read boolean
         const selectedChat = chats.find(c => c.id === chatId);
         if (selectedChat?.hasUnreadMessages) {
             setChats(prevChats => prevChats.map(c => 

@@ -6,6 +6,7 @@ import useUserApi from "../hooks/useUserApi";
 import useChatInbox from "../hooks/useChatInbox";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 type ViewType = 'messages' | 'friends' | 'requests';
 
 function Inbox(){
@@ -42,6 +43,7 @@ function Inbox(){
                 } 
             })
             .catch (() => {
+                toast.error("An unexpected error switching to chatWindow");
             }) 
     }
     

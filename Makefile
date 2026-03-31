@@ -79,7 +79,8 @@ clean-img:
 
 clean-s: stop-s
 	$(COMPOSE) rm -f $(s)
-	docker rmi $$(docker images | grep $(s) | awk '{print $$3}')
+	echo $(s)
+	docker rmi $$(docker images | grep $(s) | awk '{print $$2}')
 
 jwt-secret-key:
 	@ openssl rand -base64 64 | tr -d '\n' &&  echo '\n'

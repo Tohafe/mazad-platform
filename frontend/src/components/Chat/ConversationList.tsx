@@ -1,4 +1,5 @@
 import type { Chat } from "../../types/chat.ts";
+import PLACEHOLDER from "./../../assets/avatar.jpg";
 
 
 interface ConversationListProps {
@@ -6,6 +7,7 @@ interface ConversationListProps {
     activeChatId: string | null;
     onSelectChat: (id: string) => void;
 }
+
 
 function ConversationList( {chats, activeChatId, onSelectChat}: ConversationListProps ) {
     return (
@@ -15,17 +17,27 @@ function ConversationList( {chats, activeChatId, onSelectChat}: ConversationList
                             {chats.map((chat) => (
                                 <button 
                                 key={chat.id}
-                                // add the mark asread request
                                 onClick={() => onSelectChat(chat.id) }
                                 className={`w-full text-left flex  items-center gap-3 p-4 border-b border-gray-100 cursor-pointer transition-colors
                                  ${activeChatId === chat.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : 'bg-white hover:bg-gray-50 border-l-4 border-l-transparent'
                                 }`}
                                 >
                                     <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full font-bold text-gray-600 text-lg shrink-0 ">
-                                    { (chat.avatar)
-                                        ? <img src={chat.avatar} className="rounded-full"></img>
-                                        : <> {chat.name ? chat.name.charAt(0).toUpperCase(): '?'} </>
-                                    }
+                                    
+                                    {chat.avatar ? (
+                                            <img 
+                                                src={chat.avatar} 
+                                                className="w-full h-full object-cover rounded-full"
+                                                onError={(e) => {
+                                                    e.currentTarget.src = PLACEHOLDER;
+                                                }}
+                                            />
+                                        ) : (
+                                            <img 
+                                                src={PLACEHOLDER}
+                                                className="rounded-full w-full h-full object-cover"
+                                            />
+                                        )}
 
                                     </div>
                                     <div className="flex-1 overflow-hidden">
