@@ -1,5 +1,4 @@
 COMPOSE = docker compose
-SERVICES = postgres redis mazad-gateway items-service auth-service user-service
 
 CERTS_DIR = infrastructure/certs/generated
 CERTS_IMAGE = mazad-certs-generator
@@ -8,13 +7,26 @@ CERTS_CONTEXT = infrastructure/certs
 
 up: build
 	$(COMPOSE) up -d
-
-watch:
-	$(COMPOSE) up --watch
+build: certs
+	$(COMPOSE) build
 down:
 	$(COMPOSE) down
+restart:
+	$(COMPOSE) restart
+logs:
+	$(COMPOSE) logs -f
+ps:
+	$(COMPOSE) ps
+clean-all: 
+	$(COMPOSE) down -v --rmi all
+clean-v:
+	$(COMPOSE) down -v
+clean-img:
+	$(COMPOSE) down --rmi all
+re: clean-all up
 
-
+jwt-secret-key:
+	@ openssl rand -base64 64 | tr -d '\n' &&  echo '\n'
 
 certs-image:
 	docker build -t $(CERTS_IMAGE) -f $(CERTS_DOCKERFILE) $(CERTS_CONTEXT)
@@ -47,50 +59,3 @@ certs-force: certs-image
 	  -v $(PWD)/infrastructure/certs/generated:/certs/generated \
 	  -e SSL_KEYSTORE_PASSWORD=$$SSL_KEYSTORE_PASSWORD \
 	  $(CERTS_IMAGE) --force
-
-build: certs
-	$(COMPOSE) build
-
-re: clean-all up
-
-re-s: clean-s build-s up-s
-
-restart:
-	$(COMPOSE) restart
-restart-s: down-s up-s
-logs:
-	$(COMPOSE) logs -f
-ps:
-	$(COMPOSE) ps
-
-prune-img:
-	docker image prune -f
-
-# to run a single service, cmd =  "make up-s s=service_name", the same for stop-s, logs-s, buil-s, clean-s
-# if a service depends on an other service it will be ran by default
-up-s:
-	$(COMPOSE) up -d $(s)
-down-s:
-	$(COMPOSE) down $(s)
-stop-s:
-	$(COMPOSE) stop $(s)
-logs-s:
-	$(COMPOSE) logs -f $(s)
-build-s:
-	$(COMPOSE) build $(s)
-
-# to clean images and volumes of all services
-clean-all: 
-	$(COMPOSE) down -v --rmi all
-clean-v:
-	$(COMPOSE) down -v
-clean-img:
-	$(COMPOSE) down --rmi all
-
-clean-s: stop-s
-	$(COMPOSE) rm -f $(s)
-	echo $(s)
-	docker rmi $$(docker images | grep $(s) | awk '{print $$2}')
-
-jwt-secret-key:
-	@ openssl rand -base64 64 | tr -d '\n' &&  echo '\n'
