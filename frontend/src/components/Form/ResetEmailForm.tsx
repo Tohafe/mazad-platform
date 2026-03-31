@@ -40,7 +40,7 @@ export default function ResetEmailForm({setShowEmailEdit} : Props){
         try{
             await api.patch('/auth/reset/email', data);
             if (user){
-                setUser({...user, username: data.email});
+                setUser({...user, email: data.email});
             }
             setShowEmailEdit(false);
         }
