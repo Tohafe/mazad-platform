@@ -51,7 +51,7 @@ export function NotificationBell() {
             )}
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-92 bg-white border border-gray-200 shadow-xl rounded-lg z-50 overflow-hidden">
+                <div className="absolute -right-2.5 sm:right-0 mt-2 w-[90vw] sm:w-92 max-w-90 sm:max-w-none bg-white border border-gray-200 shadow-xl rounded-lg z-50 overflow-hidden origin-top-right">
 
                     <div className="p-4 border-b border-gray-100 bg-white">
                         <div className="flex items-center justify-center">
