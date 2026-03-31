@@ -4,6 +4,8 @@ import {Link} from "react-router-dom";
 import {useAuctionTimeLeft} from "../../lib/useAuctionTimeLeft.ts";
 import {formatPrice} from "../../utils/currency.ts";
 
+import PLACE_HOLDER from "./../../assets/place_holder.svg"
+
 
 interface ItemCardProps {
     auction: AuctionSummary
@@ -21,7 +23,14 @@ const ItemCard = ({className = "", auction}: ItemCardProps) => {
     return (
         <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
             <div className="relative w-full h-full xl:h-89">
-                <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
+                <img
+                    src={auction.thumbnail}
+                    alt="Not Found"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        e.currentTarget.src = PLACE_HOLDER;
+                    }}
+                />
             </div>
             <p className="text-black font-semibold leading-5 line-clamp-2 min-h-10">{auction.title}</p>
             <div className="flex flex-col">

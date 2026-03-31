@@ -23,9 +23,14 @@ certs-image:
 certs: certs-image
 	@if [ ! -f $(CERTS_DIR)/nginx.crt ]; then \
 		echo "Generating SSL certificates in Docker..."; \
+		if [ -z "$$SSL_KEYSTORE_PASSWORD" ]; then \
+			echo "SSL_KEYSTORE_PASSWORD environment variable is not set!"; \
+			exit 1; \
+		fi; \
 		docker run --rm -u $(shell id -u):$(shell id -g) \
 		  -v $(PWD)/infrastructure/certs:/certs \
 		  -v $(PWD)/infrastructure/certs/generated:/certs/generated \
+		  -e SSL_KEYSTORE_PASSWORD=$$SSL_KEYSTORE_PASSWORD \
 		  $(CERTS_IMAGE); \
 	else \
 		echo "SSL certificates already exist. Skipping generation."; \
@@ -33,9 +38,14 @@ certs: certs-image
 
 # Force regenerate all certificates
 certs-force: certs-image
+	@if [ -z "$$SSL_KEYSTORE_PASSWORD" ]; then \
+		echo "SSL_KEYSTORE_PASSWORD environment variable is not set!"; \
+		exit 1; \
+	fi; \
 	docker run --rm -u $(shell id -u):$(shell id -g) \
 	  -v $(PWD)/infrastructure/certs:/certs \
 	  -v $(PWD)/infrastructure/certs/generated:/certs/generated \
+	  -e SSL_KEYSTORE_PASSWORD=$$SSL_KEYSTORE_PASSWORD \
 	  $(CERTS_IMAGE) --force
 
 build: certs

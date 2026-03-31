@@ -19,8 +19,8 @@ const ItemCarousel = ({carouselTitle = "", className = "", auctions}: ItemCarous
     const [canScrollLeft, setCanScrollLeft] = useState(false)
 
     const updateState = (swiper: SwiperClass) => {
-        setCanScrollRight(swiper.isBeginning || !swiper.isEnd);
-        setCanScrollLeft(swiper.isEnd || !swiper.isBeginning);
+        setCanScrollLeft(!swiper.isBeginning && !swiper.isLocked);
+        setCanScrollRight(!swiper.isEnd && !swiper.isLocked);
     }
 
     return (

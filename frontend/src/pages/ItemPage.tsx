@@ -10,7 +10,7 @@ function ItemPage() {
     const {productId} = useParams<{ productId: string }>();
     const numericProductId = Number(productId);
     const {data, isLoading, isError, error} = useProduct(numericProductId);
-    const {data: auctions} = useAuctions({size: 10, sellerId: data?.raw.sellerId})
+    const {data: auctions} = useAuctions({size: 10, status: 'ACTIVE', sellerId: data?.raw.sellerId})
     const {data: seller} = useSeller(data?.raw.sellerId);
 
     const otherAuctions = auctions?.content.filter(auction => auction.id !== data?.raw.id);

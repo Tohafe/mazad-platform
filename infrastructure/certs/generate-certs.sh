@@ -233,8 +233,13 @@ main() {
         exit 1
     fi
 
+
     # Keystore password (used for all Java keystores)
-    KEYSTORE_PASSWORD="mazad-ssl-password"
+    if [[ -z "$SSL_KEYSTORE_PASSWORD" ]]; then
+        log_error "SSL_KEYSTORE_PASSWORD environment variable is not set!"
+        exit 1
+    fi
+    KEYSTORE_PASSWORD="$SSL_KEYSTORE_PASSWORD"
 
     # Generate Root CA
     generate_root_ca

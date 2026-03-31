@@ -21,7 +21,7 @@ export default function PublicProfile(){
     const [profile, setProfile] = useState<PublicProfile | null>(null);
     const [profileErrorMsg, setProfileErrorMsg] = useState<string>('loading');
     const [page, setPage] = useState(0);
-    const {data} = useAuctions({page: page, size: 10, sellerId: profile?.userId})
+    const {data} = useAuctions({page: page, size: 8, status: 'ACTIVE', sellerId: profile?.userId})
     const [isFriend, setIsFriend] = useState(false);
     const navigate = useNavigate();
 
@@ -58,6 +58,7 @@ export default function PublicProfile(){
                             {user && profile.userId != user.id &&
                                 <div className={'flex mt-10 -ml-5 '}>
                                     <ConnectionButton user={user} other={profile} setIsFriend={setIsFriend}/>
+                                    {/* @NaoufalUse */}
                                     {isFriend && <IconButton icon={PiChatDots} className={"text-brand"} onClick={() => navigate(`/inbox/${profile.userId}`)}></IconButton>}
                                 </div>}
                         </div>

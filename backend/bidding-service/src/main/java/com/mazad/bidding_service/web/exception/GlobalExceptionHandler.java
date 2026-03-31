@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,7 +52,6 @@ public class GlobalExceptionHandler {
     // Business Logic: Invalid State (e.g., Insufficient Funds, Wallet already exists)
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail handleIllegalState(IllegalStateException ex) {
-        // BAD_REQUEST (400) or CONFLICT (409) are usually best for state violations
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
@@ -95,18 +95,16 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
-    // // Safety Net: The "Everything Else" handler
-    // @ExceptionHandler(Exception.class)
-    // public ProblemDetail handleEverythingElse(Exception ex) {
-    //     // We log the real error for us, but hide the details from the user
-    //     log.error("Unexpected error occurred: ", ex); 
+     @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleBadInput(IllegalArgumentException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
 
-    //     ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-    //         HttpStatus.INTERNAL_SERVER_ERROR, 
-    //         "An internal error occurred. Our team has been notified."
-    //     );
-    //     pd.setTitle("Server Error");
-    //     return pd;
-    // }
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail runTimeExceptionHandler(Exception e){
+        log.error(e.getMessage());
+        return ProblemDetail
+                        .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An internal error occurred. Our team has been notified.");
+    }
 }
 

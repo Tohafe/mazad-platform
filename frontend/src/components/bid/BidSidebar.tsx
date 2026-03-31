@@ -13,6 +13,7 @@ import {ClosedAuctionView} from './ClosedAuctionView';
 import {usePlaceBid} from "../../hooks/usePlaceBid.ts";
 import {useAuth} from "../../context/AuthProvider.tsx";
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 interface BidSidebarProps {
     data: BidData;
@@ -28,40 +29,32 @@ export function parseCurrency(value: string): number {
 }
 
 const AuctionOwner = () => {
-    return <div className=" p-4">
-        <p className="text-sm text-brand font-medium">
-            You are the seller of this auction
-        </p>
-        <p className="text-xs text-black mt-1">
-            You cannot place bids on your own listing.
-        </p>
+    return <div className="text-center p-4 rounded-md">
+    <p className="text-sm font-bold text-brand">
+        You are the seller of this auction
+    </p>
+    <p className="text-xs mt-1">
+        You cannot place bids on your own listing.
+    </p>
     </div>
 }
 
 
 export function BidSidebar({data, auctionId}: BidSidebarProps) {
-    const {data: bidsData, isLoading} = useBids(auctionId);
     const {user} = useAuth();
+    const {data: bidsData, isLoading} = useBids(auctionId, user);
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const isOwner = data.sellerId === user?.id;
-
-    // const latestBidValue = bidsData?.entries?.[0]?.amount ?? data.currentBid;
-
+    const lastBiderid = bidsData?.lastBidderId;
+    const isWinner = lastBiderid === user?.id
     
-    // 2. Parse it into a usable number for your math
+    // Parse it into a usable number for your math
     const currentBidNumeric = useMemo(
         () => parseCurrency(data.currentBid),
-        [data.currentBid] // React will recalculate when latestBidValue changes
+        [data.currentBid] 
     );
-
-
-    //////////////////////////
-
-    // const currentBidNumeric = useMemo(
-    //     () => parseCurrency(data.currentBid),
-    //     [data.currentBid]
-    // );
 
     const minRequired = useMemo(
         () => currentBidNumeric + 1,
@@ -89,6 +82,9 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
                     bids={bidsData?.entries ?? []}
                     totalBids={bidsData?.total ?? 0}
                     isLoading={isLoading}
+                    isOwner={isOwner}
+                    isWinner={isWinner}
+                    winnerId={lastBiderid}
                 />
                 <HelpBox/>
             </div>
@@ -132,6 +128,7 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
                         <ActionButtons
                             onPlaceBid={submitBid}
                             isLoading={isPending}
+                            onAskSeller={() => navigate(`/inbox/${data.sellerId}`)}
                         />
 
                     </div> : <AuctionOwner/>}

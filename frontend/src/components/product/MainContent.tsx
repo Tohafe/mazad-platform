@@ -4,7 +4,7 @@ import { ImageGallery } from './ImageGallery';
 import { SellerDescription } from './SellerDescription';
 import { DetailsGrid } from './DetailsGrid';
 import { ShippingInfo } from './ShippingInfo';
-import { SllerDocument } from './sellerDocument';
+import { SellerDocument } from './sellerDocument';
 
 interface MainContentProps {
   title: string;
@@ -38,7 +38,7 @@ export function MainContent({
       </div>
 
       {/* Document */}
-      <SllerDocument document={document} />
+      <SellerDocument document={document} />
       
       {/* Description from seller */}
       <SellerDescription description={sellerDescription} />
