@@ -20,7 +20,7 @@ const HeroCarousel = ({className = ""}) => {
 
     return (
         <div className={cn("relative flex flex-col w-full h-full", className)}>
-            {data[currentSlide].items.length > 0 ?
+            {data.length > 0 && data[currentSlide].items.length > 0 ?
                 <div className="absolute top-0 bottom-30 left-1/2 -ml-[50vw] w-screen bg-gray-50"></div> :
                 <div className="absolute top-0 bottom-0 left-1/2 -ml-[50vw] w-screen bg-gray-50"></div>
             }

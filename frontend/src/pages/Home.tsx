@@ -8,7 +8,7 @@ import {usePopularCategories} from "../hooks/useCategories.ts";
 const HomePageContent = () => {
     const {data: Categories = []} = usePopularCategories()
     const {data: EndingSoonAuctions = []} = useEndingSoonAuctions(128, 10);
-    const {data: extraAuctions} = useAuctions({page: 0, size: 20, status: "ACTIVE"});
+    const {data: extraAuctions} = useAuctions({page: 0, size: 20, status: 'ACTIVE'});
     const recentlyAdded = extraAuctions?.content.slice(0, 10) ?? []
     const mightLikeAuctions = extraAuctions?.content.slice(10, 20) ?? []
     return <div className="flex flex-col gap-10 items-center justify-center max-w-305  w-full py-6">

@@ -4,4 +4,3 @@ public record TransferResult(
     Long bidderBalance,
     Long ownerBalance
 ) {}
-// @Naoufal

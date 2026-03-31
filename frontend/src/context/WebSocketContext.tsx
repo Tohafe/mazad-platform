@@ -5,13 +5,8 @@ import { Client } from '@stomp/stompjs';
 
 // Build WebSocket URL dynamically based on current page location
 const getWsUrl = () => {
-    // const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // return `${protocol}//${window.location.host}`;
-
-    //for frontend Dev, remove it before push @Naoufal
-    const MAZAD_IP = import.meta.env.VITE_MAZAD_IP;
-
-    return `wss://${MAZAD_IP}:443`
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.host}`;
 };
 
 interface WebSocketContextType {
