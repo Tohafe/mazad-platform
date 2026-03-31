@@ -3,14 +3,14 @@ import { useAuth } from "../context/AuthProvider";
 import { useWebSocket } from "../context/WebSocketContext";
 import useChatApi from "./useChatApi";
 import type { Chat } from "../types/chat.ts";
+import toast from "react-hot-toast";
 
 function useChatInbox(activeChatId: string | null){
 
     const { user } = useAuth();
     
-    
     const { getInbox, getUserDetails, markChatRead } = useChatApi();
-    // FETCH CHATS FRON /INBOX ENDPOIT
+    
     const fetchUserDetails = async (userId: string) => {
         try {
 
@@ -23,7 +23,7 @@ function useChatInbox(activeChatId: string | null){
                             : c
                             
             ));
-        } catch(err) {
+        } catch {
         }
         
     }
@@ -46,7 +46,8 @@ function useChatInbox(activeChatId: string | null){
                 formattedChats.forEach( (chat: Chat) => {
                     fetchUserDetails(chat.id);
                 })
-            }catch(error){
+            }catch {
+                toast.error("An unexpected error occurred.");
             }
         }
         if (user?.id)
@@ -55,7 +56,6 @@ function useChatInbox(activeChatId: string | null){
         }
     }, [user?.id]);
 
-    // MARK AS READ AFTER SELECTING A CHAT
     const handleSelectChat = async (chatId: string) => {
         // need to set read boolean
         const selectedChat = chats.find(c => c.id === chatId);
@@ -66,17 +66,17 @@ function useChatInbox(activeChatId: string | null){
 
             try{
                 await markChatRead(chatId);
-            }catch(e){
+            }catch {
+                toast.error("An unexpected error occurred.");
             }
         }
         }
-    // SUBSCRIBING TO THE WEBSOCKET LISTENING TO MESSAGES TOPIC
+
     const { stompClient, isConnected } = useWebSocket();
     useEffect(() => {
             if (!stompClient || !isConnected || !user?.id){
                 return ;
             } 
-
             const subscription = stompClient.subscribe('/user/queue/messages', (message) => {
                 const incomingMsg = JSON.parse(message.body);
                 const conversationPartnerId = 
@@ -85,6 +85,10 @@ function useChatInbox(activeChatId: string | null){
                         : incomingMsg.senderId;
                 const isCurrentlyOpen = activeChatId?.toLowerCase() === conversationPartnerId.toLowerCase();
                 const didISendThis = incomingMsg.senderId.toLowerCase() === (user?.id || "").toLowerCase();
+                if (isCurrentlyOpen && !didISendThis) {
+                    markChatRead(conversationPartnerId)
+                        .catch(() => toast.error("Unexpected error happend during mark chat as read"));
+                }
                 setChats((prevChats) => {
         
                     const existingChatIndex = prevChats.findIndex(c => c.id.toLowerCase() === conversationPartnerId.toLowerCase());
@@ -119,7 +123,6 @@ function useChatInbox(activeChatId: string | null){
         }, [stompClient, isConnected, activeChatId, user?.id]
     );
 
-    // a hook for send button to move chat to top
     const moveChatToTop = (chatId: string, lastMessage: string) => {
         setChats((prevChats) => {
             const updatedChats = [...prevChats];

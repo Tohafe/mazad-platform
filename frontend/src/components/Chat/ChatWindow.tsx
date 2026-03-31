@@ -1,7 +1,7 @@
 import {  useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthProvider"
 import { useWebSocket } from "../../context/WebSocketContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useChatApi from "../../hooks/useChatApi";
 import  { toast } from "react-hot-toast";
 
@@ -9,7 +9,8 @@ import  { toast } from "react-hot-toast";
 
 
 function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string, onMessageSent: (msg: string) => void, onBack: () => void }>, ){
-
+    
+    const navigate = useNavigate();
 
     const [messages, setMessages]  = useState<any[]>([]);
     
@@ -81,7 +82,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                     sender: dto.senderId.toLowerCase() === user?.id ? "me" : "them"
                 }));
                 setMessages(formattedMessages.reverse());
-            } catch (err){
+            } catch {
             }
         }
         fetchHistory();
@@ -126,13 +127,19 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                     username: response.data.username,
                     avatar: response.data.avatarUrl
                 });
-            } catch(error){
+            } catch{
                 setOtherUser({ username: `User ${chatId.substring(0,4)}` });
+                toast.error("This user does not exist"); 
+                navigate('/inbox');
             }
         };
         getOtherUserInfo();
-    }, [chatId])
+    }, [chatId]);
 
+    const [imageFailed, setImageFailed] = useState(false);
+    useEffect (()=> {
+        setImageFailed(false);
+    }, [chatId]);
     return (
         <div className="flex flex-col w-full h-full bg-white">
             {/* // HEADER */}
@@ -148,11 +155,12 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                 </button>
                 {/* AVATAR */}
                 <div className="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-full font-bold text-blue-600">
-                    {otherUser?.avatar ? (
+                    {otherUser?.avatar && !imageFailed ? (
                         <img
                         src={otherUser.avatar}
-                        alt={otherUser.username.charAt(0).toUpperCase()}
+                        alt={`${otherUser.username}'s avatar`}
                         className="w-full h-full object-cover rounded-full"
+                        onError={() => setImageFailed(true)}
                         />
                     ): (
                         <span>{otherUser?.username.charAt(0).toUpperCase()}</span>

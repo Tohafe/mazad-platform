@@ -39,7 +39,6 @@ function Inbox(){
                     setActiveChatId(friendId);
                     setActiveView('messages');
                     navigate(`/inbox/${friendId}`);
-                    navigate(`/inbox/${friendId}`);
                 } 
             })
             .catch (() => {
