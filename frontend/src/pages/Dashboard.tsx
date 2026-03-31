@@ -18,7 +18,7 @@ const tabs: TabInfo[] = [
     {title: "Overview"},
     {title: "Won", status: "SOLD"},
     {title: "Selling", status: "ACTIVE"},
-    {title: "Balance", status: "SOLD"},
+    {title: "Sold", status: "SOLD"},
     {title: "Expired", status: "EXPIRED"},
     {title: "Cancelled", status: "CANCELLED"},
 ]

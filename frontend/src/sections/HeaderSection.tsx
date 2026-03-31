@@ -56,11 +56,11 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
                 <IconButton onClick={() => setShowFullWidthSearch(true)} icon={BiSearch} iconClassName="text-brand"
                             size="md" className="flex md:hidden"/>
                 {!isAuthenticated && <TextButton link={"/how-it-works"} className="hidden md:flex mx-2" size="sm">How it works?</TextButton>}
-                {!isAuthenticated && <TextButton link={"/help"} className="hidden md:flex ml-2 mr-4" size="sm">Help</TextButton>}
+                {!isAuthenticated && <TextButton link={"/about"} className="hidden md:flex ml-2 mr-4" size="sm">About Us</TextButton>}
                 {isAuthenticated && <Balance/>}
                 {isAuthenticated && <NotificationBell/>}
                 {isAuthenticated ?
-                    <UserMenu className="ms-3" user={user}/> :
+                    <UserMenu className="ms-0 sm:ms-3" user={user}/> :
                     <Button link={"/login"} className="">Sign in</Button>
                 }
 
