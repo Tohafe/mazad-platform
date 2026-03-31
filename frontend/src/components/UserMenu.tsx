@@ -2,13 +2,13 @@ import type User from "../types/user.ts";
 import {cn} from "../lib/utils.ts";
 import IconButton from "./Button/IconButton.tsx";
 import {MdKeyboardArrowDown} from "react-icons/md";
-import {FaRegUser} from "react-icons/fa";
 import Dropdown from "./Dropdown.tsx";
 import {useRef, useState} from "react";
 import TextButton from "./Button/TextButton.tsx";
 import {useSignOut} from "../hooks/useAuctions.ts";
 import {Link} from "react-router-dom";
 import {useOnClickOutside} from "./Notification/NotificationBell.tsx";
+import {avatar} from "../assets/avatar.ts";
 
 
 interface UserMenuProps {
@@ -25,14 +25,14 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
 
     return <div ref={ref} className={cn("relative flex gap-1 items-center", className)}>
         <div className="flex items-center w-8 h-8" onClick={() => setOpen(!open)}>
-            {user?.avatarThumbnailUrl ? (
                 <img
                     className="shrink-0 w-full h-full rounded-full object-cover cursor-pointer"
-                    src={user?.avatarThumbnailUrl}
+                    src={user?.avatarThumbnailUrl || avatar}
                     alt={"avatar"}
-                />) : (
-                <FaRegUser size={20} className="shrink-0 text-brand"/>)
-            }
+                    onError={(e) => {
+                        e.currentTarget.src = avatar;
+                    }}
+                />
         </div>
 
         <IconButton className={`hidden sm:block`} onClick={() => setOpen(!open)} icon={MdKeyboardArrowDown} size={"sm"}

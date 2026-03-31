@@ -341,7 +341,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
                     variant={isSubmitting ? "secondary" : hasFailedUploads ? "danger" : "primary"} 
                     size="lg"
                     disabled={isSubmitting}
-                    className={isSubmitting ? "cursor-not-allowed opacity-70" : ""}
+                    className={`w-full sm:w-auto ${isSubmitting ? "cursor-not-allowed opacity-70" : ""}`}
                 >
                     {isSubmitting 
                         ? <><FiLoader className="animate-spin h-5 w-5" /></> 

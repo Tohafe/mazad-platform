@@ -5,8 +5,7 @@ import { useAuth } from '../context/AuthProvider';
 import { Outlet } from 'react-router-dom';
 import useUserApi from '../hooks/useUserApi';
 import type User from '../types/user';
-import DEFAULT_AVATAR from '../assets/avatar.jpg'
-import DEFAULT_THUMB from '../assets/avatar_thumb.jpg'
+import {avatar, avatar_thumbnail} from '../assets/avatar.ts'
 
 export default function PersistLogin(){
     const refresh = useRefreshToken();
@@ -23,8 +22,8 @@ export default function PersistLogin(){
                     .catch (() => {
                         const updatedUser: User = {
                             ...refreshResponse.user,
-                            avatarUrl: DEFAULT_AVATAR,
-                            avatarThumbnailUrl: DEFAULT_THUMB
+                            avatarUrl: avatar,
+                            avatarThumbnailUrl: avatar_thumbnail
                         }
                         setUser(updatedUser);
                     })

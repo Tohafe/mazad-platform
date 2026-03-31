@@ -6,7 +6,7 @@ interface ContentPageLayoutProps {
 
 export function ContentPageLayout({ title, subtitle, children }: ContentPageLayoutProps) {
     return (
-        <div className="w-305 py-12 mx-auto">
+        <div className="w-full xl:w-305 py-12 mx-auto">
             {/* Page title */}
             <h1 className="text-6xl font-semibold font-serif text-brand mb-4">{title}</h1>
 

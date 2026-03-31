@@ -10,7 +10,7 @@ services:
     container_name: frontend-c
     image: mazad-frontend
     ports:
-      # - "80:80"
+      - "80:80"
       - "443:443"
     volumes:
       - ./infrastructure/certs/generated/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
@@ -58,15 +58,13 @@ services:
       - SSL_KEYSTORE=/etc/ssl/gateway.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
       
-      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
-        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
+      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12
+        -Djavax.net.ssl.trustStorePassword=${SSL_KEYSTORE_PASSWORD}
         -Djavax.net.ssl.trustStoreType=PKCS12
 
     volumes:
       - ./infrastructure/certs/generated/gateway.p12:/etc/ssl/gateway.p12:ro
       - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
-    ports:
-      - "8443:8443"
     networks:
       mazad-network:
     restart: on-failure
@@ -152,7 +150,7 @@ services:
       - FORTY_TWO_CLIENT_SECRET=${FORTY_TWO_CLIENT_SECRET}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - DEFAULT_SOLD=${DEFAULT_SOLD}
+      - DEFAULT_BALANCE=${DEFAULT_BALANCE}
 
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
@@ -321,8 +319,8 @@ services:
       SSL_KEYSTORE: /etc/ssl/upload-service.p12
       SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
 
-      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12 
-        -Djavax.net.ssl.trustStorePassword=mazad-ssl-password 
+      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12
+        -Djavax.net.ssl.trustStorePassword=${SSL_KEYSTORE_PASSWORD}
         -Djavax.net.ssl.trustStoreType=PKCS12
     volumes:
       - ./infrastructure/certs/generated/upload-service.p12:/etc/ssl/upload-service.p12:ro

@@ -23,6 +23,7 @@ Make sure the following tools are installed before running the project:
 - **Git**
 - **Makefile**
 - **Docker** and **Docker Compose**
+- **openssl**
 
 ### Configuration
 1. Clone the repository.
@@ -33,6 +34,7 @@ Make sure the following tools are installed before running the project:
 1. Start the whole project (frontend, backend services, and infrastructure):
    ```bash
    make
+   ```
 
 ## Resources
 
@@ -46,7 +48,6 @@ Make sure the following tools are installed before running the project:
 AI was used as a support tool during the project for:
 - drafting documentation content
 - improving wording and structure in the README
-- generating and refining simple legal pages such as the Privacy Policy and Terms of Service
 - assisting with small UI and code-related questions during development
 
 All architecture, implementation, integration, and final technical decisions were made and reviewed by the project team.
@@ -86,7 +87,6 @@ The team used the following communication channels:
 ### Frontend
 - **React**
 - **TypeScript**
-- **Vite**
 - **Tailwind CSS**
 
 These technologies were chosen to build a fast, modern, and maintainable user interface with reusable components and strong typing.
@@ -95,6 +95,8 @@ These technologies were chosen to build a fast, modern, and maintainable user in
 - **Java**
 - **Spring Boot**
 - **Spring Cloud Gateway**
+- **Spring Security**
+
 These technologies were selected because they provide a strong ecosystem for building scalable backend services, API layers, and structured business logic.
 
 ### Database
@@ -196,26 +198,37 @@ The platform supports file or image handling for user and auction content.
 #### 12. Privacy Policy and Terms of Service Pages
 **Worked on by:** `helarras`
 
+### 13. Remote Authentication (OAuth 2.0)
+**Worked on by:** `arekoune`
+
+Users can securely log in to the platform using third-party providers such as Google and 42.
+
+### 14. AI Content Moderation
+**Worked on by:** `haouky`
+
+The platform uses automated AI moderation to scan user-generated content, automatically filtering inappropriate items, deleting violating content, and issuing user warnings.
+
 ## Modules
 
 ### Selected Modules and Points
 
-| Module                                                                                                             | Points | Justification                                                                                                                                                      | Implementation                                                                                                                                                                                                                   | Team Member(s)     |
-|--------------------------------------------------------------------------------------------------------------------|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| Major: Use a framework for both the frontend and backend                                                           | 2      | A full-stack framework-based approach was necessary to build a responsive user interface and a structured backend with clear APIs and maintainable business logic. | Implemented with **React**, **TypeScript**, and **Vite** on the frontend, and **Java**, **Spring Boot**, **Spring Data JPA**, and **Spring Cloud Gateway** on the backend.                                                       | `All Team Members` |
-| Major: Backend as microservices                                                                                    | 2      | The platform required loosely-coupled services with clear responsibilities for authentication, profiles, items, bidding, chat, notifications, and uploads.         | Implemented as separate backend services (`auth-service`, `user-service`, `item-service`, `bidding-service`, `chat-service`, `notification-service`, `upload-service`) communicating through **REST APIs** and **Kafka** events. | `All Team Members` |
-| Implement real-time features                                                                                       | 2      | Real-time behavior is important in an auction platform for updates such as bidding activity, chat, and live notifications.                                         | Implemented through real-time communication between services and live updates for user-facing features.                                                                                                                          | `nhimad, haouky`   |
-| Allow users to interact with other users                                                                           | 2      | User-to-user interaction makes the platform more realistic and useful, especially in an auction context.                                                           | Implemented through chat/messaging and other user interaction features inside the platform.                                                                                                                                      | `ajbari, arekoune` |
-| Public API                                                                                                         | 2      | A public API makes auction data accessible in a structured way and improves the technical value of the project.                                                    | Implemented through public endpoints exposed by the backend gateway and item-related services.                                                                                                                                   | `helarras`         |
-| Use an ORM                                                                                                         | 1      | An ORM simplifies database access, entity management, and query handling in backend services.                                                                      | Implemented with **Spring Data JPA** to map application entities to relational database tables.                                                                                                                                  | `All Team Members` |
-| Notification system                                                                                                | 1      | Notifications improve user awareness of auction events and platform activity.                                                                                      | Implemented as a dedicated notification feature/service for platform updates and user events.                                                                                                                                    | `haouky`           |
-| File upload and management                                                                                         | 1      | Auctions require media support for item images and user-related content.                                                                                           | Implemented with upload handling and object storage for managing files and images.                                                                                                                                               | `haouky`           |
-| Standard user management                                                                                           | 2      | User management is essential for authentication, profiles, and access control.                                                                                     | Implemented through registration, login, protected routes, profile handling, and account-related features.                                                                                                                       | `arekoune`         |
-| Advanced search functionality                                                                                      | 1      | Search is a key feature in an auction platform and helps users quickly find relevant listings.                                                                     | Implemented with item search, filtering, and result browsing features.                                                                                                                                                           | `helarras`         |
-| Support for additional browsers                                                                                    | 1      | Cross-browser support improves accessibility and usability for different users.                                                                                    | The frontend was developed and tested to work correctly on more than one modern browser.                                                                                                                                         | `All Team Members` |
-| Minor: Custom-made design system with reusable components, including a proper color palette, typography, and icons | 1      | A consistent design system improves usability, maintainability, and visual coherence across the platform.                                                          | Implemented through a custom UI layer with reusable components such as buttons, inputs, cards, dialogs, grids, tables, pagination, dropdowns, checkboxes, icons, and layout elements used across the frontend.                   | `All Team Members` |
-
-**Total Points: 18**
+| Module                                                   | Points | Justification                                                                                                                                                      | Implementation                                                                                                                                                                                                                   | Team Member(s)     |
+|----------------------------------------------------------|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| Use a framework for both the frontend and backend | 2      | A full-stack framework-based approach was necessary to build a responsive user interface and a structured backend with clear APIs and maintainable business logic. | Implemented with **React**, **TypeScript**, and **Vite** on the frontend, and **Java**, **Spring Boot**, **Spring Data JPA**, and **Spring Cloud Gateway** on the backend.                                                       | `All Team Members` |
+| Backend as microservices                          | 2      | The platform required loosely-coupled services with clear responsibilities for authentication, profiles, items, bidding, chat, notifications, and uploads.         | Implemented as separate backend services (`auth-service`, `user-service`, `item-service`, `bidding-service`, `chat-service`, `notification-service`, `upload-service`) communicating through **REST APIs** and **Kafka** events. | `All Team Members` |
+| Implement real-time features                             | 2      | Real-time behavior is important in an auction platform for updates such as bidding activity, chat, and live notifications.                                         | Implemented through real-time communication between services and live updates for user-facing features.                                                                                                                          | `All Team Members`   |
+| Allow users to interact with other users                 | 2      | User-to-user interaction makes the platform more realistic and useful, especially in an auction context.                                                           | Implemented through chat/messaging and other user interaction features inside the platform.                                                                                                                                      | `ajbari, arekoune` |
+| Public API                                               | 2      | A public API makes auction data accessible in a structured way and improves the technical value of the project.                                                    | Implemented through public endpoints exposed by the backend gateway and item-related services.                                                                                                                                   | `helarras`         |
+| Use an ORM                                               | 1      | An ORM simplifies database access, entity management, and query handling in backend services.                                                                      | Implemented with **Spring Data JPA** to map application entities to relational database tables.                                                                                                                                  | `All Team Members` |
+| Notification system                                      | 1      | Notifications improve user awareness of auction events and platform activity.                                                                                      | Implemented as a dedicated notification feature/service for platform updates and user events.                                                                                                                                    | `haouky`           |
+| File upload and management                               | 1      | Auctions require media support for item images and user-related content.                                                                                           | Implemented with upload handling and object storage for managing files and images.                                                                                                                                               | `haouky`           |
+| Standard user management                                 | 2      | User management is essential for authentication, profiles, and access control.                                                                                     | Implemented through registration, login, protected routes, profile handling, and account-related features.                                                                                                                       | `arekoune`         |
+| Advanced search functionality                            | 1      | Search is a key feature in an auction platform and helps users quickly find relevant listings.                                                                     | Implemented with item search, filtering, and result browsing features.                                                                                                                                                           | `helarras`         |
+| Support for additional browsers                          | 1      | Cross-browser support improves accessibility and usability for different users.                                                                                    | The frontend was developed and tested to work correctly on more than one modern browser.                                                                                                                                         | `All Team Members` |
+| Custom-made design system with reusable components       | 1      | A consistent design system improves usability, maintainability, and visual coherence across the platform.                                                          | Implemented through a custom UI layer with reusable components such as buttons, inputs, cards, dialogs, grids, tables, pagination, dropdowns, checkboxes, icons, and layout elements used across the frontend.                   | `All Team Members` |
+| Authentication with OAuth 2.0 (Google,42)                | 1      | Enables secure third-party login.                                                                                                                                  | Integrated OAuth 2.0 providers using Spring Security.                                                                                                                                                                            | `arekoune`         |
+| Content moderation AI                                    | 1      | Automates platform safety by filtering inappropriate content.                                                                                                      | Implemented AI-based content scanning and automated moderation actions.                                                                                                                                                          | `haouky`           |
+**Total Points: 20**
 
 ## Individual Contributions
 

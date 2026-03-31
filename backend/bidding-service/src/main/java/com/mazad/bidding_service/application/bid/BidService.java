@@ -15,8 +15,6 @@ import com.mazad.bidding_service.domain.bid.BidRepository;
 import com.mazad.bidding_service.domain.bid.BidValidator;
 import com.mazad.bidding_service.domain.exception.AuctionNotFoundException;
 import com.mazad.bidding_service.web.dto.BidResponse;
-import com.mazad.bidding_service.web.dto.BiddersAvailableBalance;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -42,20 +40,13 @@ public class BidService {
         
         BidValidator.validate(auction, amount, userId);
         
-        /* just for now we create a wallet for each user*/
-        // walletService.createWalletForNewUser(userId, 1000L);
         Long previousBidderIdAvailableBalance = null;
-        
-        
         UUID previousBidderId = auction.getCurrentHighestBidderId();
         if (previousBidderId != null) {
-            // A previous bidder exists! 
-            // This is where you release the reserved funds back to them.
+            // This is where we release the reserved.
             previousBidderIdAvailableBalance = walletService.releaseFunds(previousBidderId, auction.getCurrentHighestBid());
         }
-        
         Long lastBidderAvailableBalance = walletService.reserveFunds(userId, amount);
-        /* you can reset this by remove the included lines (between /*), ecxept uuid */
 
         // Anti-Sniping Check
         extendAuctionIfNecessary(auction);
@@ -65,8 +56,6 @@ public class BidService {
         bid.setBidderId(userId);
         bid.setAuctionId(auction.getAuctionId());
         
-        
-
         auction.setCurrentHighestBid(amount);
         auction.setCurrentHighestBidderId(userId);
 

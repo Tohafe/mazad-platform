@@ -11,8 +11,7 @@ import { useAuth } from "../../context/AuthProvider";
 import type User from "../../types/user";
 import useUserApi from "../../hooks/useUserApi";
 import { useEffect } from "react";
-import DEFAULT_AVATAR from '../../assets/avatar.jpg'
-import DEFAULT_THUMB from '../../assets/avatar_thumb.jpg'
+import {avatar, avatar_thumbnail} from '../../assets/avatar.ts'
 
 import OAuth from "../OAuth.tsx";
 
@@ -62,8 +61,8 @@ const onSubmit = async (data: LoginData) => {
             .catch (() => {
                 const updatedUser: User = {
                     ...login.data?.user,
-                    avatarUrl: DEFAULT_AVATAR,
-                    avatarThumbnailUrl: DEFAULT_THUMB
+                    avatarUrl: avatar,
+                    avatarThumbnailUrl: avatar_thumbnail
                 }
                 setUser(updatedUser);
             })

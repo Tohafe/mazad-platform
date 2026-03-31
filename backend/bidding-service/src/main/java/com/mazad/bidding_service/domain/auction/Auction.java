@@ -48,25 +48,5 @@ public class Auction {
     
     @Version
     @Column(nullable = false)
-    private Long version; // optimistic locking (VERY important)
-
-    // @OneToMany(
-    //     mappedBy = "auction",
-    //     cascade = CascadeType.ALL,
-    //     orphanRemoval = true
-    // )
-    // private List<Bid> bids = new ArrayList<>();
-
+    private Long version; // optimistic locking
 }
-
-// public class Auction {
-
-//     @Id
-//     @GeneratedValue
-//     private Long id;
-
-//     private boolean open = true;
-
-//     private BigDecimal highestBid;
-
-// }

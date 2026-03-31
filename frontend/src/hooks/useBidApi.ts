@@ -41,5 +41,3 @@ export function useBidApi() {
 
   return { getBids, placeBid };
 }
-
-export default useBidApi;

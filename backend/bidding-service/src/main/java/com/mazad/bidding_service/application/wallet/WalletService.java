@@ -90,7 +90,7 @@ public class WalletService {
      */
     public Wallet getWalletOrThrow(UUID userId) {
         return walletRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Wallet not found for user ID: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("Wallet not found!"));
     }
 }
 

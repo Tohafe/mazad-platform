@@ -319,7 +319,7 @@ const CreateAuction = () => {
     
 
     return (
-        <div className="max-w-6xl mx-auto p-6 mt-8">
+        <div className="bg-white rounded border border-gray-200 shadow-none p-4 sm:p-8">
             
             <div className="mb-8 flex items-center justify-center space-x-4 select-none">
                 <div className={`px-4 py-2 rounded-full font-bold transition-colors ${currentStep === 1 ? 'bg-blue-600 text-white' : 'bg-blue-300 text-white'}`}>

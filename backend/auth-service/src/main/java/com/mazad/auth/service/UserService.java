@@ -51,8 +51,8 @@ public class UserService {
     String syncTopic;
     @Value("${auth.refresh-token-validity-days:4}")
     long    refreshValidity;
-    @Value("${DEFAULT_SOLD}")
-    String DEFAULT_SOLD;
+    @Value("${DEFAULT_BALANCE}")
+    String DEFAULT_BALANCE;
 
     public ResponseEntity<LoginResponseDto> addUser(UserRequestDTO userRequest) {
         UserEntity user = mapper.toEntity(userRequest);
@@ -64,7 +64,7 @@ public class UserService {
             throw new DuplicateResourceException("Username is already taken", "username");
 
         user = repo.save(user);
-        kafka.produce(syncTopic, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).sold(DEFAULT_SOLD).build());
+        kafka.produce(syncTopic, CurrentUser.builder().id(user.getId()).email(user.getEmail()).username(user.getUserName()).balance(DEFAULT_BALANCE).build());
         tokens = jwtService.getTokens(user);
         return getLoginResponse(tokens.refreshToken(),
                 tokens.accessToken(),
@@ -97,8 +97,8 @@ public class UserService {
         refreshCookie = ResponseCookie
                 .from("refresh_token", refreshToken)
                 .httpOnly(true)
-                .sameSite("None") // "None" allows the cookie to be sent across different ports @Naoufal .sameSite("Strict")
-                .secure(true) // true for HTTPS on production
+                .sameSite("Strict") 
+                .secure(true) 
                 .path("/api/v1/auth/")
                 .maxAge(Duration.ofDays(refreshValidity))
                 .build();

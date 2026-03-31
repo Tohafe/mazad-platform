@@ -3,6 +3,7 @@ package com.mazad.item.service;
 import com.mazad.item.dto.CategorizedItemsDto;
 import com.mazad.item.dto.ItemSearch;
 import com.mazad.item.dto.ItemSummaryDto;
+import com.mazad.item.entity.AuctionStatus;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,7 @@ public class CatalogService {
     public List<CategorizedItemsDto> getCategorizedItems(int categoriesLimit, int itemsLimit) {
         if (categoriesLimit <= 0 || itemsLimit <= 0)
             throw new ValidationException("categories_limit and items_limit must be positive integers");
-        Function<Long, ItemSearch> searchFor = (categoryId) -> ItemSearch.builder().categoryId(categoryId).build();
+        Function<Long, ItemSearch> searchFor = (categoryId) -> ItemSearch.builder().categoryId(categoryId).status(AuctionStatus.ACTIVE).build();
         return categoryService.getAllCategories().stream()
                 .limit(categoriesLimit)
                 .map(category -> {

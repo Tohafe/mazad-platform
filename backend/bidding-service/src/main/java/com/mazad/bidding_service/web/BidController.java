@@ -46,29 +46,10 @@ public class BidController {
     
     @GetMapping("/{auctionId}")
     public List<Bid> getBidsList(
-            @PathVariable Long auctionId) {
-        
-        // log.info("auction ID: {}", auctionId);
-        
+            @PathVariable Long auctionId) { 
         List<Bid> lb =   bidService.getBidsList(auctionId);
-
-        // log.info("auction ID: {}, and userId{}", lb.get(0).getAuctionId() , lb.get(0).getBidderId());
         
         return lb;
     }
-
-    
-    
-    
-    // @PostMapping
-    // public ResponseEntity<BidResponse> placeBid(@RequestBody @Valid CreateBidRequest request) {
-    //     BidResponse bid = bidService.placeBid(
-    //         request.getAuctionId(),
-    //         request.getUserId(),
-    //         request.getAmount()
-    //     );
-        
-    //     return ResponseEntity.status(201).body(bid);
-    // }
     
 }

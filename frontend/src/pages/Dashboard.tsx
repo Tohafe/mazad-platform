@@ -18,7 +18,7 @@ const tabs: TabInfo[] = [
     {title: "Overview"},
     {title: "Won", status: "SOLD"},
     {title: "Selling", status: "ACTIVE"},
-    {title: "Balance", status: "SOLD"},
+    {title: "Sold", status: "SOLD"},
     {title: "Expired", status: "EXPIRED"},
     {title: "Cancelled", status: "CANCELLED"},
 ]
@@ -98,7 +98,7 @@ const Dashboard = () => {
                 ) : hasAuctions ? (
                     <ItemGrid>
                         {auctions.map((auction) => (
-                            <ListingCard auction={auction} handleCancelClick={handleCancelClick}/>)
+                            <ListingCard key={auction.id} auction={auction} handleCancelClick={handleCancelClick}/>)
                         )}
                     </ItemGrid>
                 ) : (
