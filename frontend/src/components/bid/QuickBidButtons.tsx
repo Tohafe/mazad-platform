@@ -3,7 +3,7 @@ interface QuickBidButtonsProps {
   onBidClick?: (amount: string) => void;
 }
 
-export function QuickBidButtons({ amounts, onBidClick }: QuickBidButtonsProps) {
+export function QuickBidButtons({ amounts, onBidClick }: QuickBidButtonsProps) {  
   return (
     <div className="flex flex-wrap gap-2 my-3">
       {amounts.map((amount, index) => (

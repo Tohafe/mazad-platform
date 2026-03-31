@@ -105,8 +105,8 @@ OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             ResponseCookie refreshCookie = ResponseCookie
                     .from("refresh_token", refreshToken)
                     .httpOnly(true)
-                    .sameSite("None") // "None" allows the cookie to be sent across different ports @Naoufal .sameSite("Strict")
-                    .secure(true) // true for HTTPS on production
+                    .sameSite("Strict") 
+                    .secure(true) 
                     .path("/api/v1/auth/")
                     .maxAge(Duration.ofDays(refreshValidity))
                     .build();
