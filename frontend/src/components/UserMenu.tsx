@@ -8,7 +8,7 @@ import TextButton from "./Button/TextButton.tsx";
 import {useSignOut} from "../hooks/useAuctions.ts";
 import {Link} from "react-router-dom";
 import {useOnClickOutside} from "./Notification/NotificationBell.tsx";
-import PLACE_HOLDER from "../assets/avatar.jpg";
+import {avatar} from "../assets/avatar.ts";
 
 
 interface UserMenuProps {
@@ -27,10 +27,10 @@ const UserMenu = ({className = "", user}: UserMenuProps) => {
         <div className="flex items-center w-8 h-8" onClick={() => setOpen(!open)}>
                 <img
                     className="shrink-0 w-full h-full rounded-full object-cover cursor-pointer"
-                    src={user?.avatarThumbnailUrl || PLACE_HOLDER}
+                    src={user?.avatarThumbnailUrl || avatar}
                     alt={"avatar"}
                     onError={(e) => {
-                        e.currentTarget.src = PLACE_HOLDER;
+                        e.currentTarget.src = avatar;
                     }}
                 />
         </div>
