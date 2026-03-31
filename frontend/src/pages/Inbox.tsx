@@ -7,6 +7,8 @@ import useChatInbox from "../hooks/useChatInbox";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { HiOutlineChatBubbleLeft } from "react-icons/hi2";
+
 type ViewType = 'messages' | 'friends' | 'requests';
 
 function Inbox(){
@@ -116,9 +118,9 @@ function Inbox(){
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center text-gray-500 gap-4">
                             <div className="w-24 h-24 rounded-full mb-2  bg-blue-50 flex items-center justify-center text-blue-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                                </svg>
+                                <HiOutlineChatBubbleLeft
+                                className="w-12 h-12"
+                                />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-800">Start a conversation</h3>
                             <p className="text-sm">Select a chat on the left to see your messages here.</p>

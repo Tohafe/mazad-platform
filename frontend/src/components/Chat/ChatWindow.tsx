@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import useChatApi from "../../hooks/useChatApi";
 import  { toast } from "react-hot-toast";
 import PLACEHOLDER from "./../../assets/avatar.jpg";
+import { IoChevronBackSharp } from "react-icons/io5";
+
 
 
 
@@ -62,7 +64,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
             if (error.response?.status == 429)
                 toast.error("Sending too many requests");
             else
-                toast.error("An unexpected error during send", errorMessage);
+                toast.error(`An unexpected error during send, ${errorMessage}`);
         }
     };
 
@@ -84,7 +86,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                 setMessages(formattedMessages.reverse());
             } catch (error : any) {
                 const errorMessage = error.response?.data?.message || error.response?.data?.detail || "";
-                toast.error("An unexpected error while getting chat history", errorMessage);
+                toast.error(`An unexpected error while getting chat history, ${errorMessage}`);
             }
         }
         fetchHistory();
@@ -167,9 +169,8 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                     className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
                     title="Back to messages"
                 >
-                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
+                    <IoChevronBackSharp 
+                    className="w-6 h-6"/>
                 </button>
 
                 <div className="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-full font-bold text-blue-600">
