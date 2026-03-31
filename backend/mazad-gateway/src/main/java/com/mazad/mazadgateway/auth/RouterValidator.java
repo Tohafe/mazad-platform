@@ -25,7 +25,7 @@ public class RouterValidator {
                 Map.entry("/api/v1/items", List.of(HttpMethod.GET)),
                 Map.entry("/api/items", List.of(HttpMethod.GET, HttpMethod.POST,  HttpMethod.PUT, HttpMethod.DELETE)),
                 Map.entry("/api/v1/categories", List.of(HttpMethod.GET)),
-                Map.entry("/api/upload/minio", List.of(HttpMethod.GET)),
+                Map.entry("/api/v1/storage", List.of(HttpMethod.GET)),
                 Map.entry("/api/v1/catalog", List.of(HttpMethod.GET)),
                 Map.entry("/ws", List.of(HttpMethod.GET)),
                 Map.entry("/v3/api-docs", List.of(HttpMethod.GET)),

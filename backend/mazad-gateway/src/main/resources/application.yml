@@ -82,18 +82,18 @@ spring:
             - id: notification-service-route
               uri: https://notification-service:8443
               predicates:
-                - Path=/ws/**,/api/notifications/**
+                - Path=/ws/**,/api/v1/notifications/**
             - id: upload-service-route
               uri: https://upload-service:8443
               predicates:
-                - Path=/api/v1/api/media/**
+                - Path=/api/v1/media/**
               filters:
                 - StripPrefix=2
 
             - id: minio-route
               uri: https://mazad-minio:9000
               predicates:
-                - Path=/api/upload/minio/**
+                - Path=/api/v1/storage/**
               filters:
                 - StripPrefix=3
                 
