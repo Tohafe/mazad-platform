@@ -20,7 +20,10 @@ const HeroCarousel = ({className = ""}) => {
 
     return (
         <div className={cn("relative flex flex-col w-full h-full", className)}>
-            <div className="absolute top-0 bottom-30 left-1/2 -ml-[50vw] w-screen bg-gray-50"></div>
+            {data[currentSlide].items.length > 0 ?
+                <div className="absolute top-0 bottom-30 left-1/2 -ml-[50vw] w-screen bg-gray-50"></div> :
+                <div className="absolute top-0 bottom-0 left-1/2 -ml-[50vw] w-screen bg-gray-50"></div>
+            }
             <div className={"flex flex-row gap-4 w-full h-76"}>
 
                 {data.length > 0 && <InfoSlider className="flex-1" data={data[currentSlide].category}/>}
@@ -42,7 +45,8 @@ const HeroCarousel = ({className = ""}) => {
                 >
                     {data.map((slide, index) =>
                         <SwiperSlide key={index} className="">
-                            <Link to={`/c/${slide.category.id}-${slide.category.slug}`} className="flex flex-row w-full h-full">
+                            <Link to={`/c/${slide.category.id}-${slide.category.slug}`}
+                                  className="flex flex-row w-full h-full">
                                 <ImageSlide className="" url={slide.category.imageUrl}/>
                             </Link>
                         </SwiperSlide>
@@ -50,7 +54,8 @@ const HeroCarousel = ({className = ""}) => {
                 </Swiper>
             </div>
 
-            {data.length > 0 && <ItemsSlider key={currentSlide} auctions={data[currentSlide].items} className="w-full h-full mt-12"/>}
+            {data.length > 0 &&
+                <ItemsSlider key={currentSlide} auctions={data[currentSlide].items} className="w-full h-full mt-12"/>}
 
         </div>
     )
