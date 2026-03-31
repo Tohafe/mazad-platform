@@ -19,7 +19,8 @@ const HeroCarousel = ({className = ""}) => {
 
 
     return (
-        <div className={cn("flex flex-col w-full h-full", className)}>
+        <div className={cn("relative flex flex-col w-full h-full", className)}>
+            <div className="absolute top-0 bottom-30 left-1/2 -ml-[50vw] w-screen bg-gray-50"></div>
             <div className={"flex flex-row gap-4 w-full h-76"}>
 
                 {data.length > 0 && <InfoSlider className="flex-1" data={data[currentSlide].category}/>}
