@@ -2,7 +2,7 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-    CREATE DATABASE "items-db";
+    CREATE DATABASE "$ITEMS_DB_NAME";
 EOSQL
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$ITEMS_DB_NAME" <<-EOSQL
