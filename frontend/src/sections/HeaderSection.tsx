@@ -41,8 +41,8 @@ const HeaderSection = ({className = "", ...props}: HeaderSectionProps) => {
 
         <div className={cn(baseStyles, className,)} {...props}>
             <div className={`flex gap-1 items-center shrink-0 ${showFullWidthSearch ? "hidden" : "flex"}`}>
-                <Link to={"/"} className="flex gap-1 items-center">
-                    <img src={logo} className="h-14" alt="logo"/>
+                <Link to={"/"} className="flex gap-3 items-center">
+                    <img src={logo} className="h-12 w-12 aspect-square shrink-0" alt="logo"/>
                     <h1 className="hidden lg:block text-2xl font-bold text-brand">Mazad</h1>
                 </Link>
                 <IconButton onClick={() => setDialogOpen(true)} size="sm" icon={MdKeyboardArrowDown}

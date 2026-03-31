@@ -60,12 +60,6 @@ public class ItemController {
         return ResponseEntity.ok(itemService.patchItem(id, patch, userId));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
-        if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
-        itemService.deleteItem(id, userId);
-        return ResponseEntity.noContent().build();
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> getById(@PathVariable Long id) {
@@ -111,40 +105,6 @@ public class ItemController {
     public ResponseEntity<ItemDetailsDto> cancel(@PathVariable Long id, @RequestHeader(value = USER_ID_HEADER, required = false) UUID userId) {
         if (userId == null) throw new AuthorizationException("You don't have permission to perform this action.");
         return ResponseEntity.ok(itemService.cancelItem(id, userId));
-    }
-
-    @PostMapping("/backfill-kafka")
-    public ResponseEntity<BackfillResponse> backfillKafka(
-            @RequestParam(defaultValue = "500") int limit,
-            @RequestParam(defaultValue = "false") boolean onlyActive
-    ) {
-        int safeLimit = Math.max(1, Math.min(limit, 5000));
-
-        List<ItemEntity> items = itemRepository
-                .findAll(PageRequest.of(0, safeLimit))
-                .getContent();
-
-        int sent = 0;
-        for (ItemEntity item : items) {
-//            if (onlyActive && item.getStatus() != AuctionStatus.ACTIVE) continue;
-
-            ItemEventDto event = ItemEventDto.builder()
-                    .id(item.getId())
-                    .sellerId(item.getSellerId())
-                    .status(item.getStatus())
-                    .startingPrice(item.getStartingPrice())
-                    .endsAt(item.getEndsAt())
-                    .build();
-
-            // bidding-service listens to item.updated.topic in your setup
-            itemProducer.sendItemCreatedEvent(event);
-            sent++;
-        }
-
-        return ResponseEntity.ok(new BackfillResponse(sent, safeLimit, onlyActive));
-    }
-
-    public record BackfillResponse(int sent, int scanned, boolean onlyActive) {
     }
 
 }
