@@ -7,6 +7,7 @@ import {MdCancel} from "react-icons/md";
 import {useAuctionTimeLeft} from "../../lib/useAuctionTimeLeft.ts";
 import {Link} from "react-router-dom";
 import {formatPrice} from "../../utils/currency.ts";
+import PLACE_HOLDER from "../../assets/place_holder.svg";
 
 
 function mapStatus(status: AuctionStatus): String {
@@ -40,7 +41,14 @@ const ListingCard = ({
         <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
 
             <div className={cn("relative w-full h-full", imgClassName)}>
-                <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
+                <img
+                    src={auction.thumbnail}
+                    alt="Not Found"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        e.currentTarget.src = PLACE_HOLDER;
+                    }}
+                />
                 <IconButton className="absolute top-3 left-3 bg-main" variant="outlined"
                             iconClassName="text-brand">{mapStatus(auction.status)}</IconButton>
             </div>

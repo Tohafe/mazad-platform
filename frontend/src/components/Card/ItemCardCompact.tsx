@@ -2,6 +2,7 @@ import {cn} from "../../lib/utils.ts";
 import type {AuctionSummary} from "../../types/item.ts";
 import {Link} from "react-router-dom";
 import {formatPrice} from "../../utils/currency.ts";
+import PLACE_HOLDER from "../../assets/place_holder.svg";
 
 export interface Item {
     id: number;
@@ -25,7 +26,14 @@ const ItemCardCompact = ({className = "", imgClassName = "", auction}: ItemCardC
     return (
         <Link to={`/auction/${auction.id}`} className={cn(baseStyles, className)}>
             <div className={cn("relative w-full h-full", imgClassName)}>
-                <img src={auction.thumbnail} alt="Not Found" className="w-full h-full object-cover"/>
+                <img
+                    src={auction.thumbnail}
+                    alt="Not Found"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        e.currentTarget.src = PLACE_HOLDER;
+                    }}
+                />
             </div>
             <div className="flex flex-col pt-1">
                 <label className="text-muted font-mono tracking-widest text-[12px]">{priceTitle}</label>
