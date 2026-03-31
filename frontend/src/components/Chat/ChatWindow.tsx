@@ -73,15 +73,17 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
         setInputText("");
         setMessages([]);
         const fetchHistory = async () => {
+            if (!user?.id)
+                return ;
             try {
                 const response = await getChatHistory(chatId);
-                const rawMessages = response.data.content;
+                const rawMessages = response.data;
 
                 const formattedMessages = rawMessages.map((dto:any) => ({
 
                     id: dto.id,
                     text: dto.content,
-                    sender: dto.senderId.toLowerCase() === user?.id ? "me" : "them"
+                    sender: dto.senderId.toLowerCase() === user?.id?.toLowerCase() ? "me" : "them"
                 }));
                 setMessages(formattedMessages.reverse());
             } catch (error : any) {
@@ -160,6 +162,9 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
             return (() => window.removeEventListener('resize', adjustHeight));
     }
     , [inputText])
+
+
+    
     return (
         <div className="flex flex-col w-full h-full bg-white">
 
