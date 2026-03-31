@@ -56,7 +56,7 @@ export function BidInput({ minBid, currentBidNumeric, value, onChange, error }: 
           }}
           onBlur={() => setTouched(true)}
           placeholder={minBid}
-          className="w-full bg-transparent text-sm text-gray-700 outline-none"
+          className="w-full bg-transparent text-sm text-gray-600 outline-none"
         />
       </div>
       {displayError && (

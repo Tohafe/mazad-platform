@@ -95,13 +95,17 @@ export function useBids(auctionId: number, user: User | null ) {
   return useQuery({
     queryKey: ['bids', auctionId],
     queryFn: () => getBids(auctionId),
-    select: (data: ApiBid[]): { entries: BidEntry[]; total: number } => {
+    select: (data: ApiBid[]): { entries: BidEntry[]; total: number; lastBidderId: string } => {
       const sorted = [...(data ?? [])].sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
+
+      const latestBidderId = sorted[0]?.bidderId;
+
       return {
         entries: sorted.map((bid) => transformBid(bid, user?.id)),
         total: sorted.length,
+        lastBidderId: latestBidderId
       };
     },
   });
