@@ -6,7 +6,7 @@ export const useNotificationApi = () => {
     const apiPrivate = useApiPrivate(); 
     // @ Naoufal remove 'https://localhost' when front dev end, leave /api.
 
-    const BASE_URL = `https://${MAZAD_IP}/api`;
+    const BASE_URL = `https://${MAZAD_IP}/api/v1`;
 
     return {
         getPage: async (pageNumber: number) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import { Link } from "react-router-dom";
-import { MdChat } from "react-icons/md";
+// import { MdChat } from "react-icons/md";
 
 export interface Friend {
     username: string;
