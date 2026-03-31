@@ -285,6 +285,7 @@ services:
       - mazad-gateway
       - auth-service
     environment:
+      - "CHAT_MESSAGES_TOPIC=${CHAT_MESSAGES_TOPIC}"
       # DATABASE ENV VARS ====
       - "DB_URL=${DB_URL}/${CHAT_SERVICE_DB_NAME}"
       - "DB_NAME=${CHAT_SERVICE_DB_NAME}"
@@ -341,6 +342,8 @@ services:
       - AUCTION_UPDATE_TOPIC=${AUCTION_UPDATE_TOPIC}
       - NOTIFY_FRIENDS_TOPIC=${NOTIFY_FRIENDS_TOPIC}
       - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
+      - CHAT_UPDATE_TOPIC=${CHAT_MESSAGES_TOPIC}
+
       - DB_URL=${DB_URL}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
 

@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String> > handleGenericException(Exception ex){
         Map<String, String> error = new HashMap<>();
         error.put("Error", "Internal Server Error");
-        log.error("Critical Server Error {}", ex.getMessage());
+        log.error("Critical Server Error {}", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

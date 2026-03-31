@@ -5,22 +5,10 @@ import { useAuth } from "../../context/AuthProvider";
 
 import type { FriendRequest } from "../../types/chat";
 import toast from "react-hot-toast";
+import PLACEHOLDER from "./../../assets/avatar.jpg";
+import { HiOutlineUserPlus } from "react-icons/hi2";
 
-// const FAKE_REQUESTS: FriendRequest[] = [
-//     {
-//         username: "abde1",
-//         // userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         status: 'PENDING'
-//     },
-//     {
-//         username: "gamil1",
-//         // userId: "39ee7942-e7d5-4426-b27e-ddbaecd1c81c",
-//         thumbnail: "",
-//         status: "PENDING"
-//     }
-   
-// ];
+
 
 function FriendRequestsList() {
     const [requests, setRequests] = useState<FriendRequest[]>([]);
@@ -29,13 +17,14 @@ function FriendRequestsList() {
 
     const { getFriendRequests, acceptFriendRequest } = useChatApi();
     const { user } = useAuth();
-    // FETCH REQUESTS 
+
     useEffect(() => {
         const fetchRequests = async () => {
             try {
                 const response = await getFriendRequests();
                 setRequests(response.data);
-            } catch (error) {
+            } catch  {
+                toast.error("An unexpected error getting friends requests");
             } finally {
                 setIsLoading(false);
             }
@@ -49,7 +38,7 @@ function FriendRequestsList() {
         try {
             await acceptFriendRequest(username);
             setRequests(prev => prev.filter(r => r.username !== username));
-        } catch (error) {
+        } catch  {
             toast.error("Failed to accept request");
         } finally {
             setProcessingId(null);
@@ -64,12 +53,10 @@ if (!requests || requests.length === 0) {
         return (
             <div className="flex flex-1 flex-col items-center justify-center text-gray-500 gap-3">
                 <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <line x1="19" y1="8" x2="19" y2="14" />
-                        <line x1="22" y1="11" x2="16" y2="11" />
-                    </svg>
+                    <HiOutlineUserPlus 
+                        className="w-8 h-8"
+                    />
+
                 </div>
                 <div className="text-center">
                     <h3 className="text-lg font-semibold text-gray-800">No pending requests</h3>
@@ -93,10 +80,20 @@ if (!requests || requests.length === 0) {
                     <div className="flex items-center gap-3 overflow-hidden">
                         <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full font-bold text-gray-600 text-lg shrink-0 overflow-hidden">
                             {request.thumbnail && request.thumbnail !== "default_thumbnail_url" ? (
-                                <img src={request.thumbnail} alt={request.username} className="w-full h-full object-cover" />
+                                <img 
+                                    src={request.thumbnail} 
+                                    className="w-full h-full object-cover "
+                                    onError={(e) => {
+                                        e.currentTarget.src = PLACEHOLDER;
+                                    }}
+                                    />
                             ) : (
-                                <span>{request.username.charAt(0).toUpperCase()}</span>
+                                <img 
+                                    src={PLACEHOLDER}
+                                    className="rounded-full w-full h-full object-cover"
+                                    />
                             )}
+                            
                         </div>
                         <div className="flex-1 overflow-hidden min-w-0">
                             <Link to={`/profile/${request.username}`}>
@@ -106,7 +103,6 @@ if (!requests || requests.length === 0) {
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex gap-2 shrink-0">
                         <button
                             onClick={() => handleAccept(request.username)}
