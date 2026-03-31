@@ -1,12 +1,10 @@
 package com.mazad.chat_service.repository;
 
 import com.mazad.chat_service.model.Message;
-import java.util.UUID;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import java.util.UUID;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID>
 {
-    Slice<Message> findByRoomIdOrderByTimestampDesc(String roomId, Pageable pageable);
+    List<Message> findByRoomIdOrderByTimestampDesc(String roomId);
 
     @Query(value = """
             SELECT * FROM (
@@ -27,7 +25,7 @@ public interface MessageRepository extends JpaRepository<Message, UUID>
             ) sub
             ORDER BY timestamp DESC
             """, nativeQuery = true)
-    Slice<Message> findInbox(@Param("userId") UUID userId, Pageable pageable);
+    List<Message> findInbox(@Param("userId") UUID userId);
    
     @Modifying
     @Transactional
