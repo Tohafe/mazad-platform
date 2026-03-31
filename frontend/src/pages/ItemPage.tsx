@@ -17,7 +17,7 @@ function ItemPage() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, [data]);
+    }, [productId]);
 
     if (isLoading) { 
         return (

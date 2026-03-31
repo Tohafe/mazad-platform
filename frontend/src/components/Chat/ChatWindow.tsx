@@ -86,9 +86,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                     sender: dto.senderId.toLowerCase() === user?.id?.toLowerCase() ? "me" : "them"
                 }));
                 setMessages(formattedMessages.reverse());
-            } catch (error : any) {
-                const errorMessage = error.response?.data?.message || error.response?.data?.detail || "";
-                toast.error(`An unexpected error while getting chat history, ${errorMessage}`);
+            } catch {
             }
         }
         fetchHistory();
