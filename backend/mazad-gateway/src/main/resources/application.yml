@@ -66,12 +66,24 @@ spring:
             - id: auth-service-route
               uri: https://auth-service:8443
               predicates:
-                - Path=/api/v1/auth/**,/oauth2/**,/login/oauth2/**
+                - Path=/api/v1/auth/**
               filters:
                 - name: RequestRateLimiter
                   args:
                     redis-rate-limiter.replenishRate: 1
-                    redis-rate-limiter.burstCapacity: 1
+                    redis-rate-limiter.burstCapacity: 2
+                    redis-rate-limiter.requestedTokens: 1
+                    key-resolver: "#{@authKeyResolver}"
+
+            - id: oauth-route
+              uri: https://auth-service:8443
+              predicates:
+                - Path=/oauth2/**,/login/oauth2/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
                     redis-rate-limiter.requestedTokens: 1
                     key-resolver: "#{@authKeyResolver}"
 
