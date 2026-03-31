@@ -1,25 +1,21 @@
 package com.mazad.chat_service.controller;
 
-import org.springframework.web.bind.annotation.PatchMapping;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.mazad.chat_service.repository.MessageRepository;
 import com.mazad.chat_service.service.MessageService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.mazad.chat_service.dto.InboxResponseDTO;
+import com.mazad.chat_service.dto.MessageRequestDTO;
 import com.mazad.chat_service.dto.MessageResponseDTO;
 import com.mazad.chat_service.model.Message;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
@@ -28,74 +24,45 @@ import org.springframework.http.ResponseEntity;
 @Slf4j
 @RestController
 @RequestMapping("api/v1/chat")
+@RequiredArgsConstructor
 public class MessageController {
-    
-    @Autowired
-    MessageRepository repo;
-    @Autowired
-    MessageService service;
+
+    private final MessageService service;
     
 
     @PostMapping("/send")
     public MessageResponseDTO sendMessage(
             @RequestHeader("X-User-Id") UUID myId,
-            @Valid @RequestBody Message message) {
-            // save this in repo by the save function ig 
-        Message sentMessageEntity = service.sendMessage(message, myId);
-        MessageResponseDTO dto = new MessageResponseDTO();
-        dto.setId(sentMessageEntity.getId());
-        dto.setSenderId(sentMessageEntity.getSenderId());
-        dto.setContent(sentMessageEntity.getContent());
-        dto.setTimestamp(sentMessageEntity.getTimestamp());
+            @Valid @RequestBody MessageRequestDTO message) {
 
-        log.info("In Send RequestMapping");
-        return  dto ;
+        return service.sendMessage(message, myId);
     }
     
     @GetMapping("/history/{otherUserId}")
-    public Slice<MessageResponseDTO> fetchChatHistory(
+    public List<MessageResponseDTO> fetchChatHistory(
         @RequestHeader("X-User-Id") UUID myId,
-        @PathVariable UUID otherUserId,
-        @PageableDefault(
-            size = 20,
-            sort = "timestamp",
-            direction = Sort.Direction.DESC
-        )
-        Pageable pageable)
+        @PathVariable UUID otherUserId)
     {
+        List<Message> rawMessages = service.fetchChatHistory(myId, otherUserId);
+        List<MessageResponseDTO> rslt = new ArrayList<>();
 
-        if (pageable.getPageSize() > 50){
-            pageable = PageRequest.of(pageable.getPageNumber(), 20, pageable.getSort());
-        }
-
-        log.info("In post RequestMapping");
-        log.info("Fetching history between " + myId + " and " + otherUserId);
-        Slice<Message> rawMessages = service.fetchChatHistory(myId, otherUserId, pageable);
-
-        return rawMessages.map(message -> {
+        rawMessages.forEach(message -> {
             MessageResponseDTO dto = new MessageResponseDTO();
             dto.setId(message.getId());
             dto.setSenderId(message.getSenderId());
             dto.setContent(message.getContent());
             dto.setTimestamp(message.getTimestamp());
-            return dto;
-        })
-        ;
+            rslt.add(dto);
+        });
+        return rslt;
     }
+
     @GetMapping("/inbox")
-    public Slice<InboxResponseDTO> fetchInbox(@RequestHeader("X-User-Id") UUID myId,
-            @PageableDefault(
-                size = 20
-            )                                
-            Pageable pageable){
+    public List<InboxResponseDTO> fetchInbox(@RequestHeader("X-User-Id") UUID myId){
         
-        
-        
-        log.info("In get (fetchInbox) for user {}", myId);
-
-        Slice<Message> inboxMessages = service.fetchInbox(myId, pageable);
-
-        return inboxMessages.map(message -> {
+        List<Message> inboxMessages = service.fetchInbox(myId);
+        List<InboxResponseDTO> result = new ArrayList<>();
+         inboxMessages.forEach(message -> {
             InboxResponseDTO dto = new InboxResponseDTO();
             dto.setRoomId(message.getRoomId());
             dto.setLastMessage(message.getContent());
@@ -112,8 +79,9 @@ public class MessageController {
 
             }
             dto.setOtherUserId(otherUserId);
-            return dto;
+            result.add(dto);
         });
+        return result;
     }
     
     @PatchMapping("/read/{otherUserId}")    
@@ -121,10 +89,7 @@ public class MessageController {
         @RequestHeader("X-User-Id") UUID myId,
         @PathVariable UUID otherUserId) 
     {
-            log.info("User {} is marking message from {} as read",  myId, otherUserId);
             service.markConversationAsRead(myId, otherUserId);
             return ResponseEntity.ok().build();
     }
-        
-
-    }
+}
