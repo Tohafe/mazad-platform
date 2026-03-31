@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public record WalletDto(
     UUID id,
-    Long sold
+    Long balance
 ) {}

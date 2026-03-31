@@ -28,23 +28,31 @@ export function parseCurrency(value: string): number {
 }
 
 const AuctionOwner = () => {
-    return <div className=" p-4">
-        <p className="text-sm text-brand font-medium">
-            You are the seller of this auction
-        </p>
-        <p className="text-xs text-black mt-1">
-            You cannot place bids on your own listing.
-        </p>
+    return <div className="text-center p-4 rounded-md">
+    <p className="text-sm font-bold text-brand">
+        You are the seller of this auction
+    </p>
+    <p className="text-xs mt-1">
+        You cannot place bids on your own listing.
+    </p>
     </div>
 }
 
 
 export function BidSidebar({data, auctionId}: BidSidebarProps) {
-    const {data: bidsData, isLoading} = useBids(auctionId);
     const {user} = useAuth();
+    const {data: bidsData, isLoading} = useBids(auctionId, user);
     const queryClient = useQueryClient();
 
     const isOwner = data.sellerId === user?.id;
+
+    // 2. NEW: Calculate if the current user is the last/winning bidder
+    // We grab the first bid (the highest/latest) and check if it belongs to the user
+    const winningBid = bidsData?.entries?.[0];
+
+    // Assuming you added 'isOwnBid' to your BidEntry object in transformBid
+    // If not, you can temporarily use: winningBid?.pseudonym === "Your bid"
+    const isWinner = winningBid?.pseudonym === "Your bid"
 
     // const latestBidValue = bidsData?.entries?.[0]?.amount ?? data.currentBid;
 
@@ -55,13 +63,6 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
         [data.currentBid] // React will recalculate when latestBidValue changes
     );
 
-
-    //////////////////////////
-
-    // const currentBidNumeric = useMemo(
-    //     () => parseCurrency(data.currentBid),
-    //     [data.currentBid]
-    // );
 
     const minRequired = useMemo(
         () => currentBidNumeric + 1,
@@ -89,6 +90,8 @@ export function BidSidebar({data, auctionId}: BidSidebarProps) {
                     bids={bidsData?.entries ?? []}
                     totalBids={bidsData?.total ?? 0}
                     isLoading={isLoading}
+                    isOwner={isOwner}   // 👈 3. Pass the owner flag
+                    isWinner={isWinner}
                 />
                 <HelpBox/>
             </div>

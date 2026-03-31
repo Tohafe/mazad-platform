@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,7 +52,6 @@ public class GlobalExceptionHandler {
     // Business Logic: Invalid State (e.g., Insufficient Funds, Wallet already exists)
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail handleIllegalState(IllegalStateException ex) {
-        // BAD_REQUEST (400) or CONFLICT (409) are usually best for state violations
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
@@ -94,6 +94,16 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleAuthorizationException(AuthorizationException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
+
+     @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleBadInput(IllegalArgumentException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    // @ExceptionHandler(IllegalArgumentException.class)
+    // public ResponseEntity<ErrorResponse> handleBadInput(IllegalArgumentException e) {
+    //     return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    // }
 
     // // Safety Net: The "Everything Else" handler
     // @ExceptionHandler(Exception.class)

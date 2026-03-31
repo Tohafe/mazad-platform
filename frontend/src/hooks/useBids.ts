@@ -6,6 +6,8 @@ import { useBidApi } from './useBidApi';
 import { generatePseudonym } from '../utils';
 import { useWebSocket } from '../context/WebSocketContext';
 import {formatPrice} from "../utils/currency.ts";
+// import { useAuth } from '../context/AuthProvider.tsx';@Naoufal
+import type User from '../types/user.ts';
 
 /** WebSocket bid event message structure */
 interface BidEventMessage extends ApiBid {
@@ -28,19 +30,26 @@ function timeAgo(dateStr: string): string {
 }
 
 /** Transform a raw API bid into a display entry */
-function transformBid(bid: ApiBid): BidEntry {
+function transformBid(bid: ApiBid, currentUserId?: string | null): BidEntry {
+
+  const isUser = bid.bidderId === currentUserId;
+  console.log('inside Transform:', isUser);
+  console.log('inside Transform:', formatPrice(bid.amount));
   return {
-    pseudonym: generatePseudonym(bid.bidderId),
+    pseudonym: (isUser ? "Your bid" : generatePseudonym(bid.bidderId)),
     timeAgo: timeAgo(bid.createdAt),
     amount: formatPrice(bid.amount),
   };
 }
 
-export function useBids(auctionId: number) {
+export function useBids(auctionId: number, user: User | null ) {
   const { stompClient, isConnected } = useWebSocket();
   const queryClient = useQueryClient();
   const { getBids } = useBidApi();
 
+  // const { user } = useAuth();
+
+  console.log('Naoufal New bid received: 0');
 
   // Subscribe to real-time bid updates via WebSocket
   useEffect(() => {
@@ -91,7 +100,7 @@ export function useBids(auctionId: number) {
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       return {
-        entries: sorted.map(transformBid),
+        entries: sorted.map((bid) => transformBid(bid, user?.id)),
         total: sorted.length,
       };
     },

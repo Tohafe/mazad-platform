@@ -38,7 +38,6 @@ public class GatewayConfig {
     public KeyResolver resolveKey() {
         return (exchange) -> {
             String apiKey = exchange.getRequest().getHeaders().getFirst("X-API-KEY");
-            System.out.println("CLIENT API KEY: " + apiKey);
             return Mono.justOrEmpty(apiKey);
         };
     }

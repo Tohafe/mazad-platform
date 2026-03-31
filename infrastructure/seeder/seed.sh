@@ -13,13 +13,24 @@ echo "Registering Users..."
 
 for i in {0..5}; do
   PAYLOAD="${USERS[$i]}"
-  RESPONSE=$(curl -k -s -X POST https://localhost:8443/api/v1/auth/register \
+  RESPONSE=$(curl -k -s -X POST https://localhost:443/api/v1/auth/register \
     -H "Content-Type: application/json" \
     -d "$PAYLOAD")
   tokens+=("$(echo "$RESPONSE" | jq -r .accessToken)")
 done
 
-echo "Creating 4 items per category..."
+echo "Signing in users to get tokens..."
+
+for user in "${USERS[@]}"; do
+  LOGIN_RES=$(curl -k -s -X POST https://localhost:443/api/v1/auth/login \
+          -H "Content-Type: application/json" \
+          -d "$user")
+  tokens+=("$(echo $LOGIN_RES | jq -r .accessToken)")
+done
+
+
+
+echo "Creating 10 items per user..."
 
 chmod +x generate_item.sh
 
@@ -29,7 +40,7 @@ for category_id in {1..13}; do
 
     ITEM=$(./generate_item.sh "$category_id")
 
-    curl -k -s -X POST https://localhost:8443/api/v1/items \
+    curl -k -s -X POST https://localhost:443/api/v1/items \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $RANDOM_TOKEN" \
       -d "$ITEM" > /dev/null
