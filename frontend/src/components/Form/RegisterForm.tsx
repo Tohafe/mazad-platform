@@ -13,8 +13,7 @@ import useUserApi from "../../hooks/useUserApi.ts";
 import { useEffect, useMemo } from 'react';
 import OAuth from "../OAuth.tsx";
 import type User from "../../types/user.ts";
-import DEFAULT_AVATAR from "../../assets/avatar.jpg";
-import DEFAULT_THUMB from "../../assets/avatar_thumb.jpg";
+import {avatar, avatar_thumbnail} from '../../assets/avatar.ts'
 
 const schema = z.object({
 
@@ -70,8 +69,8 @@ const onSubmit: SubmitHandler<RegisterData> = async (data: RegisterData) =>{
                 .catch (() => {
                     const updatedUser: User = {
                         ...login.data?.user,
-                        avatarUrl: DEFAULT_AVATAR,
-                        avatarThumbnailUrl: DEFAULT_THUMB
+                        avatarUrl: avatar,
+                        avatarThumbnailUrl: avatar_thumbnail
                     }
                     setUser(updatedUser);
                 })
