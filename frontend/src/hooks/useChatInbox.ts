@@ -34,7 +34,7 @@ function useChatInbox(activeChatId: string | null){
             try{
                 
                 const response = await getInbox();
-                const rawChats = response.data.content;
+                const rawChats = response.data;
                 const formattedChats = rawChats.map((dto:any) => ({
                     id: dto.otherUserId,
                     name: `User ${dto.otherUserId.substring(0, 4)}..`,
