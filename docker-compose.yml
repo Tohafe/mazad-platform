@@ -10,7 +10,7 @@ services:
     container_name: frontend-c
     image: mazad-frontend
     ports:
-      # - "80:80"
+      - "80:80"
       - "443:443"
     volumes:
       - ./infrastructure/certs/generated/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
@@ -152,7 +152,7 @@ services:
       - FORTY_TWO_CLIENT_SECRET=${FORTY_TWO_CLIENT_SECRET}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - DEFAULT_SOLD=${DEFAULT_SOLD}
+      - DEFAULT_BALANCE=${DEFAULT_BALANCE}
 
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}

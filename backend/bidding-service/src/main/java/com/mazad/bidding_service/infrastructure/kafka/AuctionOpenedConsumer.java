@@ -75,8 +75,8 @@ public class AuctionOpenedConsumer {
             WalletDto walletEvent = jsonMapper.readerFor(WalletDto.class)
                                                 .readValue(event);
             
-            walletService.createWalletForNewUser(walletEvent.id(), walletEvent.sold());
-            log.info("User Wallet event received: {},, Sold {}", event, walletEvent.sold());
+            walletService.createWalletForNewUser(walletEvent.id(), walletEvent.balance());
+            log.info("User Wallet event received: {},, Balance {}", event, walletEvent.balance());
             
         } catch (Exception e) {
             log.error("Failed User Wallet updated event: {}", event, e);

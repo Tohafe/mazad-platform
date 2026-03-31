@@ -45,8 +45,8 @@ OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private int refreshValidity;
     @Value("${MAZAD_IP}")
     private String MAZAD_IP;
-    @Value("${DEFAULT_SOLD}")
-    private String DEFAULT_SOLD;
+    @Value("${DEFAULT_BALANCE}")
+    private String DEFAULT_BALANCE;
 
     @Override
     public void onAuthenticationSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -61,7 +61,7 @@ OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         if (attributes != null) {
             String username = attributes.getOrDefault("login", attributes.get("email").toString().split("@")[0]).toString();
             String email = attributes.get("email").toString();
-            String sold = attributes.getOrDefault("wallet", DEFAULT_SOLD).toString();
+            String balance = attributes.getOrDefault("wallet", DEFAULT_BALANCE).toString();
 
             UserEntity user = repo.findByEmail(email).orElseGet(()-> {
                 String finalUsername = username;
@@ -94,7 +94,7 @@ OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                         .lastName(attributes.getOrDefault("last_name", attributes.getOrDefault("family_name", "")).toString())
                         .avatarUrl(avatar)
                         .avatarThumbnailUrl(avatar)
-                        .sold(sold)
+                        .balance(balance)
                         .build();
                 kafka.produce(syncTopic, profile);
                 return userEntity;

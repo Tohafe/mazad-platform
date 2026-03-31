@@ -13,7 +13,7 @@ echo "Registering Users..."
 
 for i in {0..5}; do
   PAYLOAD="${USERS[$i]}"
-  RESPONSE=$(curl -k -s -X POST https://localhost:8443/api/v1/auth/register \
+  RESPONSE=$(curl -k -s -X POST https://localhost:443/api/v1/auth/register \
     -H "Content-Type: application/json" \
     -d "$PAYLOAD")
 done
@@ -21,7 +21,7 @@ done
 echo "Signing in users to get tokens..."
 
 for user in "${USERS[@]}"; do
-  LOGIN_RES=$(curl -k -s -X POST https://localhost:8443/api/v1/auth/login \
+  LOGIN_RES=$(curl -k -s -X POST https://localhost:443/api/v1/auth/login \
           -H "Content-Type: application/json" \
           -d "$user")
   tokens+=("$(echo $LOGIN_RES | jq -r .accessToken)")
@@ -37,7 +37,7 @@ for token in "${tokens[@]}"; do
   for i in {1..10}; do
     ITEM=$(./generate_item.sh)
 
-    curl -k -s -X POST https://localhost:8443/api/v1/items \
+    curl -k -s -X POST https://localhost:443/api/v1/items \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $token" \
       -d "$ITEM" > /dev/null
