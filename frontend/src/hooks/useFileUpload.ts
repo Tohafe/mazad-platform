@@ -28,7 +28,7 @@ export const useFileUpload = () => {
         formData.append('width', targetWidth);
         formData.append('height', targetheight);
 
-        const response = await apiPrivate.post<FileResponse>('/api/media', formData, {
+        const response = await apiPrivate.post<FileResponse>('/media', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             onUploadProgress: (progressEvent) => {
                 if (progressEvent.total && onProgress) {
@@ -99,7 +99,7 @@ export const useFileUpload = () => {
 
     const deleteFile = async (fileId: string): Promise<boolean> => {
         try {
-            await apiPrivate.delete(`/api/media/${fileId}`);
+            await apiPrivate.delete(`/media/${fileId}`);
             return true; 
         } catch (error) {
             return false; 
@@ -119,7 +119,7 @@ export const useFileUpload = () => {
         formData.append('width', targetWidth);
         formData.append('height', targetheight);
 
-        const response = await apiPrivate.put<FileResponse>(`/api/media/${fileId}`, formData, {
+        const response = await apiPrivate.put<FileResponse>(`/media/${fileId}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             onUploadProgress: (progressEvent) => {
                 if (progressEvent.total && onProgress) {
