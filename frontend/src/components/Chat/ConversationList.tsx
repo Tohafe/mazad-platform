@@ -1,5 +1,5 @@
 import type { Chat } from "../../types/chat.ts";
-import PLACEHOLDER from "./../../assets/avatar.jpg";
+import {avatar} from "./../../assets/avatar.ts";
 import { HiOutlineInboxArrowDown } from "react-icons/hi2";
 
 
@@ -30,12 +30,12 @@ function ConversationList( {chats, activeChatId, onSelectChat}: ConversationList
                                                 src={chat.avatar} 
                                                 className="w-full h-full object-cover rounded-full"
                                                 onError={(e) => {
-                                                    e.currentTarget.src = PLACEHOLDER;
+                                                    e.currentTarget.src = avatar;
                                                 }}
                                             />
                                         ) : (
                                             <img 
-                                                src={PLACEHOLDER}
+                                                src={avatar}
                                                 className="rounded-full w-full h-full object-cover"
                                             />
                                         )}

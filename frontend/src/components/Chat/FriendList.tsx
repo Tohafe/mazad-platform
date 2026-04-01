@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useApiPrivate from "../../hooks/useApiPrivate";
 import { Link } from "react-router-dom";
-import PLACEHOLDER from "./../../assets/avatar.jpg";
+import {avatar} from "./../../assets/avatar.ts";
 import toast from "react-hot-toast";
 import { HiOutlineChatBubbleLeftEllipsis, HiOutlineUsers } from "react-icons/hi2";
 
@@ -75,12 +75,12 @@ function FriendList({ onMessageFriend }: FriendListProps) {
                                     <img src={friend.thumbnail}
                                         className="w-full h-full object-cover rounded-full" 
                                         onError={(e) => {
-                                            e.currentTarget.src = PLACEHOLDER;
+                                            e.currentTarget.src = avatar;
                                         }}
                                     />
                                 ) : (
                                     <img 
-                                        src={PLACEHOLDER}
+                                        src={avatar}
                                         className="rounded-full w-full h-full object-cover"
                                     />
                                 )}
