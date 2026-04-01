@@ -53,7 +53,7 @@ export default function PublicProfile(){
                             <img src={profile.avatarUrl} className="w-25 h-25 rounded-full shadow-2xl"/>
                             <div className="bordder flex flex-col justify-center">
                                 <h1 className="font-bold text-xl">{profile.username}</h1>
-                                <h2 className="text-secondary ">{profile.country || 'Morroco'}</h2>
+                                <h2 className="text-secondary ">{profile.country || 'Morocco'}</h2>
                             </div>
                             {user && profile.userId != user.id &&
                                 <div className={'flex mt-10 -ml-5 '}>

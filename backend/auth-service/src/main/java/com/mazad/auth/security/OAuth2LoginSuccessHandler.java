@@ -129,7 +129,7 @@ OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                             .path("/").build().toString());
                 }
             }
-            if (from == null ) from = "/settings";
+            if (from == null || !from.startsWith("/") || from.contains("//") ) from = "/settings";
             String targetUrl = "https://" + MAZAD_IP  + from;
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }

@@ -27,8 +27,9 @@ Make sure the following tools are installed before running the project:
 
 ### Configuration
 1. Clone the repository.
-2. At the root of the project, create a `.env` file if it does not already exist.
-3. Fill the required environment variables based on the provided `.env.example` file.
+2. Configure environment variables: Create a .env file at the root of the project by copying the contents of .env.example. Ensure
+every variable is populated with its required value (e.g., database credentials, API keys) to ensure the application starts correctly.
+3. Make sure to export this variable. ex (export SSL_KEYSTORE_PASSWORD=your_keystore_password)
 
 ### Run the project
 1. Start the whole project (frontend, backend services, and infrastructure):
