@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthProvider";
 
 import type { FriendRequest } from "../../types/chat";
 import toast from "react-hot-toast";
-import PLACEHOLDER from "./../../assets/avatar.jpg";
+import {avatar} from "./../../assets/avatar.ts";;
 import { HiOutlineUserPlus } from "react-icons/hi2";
 
 
@@ -84,12 +84,12 @@ if (!requests || requests.length === 0) {
                                     src={request.thumbnail} 
                                     className="w-full h-full object-cover "
                                     onError={(e) => {
-                                        e.currentTarget.src = PLACEHOLDER;
+                                        e.currentTarget.src = avatar;
                                     }}
                                     />
                             ) : (
                                 <img 
-                                    src={PLACEHOLDER}
+                                    src={avatar}
                                     className="rounded-full w-full h-full object-cover"
                                     />
                             )}

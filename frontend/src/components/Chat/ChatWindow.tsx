@@ -4,7 +4,7 @@ import { useWebSocket } from "../../context/WebSocketContext";
 import { Link, useNavigate } from "react-router-dom";
 import useChatApi from "../../hooks/useChatApi";
 import  { toast } from "react-hot-toast";
-import PLACEHOLDER from "./../../assets/avatar.jpg";
+import {avatar} from "./../../assets/avatar.ts";
 import { IoChevronBackSharp } from "react-icons/io5";
 
 
@@ -186,7 +186,7 @@ function ChatWindow({ chatId , onMessageSent, onBack} : Readonly<{chatId:string,
                         />
                     ): (
                         <img 
-                        src={PLACEHOLDER}
+                        src={avatar}
                         className="w-full h-full object-cover rounded-full"
                         />
                     )}
