@@ -15,6 +15,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
+import UsersList from "./pages/UsersList.tsx";
 import AppLayout from "./AppLayout.tsx";
 import Home from "./pages/Home.tsx";
 import AboutPage from "./pages/footer/About.tsx";
@@ -88,6 +89,11 @@ export const router = createBrowserRouter(
                                 element: <PublicProfile/>
                             },
                             {
+                                path: '/users',
+                                element: <UsersList/>
+                            },
+                            {
+      
                                 path: '/about',
                                 element: <AboutPage/>
                             },

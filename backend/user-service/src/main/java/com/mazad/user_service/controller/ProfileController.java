@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import com.mazad.user_service.dto.CurrentUser;
 import com.mazad.user_service.dto.PrivateResponseDto;
 import com.mazad.user_service.dto.PublicResponseDto;
 import com.mazad.user_service.dto.RequestDto;
+import com.mazad.user_service.dto.UserSummaryDto;
 import com.mazad.user_service.exception.BadRequestException;
 import com.mazad.user_service.service.ProfileService;
 
@@ -92,6 +94,12 @@ public class ProfileController {
             throw new BadRequestException("No data provided");
         PrivateResponseDto response = service.patch(userId, jsonNode, false);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserSummaryDto>> getAllUsers(@RequestParam(name = "password", required = false) String password) {
+        List<UserSummaryDto> users = service.getAllUsers(password);
+        return ResponseEntity.ok(users);
     }
 
 }
