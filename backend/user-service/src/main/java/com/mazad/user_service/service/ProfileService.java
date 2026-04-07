@@ -10,6 +10,10 @@ import com.mazad.user_service.dto.PatchDto;
 import com.mazad.user_service.dto.PrivateResponseDto;
 import com.mazad.user_service.dto.PublicResponseDto;
 import com.mazad.user_service.dto.RequestDto;
+import com.mazad.user_service.dto.UserSummaryDto;
+import com.mazad.user_service.exception.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.List;
 import com.mazad.user_service.entity.ProfileEntity;
 import com.mazad.user_service.exception.BadRequestException;
 import com.mazad.user_service.exception.ProfileAlreadyExistException;
@@ -32,6 +36,9 @@ public class ProfileService {
     private final ProfileMapper mapper;
     private final JsonMapper jsonMapper;
     private final ProfilePatchValidator patchValidator;
+
+    @Value("${admin.password}")
+    private String adminPassword;
 
 
     public PrivateResponseDto getPrivateProfile(UUID userId) {
@@ -118,5 +125,16 @@ public class ProfileService {
         profile.setAvatarThumbnailUrl(dto.avatarThumbnailUrl());
         profile = repo.save(profile);
         return mapper.toPrivateResponseDto(profile);
+    }
+
+    public List<UserSummaryDto> getAllUsers(String password) {
+        if (password == null || password.isBlank())
+            throw new UnauthorizedException("Password required");
+        if (!password.equals(adminPassword))
+            throw new UnauthorizedException("Invalid password");
+
+        return repo.findAll().stream()
+                .map(mapper::toUserSummaryDto)
+                .toList();
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import com.mazad.user_service.dto.PrivateResponseDto;
 import com.mazad.user_service.dto.PublicResponseDto;
 import com.mazad.user_service.dto.RequestDto;
+import com.mazad.user_service.dto.UserSummaryDto;
 import com.mazad.user_service.entity.ProfileEntity;
 
 @Component
@@ -68,5 +69,18 @@ public class ProfileMapper {
                 .thumbnail(entity.getAvatarThumbnailUrl())
                 .country(entity.getCountry())
                 .build();
+    }
+
+    public UserSummaryDto toUserSummaryDto(ProfileEntity entity){
+        if (entity.getAvatarUrl() == null || entity.getAvatarUrl().isBlank()){
+            entity.setAvatarUrl(defaultAvatar);
+        }
+        return UserSummaryDto
+        .builder()
+        .username(entity.getUsername())
+        .firstName(entity.getFirstName())
+        .lastName(entity.getLastName())
+        .avatarUrl(entity.getAvatarUrl())
+        .build();
     }
 }
