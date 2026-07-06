@@ -1,2 +1,3 @@
 # Generated certificates - do not commit to version control
 generated/
+nginx/

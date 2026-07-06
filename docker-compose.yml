@@ -13,8 +13,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./infrastructure/certs/generated/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
-      - ./infrastructure/certs/generated/nginx.key:/etc/nginx/ssl/nginx.key:ro
+      - ./infrastructure/certs/nginx/mazzad.pem:/etc/nginx/ssl/nginx.pem:ro
+      - ./infrastructure/certs/nginx/mazzad.key:/etc/nginx/ssl/nginx.key:ro
       - ./infrastructure/certs/generated/mazad-root-ca.crt:/etc/nginx/ssl/mazad-root-ca.crt:ro
     networks:
       - mazad-network
@@ -33,6 +33,10 @@ services:
       mazad-network:
     restart: unless-stopped
     env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 #
   redis:
     container_name: redis-c
@@ -61,6 +65,7 @@ services:
       - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12
         -Djavax.net.ssl.trustStorePassword=${SSL_KEYSTORE_PASSWORD}
         -Djavax.net.ssl.trustStoreType=PKCS12
+        -Xmx256m -Xms64m -XX:+UseSerialGC 
 
     volumes:
       - ./infrastructure/certs/generated/gateway.p12:/etc/ssl/gateway.p12:ro
@@ -68,6 +73,10 @@ services:
     networks:
       mazad-network:
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 ##
   items-service:
     build: ./backend/item-service/
@@ -85,6 +94,8 @@ services:
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/items-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Xms64m -XX:+UseSerialGC
+      
     volumes:
       - ./infrastructure/certs/generated/items-service.p12:/etc/ssl/items-service.p12:ro
     depends_on:
@@ -94,6 +105,10 @@ services:
     networks:
       mazad-network:
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
 
   bidding-service:
@@ -113,6 +128,7 @@ services:
      - SSL_ENABLED=true
      - SSL_KEYSTORE=/etc/ssl/bidding-service.p12
      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+     - JAVA_TOOL_OPTIONS=-Xmx256m -Xms64m -XX:+UseSerialGC
     volumes:
       - ./infrastructure/certs/generated/bidding-service.p12:/etc/ssl/bidding-service.p12:ro
     depends_on:
@@ -122,6 +138,10 @@ services:
     networks:
       mazad-network:
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
   auth-service:
     build: ./backend/auth-service/
@@ -151,7 +171,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - DEFAULT_BALANCE=${DEFAULT_BALANCE}
-
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Xms64m -XX:+UseSerialGC
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
 
@@ -161,6 +181,10 @@ services:
     networks:
       mazad-network:
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
   user-service:
     build: ./backend/user-service/
@@ -191,12 +215,17 @@ services:
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/user-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Xms64m -XX:+UseSerialGC
     volumes:
       - ./infrastructure/certs/generated/user-service.p12:/etc/ssl/user-service.p12:ro
      
     networks:
       mazad-network:
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
 
   kafka-service:
@@ -226,10 +255,15 @@ services:
 
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: "-Xmx256M -Xms128M"
 
     networks:
       mazad-network:
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
 
   minio:
@@ -246,6 +280,10 @@ services:
       - ./infrastructure/certs/generated/minio.crt:/root/.minio/certs/public.crt:ro
       - ./infrastructure/certs/generated/minio.key:/root/.minio/certs/private.key:ro
     command: server /data
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
     healthcheck:
           test: ["CMD", "curl", "-fk", "https://localhost:9000/minio/health/live"]
@@ -296,10 +334,15 @@ services:
       - SSL_ENABLED=true
       - SSL_KEYSTORE=/etc/ssl/chat-service.p12
       - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Xms64m -XX:+UseSerialGC
     volumes:
       - ./infrastructure/certs/generated/chat-service.p12:/etc/ssl/chat-service.p12:ro
     networks:
       - mazad-network
+    deploy:
+      resources:
+        limits:
+          memory: 384M
       
 
 
@@ -315,7 +358,6 @@ services:
       MINIO_URL: https://mazad-minio:9000
       SIGHTENGINE_USER: ${SIGHTENGINE_USER}
       SIGHTENGINE_PASSWORD: ${SIGHTENGINE_PASSWORD}
-
       SSL_ENABLED: "true"
       SSL_KEYSTORE: /etc/ssl/upload-service.p12
       SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
@@ -323,6 +365,7 @@ services:
       JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/app/certs/mazad-truststore.p12
         -Djavax.net.ssl.trustStorePassword=${SSL_KEYSTORE_PASSWORD}
         -Djavax.net.ssl.trustStoreType=PKCS12
+        -Xmx256m -Xms64m -XX:+UseSerialGC
     volumes:
       - ./infrastructure/certs/generated/upload-service.p12:/etc/ssl/upload-service.p12:ro
       - ./infrastructure/certs/generated/mazad-truststore.p12:/app/certs/mazad-truststore.p12
@@ -331,6 +374,10 @@ services:
     depends_on:
       minio-setup:
         condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
   notification-service:
     build: ./backend/notification-service
@@ -344,7 +391,7 @@ services:
       - NOTIFY_FRIENDS_TOPIC=${NOTIFY_FRIENDS_TOPIC}
       - FRIEND_REQUEST_TOPIC=${FRIEND_REQUEST_TOPIC}
       - CHAT_UPDATE_TOPIC=${CHAT_MESSAGES_TOPIC}
-
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Xms64m -XX:+UseSerialGC
       - DB_URL=${DB_URL}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
 
@@ -360,6 +407,10 @@ services:
     depends_on:
       - postgres
       - kafka-service
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
 networks:
   mazad-network:
